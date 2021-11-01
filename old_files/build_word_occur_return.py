@@ -25,22 +25,6 @@ def build_word_occur_return(news_df, dictionary):
         num_word = len(news_word_list)
         dict_count_list = dict_count(news_word_list, dictionary)
 
-        # open_return_b2 = news_df.loc[i, 'open_return'][0]
-        # open_return_b1 = news_df.loc[i, 'open_return'][1]
-        # open_return_0 = news_df.loc[i, 'open_return'][2]
-        # open_return_1 = news_df.loc[i, 'open_return'][3]
-        # open_return_2 = news_df.loc[i, 'open_return'][4]
-        # open_return_3 = news_df.loc[i, 'open_return'][5]
-        # open_return_4 = news_df.loc[i, 'open_return'][6]
-        #
-        # close_return_b2 = news_df.loc[i, 'close_return'][0]
-        # close_return_b1 = news_df.loc[i, 'close_return'][1]
-        # close_return_0 = news_df.loc[i, 'close_return'][2]
-        # close_return_1 = news_df.loc[i, 'close_return'][3]
-        # close_return_2 = news_df.loc[i, 'close_return'][4]
-        # close_return_3 = news_df.loc[i, 'close_return'][5]
-        # close_return_4 = news_df.loc[i, 'close_return'][6]
-
         for j, word in enumerate(dict_count_list):
             word_occur_matrix[i, j] = dict_count_list[j] / num_word
 
