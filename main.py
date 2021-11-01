@@ -1,9 +1,8 @@
 import os
 from global_settings import LOG_PATH
 from global_settings import CLEAN_PATH
-from tools.log import init_data_log
 from data_prep.data_clean import clean_data
-from data_prep.data_clean import split_data
+from data_prep.data_clean import split_data, save_data
 
 # Clean data
 if __name__ == "__main__":
@@ -14,9 +13,9 @@ if __name__ == "__main__":
         os.mkdir(CLEAN_PATH)
 
     raw_file = "raw.csv"
-    date_file = "data.csv"
+    data_file = "data.csv"
     clean_file = "cleaned.csv"
 
-    init_data_log()
-    clean_data(date_file, clean_file)
+    save_data(raw_file, data_file)
+    # clean_data(data_file, clean_file)
     # split_data(clean_file, num=250)

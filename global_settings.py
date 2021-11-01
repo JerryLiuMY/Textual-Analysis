@@ -14,7 +14,8 @@ FIG_PATH = os.path.join(OUTPUT_PATH, "fig")
 
 # stkcd
 stkcd_all = list(np.load(os.path.join(DATA_PATH, "stkcd_all.npy")))
-dalym = pd.read_csv(os.path.join("dalym.csv"))
+dalym = pd.read_csv(os.path.join(DATA_PATH, "dalym.csv"))
+trddt_all = np.array(sorted(set(dalym["Trddt"])))
 
 # risklab server
 user = "risklab_user"

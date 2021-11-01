@@ -1,9 +1,6 @@
 import datetime
 from dateutil import tz
-import os
-import numpy as np
-import pandas as pd
-from global_settings import DATA_PATH
+from global_settings import trddt_all
 
 
 def convert_datetime(timestamp):
@@ -27,22 +24,24 @@ def convert_datetime(timestamp):
 
 
 def shift_date(date, delta_day):
-    """
+    """ Shift a date by a delta_day
     :param date: date string in the format of "%Y-%m-%d"
     :param delta_day: number of days to lag
-    :return: lagged date in the format of "%Y-%m-%d"
+    :return: shifted date in the format of "%Y-%m-%d"
     """
     date_fmt = "%Y-%m-%d"
-    date_datetime = datetime.datetime.strptime(date, date_fmt)
-    new_date_datetime = date_datetime + datetime.timedelta(days=delta_day)
-    new_date = datetime.datetime.strftime(new_date_datetime, date_fmt)
+    date_dt = datetime.datetime.strptime(date, date_fmt)
+    shifted_date_dt = date_dt + datetime.timedelta(days=delta_day)
+    shifted_date = datetime.datetime.strftime(shifted_date_dt, date_fmt)
 
-    return new_date
+    return shifted_date
 
 
-def match_date(dalym_file):
-    os.path.join(DATA_PATH)
+def match_date(date):
+    """ Match a date to the nearest next trading date (itself inclusive)
+    :param date: date string in the format of "%Y-%m-%d"
+    :return: matched date in the format of "%Y-%m-%d"
+    """
+    matched_date = trddt_all[trddt_all >= date][0]
 
-    trddt_all = np.array(sorted(set(dalym["Trddt"])))
-
-    pass
+    return matched_date

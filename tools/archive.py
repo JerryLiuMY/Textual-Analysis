@@ -6,20 +6,22 @@ import os
 import numpy as np
 
 
-def get_stkcd_all():
+def create_stkcd_all():
     csmar = mysql.connector.connect(user=user, password=password, host=host, database="CSMAR")
     csmar_cursor = csmar.cursor()
     csmar_cursor.execute(f"""SELECT Stkcd FROM TRD_Dalyr""")
     stkcd_query = csmar_cursor.fetchall()
     stkcd_all = sorted(set([_[0] for _ in stkcd_query]))
+
     with open(os.path.join(DATA_PATH, "stkcd_all.npy"), "wb") as f:
         np.save(f, stkcd_all)
 
 
-def get_dalym():
+def create_dalym():
     csmar = mysql.connector.connect(user=user, password=password, host=host, database="CSMAR")
     csmar_cursor = csmar.cursor()
     csmar_cursor.execute(f"""SELECT * FROM TRD_Dalym""")
-    dalym_query = csmar_cursor.fetchall()
+    dalym = csmar_cursor.fetchall()
 
-    pass
+    with open(os.path.join(DATA_PATH, "dalym.csv"), "wb") as f:
+        np.save(f, dalym)

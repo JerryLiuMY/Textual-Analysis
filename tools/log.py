@@ -6,6 +6,7 @@ from global_settings import LOG_PATH
 def init_data_log():
     data_log = {
         "original": 0,
+        "available": 0,
         "drop_nan": 0,
         "single_tag": 0,
         "match_stkcd": 0

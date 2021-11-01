@@ -3,8 +3,9 @@ import pandas as pd
 import json
 from global_settings import DATA_PATH
 from global_settings import CLEAN_PATH, LOG_PATH
-from global_settings import stkcd_all
+from global_settings import stkcd_all, trddt_all
 from tools.utils import convert_datetime
+from tools.log import init_data_log
 
 
 def save_data(raw_file, data_file):
@@ -39,7 +40,8 @@ def save_data(raw_file, data_file):
     data_df["time"] = datetime.apply(lambda _: _[1])
     data_df = data_df.loc[:, data_df.columns != "created_at"]
 
-    print("Saving data...")
+    print("Saving data.csv...")
+    data_df.reset_index(inplace=True, drop=True)
     data_df.to_csv(os.path.join(DATA_PATH, data_file), index=False)
 
 
@@ -50,6 +52,7 @@ def clean_data(data_file, clean_file):
     """
 
     # load log file
+    init_data_log()
     with open(os.path.join(LOG_PATH, "data_log.json"), "r") as f:
         data_log = json.load(f)
 
@@ -57,6 +60,11 @@ def clean_data(data_file, clean_file):
     print("Loading data.csv...")
     data_df = pd.read_csv(os.path.join(DATA_PATH, data_file))
     data_log["original"] = data_df.shape[0]
+
+    # drop entries beyond available data date range
+    print(f"Selecting articles before {trddt_all[-2]}")
+    data_df = data_df.loc[data_df["date"].apply(lambda _: _ <= trddt_all[-2]), :]
+    data_log["available"] = data_df.shape[0]
 
     # drop NaN entries
     print("Dropping NaN entries...")
@@ -77,6 +85,7 @@ def clean_data(data_file, clean_file):
     data_log["match_stkcd"] = data_df.shape[0]
 
     # reset index & save log
+    print("Saving to cleaned.csv...")
     data_df.reset_index(inplace=True, drop=True)
     data_df.to_csv(os.path.join(CLEAN_PATH, clean_file), index=False)
 
@@ -91,10 +100,12 @@ def split_data(clean_file, num):
     """
 
     # load cleaned file
+    print("Loading cleaned.csv...")
     data_df = pd.read_csv(os.path.join(CLEAN_PATH, clean_file))
     size = data_df.shape[0]
     sub_size = int(size / num)
 
     for idx, iloc in enumerate(range(0, size, sub_size)):
-        sub_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=True, drop=True)
+        print(f"Saving cleaned_{idx}.csv...")
+        sub_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=False, drop=True)
         sub_df.to_csv(os.path.join(CLEAN_PATH, clean_file.split(".")[0] + f"_{idx}.csv"), index=False)
