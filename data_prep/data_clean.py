@@ -28,7 +28,7 @@ def save_data(raw_file, data_file):
         "stock_mention"
     ]
 
-    print("Loading raw data...")
+    print(f"Loading {raw_file}...")
     data_df = pd.read_csv(os.path.join(DATA_PATH, raw_file), names=col_names)
 
     print("Selecting useful columns...")
@@ -40,7 +40,7 @@ def save_data(raw_file, data_file):
     data_df["time"] = datetime.apply(lambda _: _[1])
     data_df = data_df.loc[:, data_df.columns != "created_at"]
 
-    print("Saving data.csv...")
+    print(f"Saving {data_file}...")
     data_df.reset_index(inplace=True, drop=True)
     data_df.to_csv(os.path.join(DATA_PATH, data_file), index=False)
 
@@ -57,7 +57,7 @@ def clean_data(data_file, clean_file):
         data_log = json.load(f)
 
     # original data
-    print("Loading data.csv...")
+    print(f"Loading {data_file}...")
     data_df = pd.read_csv(os.path.join(DATA_PATH, data_file))
     data_log["original"] = data_df.shape[0]
 
@@ -85,7 +85,7 @@ def clean_data(data_file, clean_file):
     data_log["match_stkcd"] = data_df.shape[0]
 
     # reset index & save log
-    print("Saving to cleaned.csv...")
+    print(f"Saving to {clean_file}...")
     data_df.reset_index(inplace=True, drop=True)
     data_df.to_csv(os.path.join(CLEAN_PATH, clean_file), index=False)
 
@@ -100,12 +100,14 @@ def split_data(clean_file, num):
     """
 
     # load cleaned file
-    print("Loading cleaned.csv...")
+    print(f"Loading {clean_file}...")
     data_df = pd.read_csv(os.path.join(CLEAN_PATH, clean_file))
     size = data_df.shape[0]
     sub_size = int(size / num)
 
     for idx, iloc in enumerate(range(0, size, sub_size)):
-        print(f"Saving cleaned_{idx}.csv...")
         sub_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=False, drop=True)
-        sub_df.to_csv(os.path.join(CLEAN_PATH, clean_file.split(".")[0] + f"_{idx}.csv"), index=False)
+        sub_file = clean_file.split(".")[0] + f"_{idx}.csv"
+
+        print(f"Saving {sub_file}...")
+        sub_df.to_csv(os.path.join(CLEAN_PATH, sub_file), index=False)

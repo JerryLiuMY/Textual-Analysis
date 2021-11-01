@@ -1,5 +1,4 @@
-from tools.utils import shift_date
-from tools.utils import match_date
+from tools.utils import shift_date, match_date
 
 
 def enrich_data(sub_df):
@@ -9,10 +8,11 @@ def enrich_data(sub_df):
     """
 
     # match to the next trading date
-    sub_df["shift"] = sub_df["time"].apply(lambda _: _[:2] >= "15:00").astype(int)
+    cls_time = "15:00:00"
+    sub_df["shift"] = sub_df["time"].apply(lambda _: _[:2] >= cls_time).astype(int)
     sub_df["date_0"] = sub_df.apply(lambda _: shift_date(_["date"], _["shift"]), axis=1).apply(match_date)
 
-    # fetch mkt_type, cls, cap, ret for the particular date
+    # fetch type, cls, cap, ret
 
     return sub_df
 
