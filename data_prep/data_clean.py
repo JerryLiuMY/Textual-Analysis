@@ -48,15 +48,15 @@ def clean_data(data_file, clean_file):
     """ Drop i) nan entries ii) entries with more than one stock mentioned iii) entries without csmar matches
     :param data_file: name of data file
     :param clean_file: name of the cleaned file
-    :return: cleaned dataframe
     """
 
-    # load data file and log
-    data_df = pd.read_csv(os.path.join(DATA_PATH, data_file))
+    # load log file
     with open(os.path.join(LOG_PATH, "data_log.json"), "r") as f:
         data_log = json.load(f)
 
     # original data
+    print("Loading data.csv...")
+    data_df = pd.read_csv(os.path.join(DATA_PATH, data_file))
     data_log["original"] = data_df.shape[0]
 
     # drop NaN entries
@@ -72,26 +72,30 @@ def clean_data(data_file, clean_file):
 
     # drop entries without matches with the csmar database
     print("Dropping entries without matches with the csmar database...")
-    data_df = data_df.loc[data_df["stock_mention"].apply(lambda _: len(_) <= 8), :]
-    data_df["stkcd"] = data_df["stock_mention"].apply(lambda _: re.sub('\D', '', f'{_}'))
-    data_df = data_df.loc[data_df["stkcd"].apply(lambda _: _ in stkcd_all), :]
+    data_df = data_df.loc[data_df["stock_mention"].apply(lambda _: len(_) == 8), :]
+    data_df = data_df.loc[data_df["stock_mention"].apply(lambda _: _[:2].isalpha()), :]
+    data_df = data_df.loc[data_df["stock_mention"].apply(lambda _: _[2:] in stkcd_all), :]
     data_log["match_stkcd"] = data_df.shape[0]
 
     # reset index & save log
     data_df.reset_index(inplace=True)
-    data_df["stkcd"] = data_df["stkcd"].apply('="{}"'.format)
     data_df.to_csv(os.path.join(CLEAN_PATH, clean_file), index=False)
 
     with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
         json.dump(data_log, f)
 
 
-def split_data(data_df):
+def split_data(clean_file, num):
+    """ Split the cleaned data
+    :param clean_file: name of the cleaned file
+    :param num: number of files to generate
+    """
+
+    # load cleaned file
+    data_df = pd.read_csv(os.path.join(CLEAN_PATH, clean_file))
     size = data_df.shape[0]
-    sub_size = int(size / 100)
+    sub_size = int(size / num)
 
-    for idx, start in enumerate(range(0, size, sub_size)):
-        sub_data_df = data_df[start: start + sub_size]
-        sub_path = os.path.join(DATA_PATH, "split", f"XueQiu_{idx}.csv")
-        sub_data_df.to_csv(sub_path, index=False)
-
+    for idx, iloc in enumerate(range(0, size, sub_size)):
+        sub_data_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=True)
+        sub_data_df.to_csv(os.path.join(CLEAN_PATH, clean_file.split(".")[0] + f"_{idx}.csv"), index=False)
