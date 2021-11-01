@@ -3,7 +3,7 @@ from global_settings import user, host, password
 
 
 def query_dalyr(stkcd, date):
-    """ Fetch characteristics of a stock on a particular date 
+    """ Fetch characteristics of a stock on a particular date
     :param stkcd: company code
     :param date: date of query
     :return: a list of [mkt_type, cls, mkt_cap, ret]

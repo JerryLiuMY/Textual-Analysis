@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import pandas as pd
 
 # data folder
 DATA_PATH = "/Users/mingyu/Desktop/data"
@@ -13,6 +14,7 @@ FIG_PATH = os.path.join(OUTPUT_PATH, "fig")
 
 # stkcd
 stkcd_all = list(np.load(os.path.join(DATA_PATH, "stkcd_all.npy")))
+dalym = pd.read_csv(os.path.join("dalym.csv"))
 
 # risklab server
 user = "risklab_user"

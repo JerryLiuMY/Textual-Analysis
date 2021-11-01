@@ -1,5 +1,4 @@
 import os
-import re
 import pandas as pd
 import json
 from global_settings import DATA_PATH
@@ -78,7 +77,7 @@ def clean_data(data_file, clean_file):
     data_log["match_stkcd"] = data_df.shape[0]
 
     # reset index & save log
-    data_df.reset_index(inplace=True)
+    data_df.reset_index(inplace=True, drop=True)
     data_df.to_csv(os.path.join(CLEAN_PATH, clean_file), index=False)
 
     with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
@@ -97,5 +96,5 @@ def split_data(clean_file, num):
     sub_size = int(size / num)
 
     for idx, iloc in enumerate(range(0, size, sub_size)):
-        sub_data_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=True)
-        sub_data_df.to_csv(os.path.join(CLEAN_PATH, clean_file.split(".")[0] + f"_{idx}.csv"), index=False)
+        sub_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=True, drop=True)
+        sub_df.to_csv(os.path.join(CLEAN_PATH, clean_file.split(".")[0] + f"_{idx}.csv"), index=False)
