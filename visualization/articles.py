@@ -10,7 +10,6 @@ sns.set()
 def plot_year_count(data_df):
     """ Bar plot of the number of articles per year
     :param data_df: cleaned data_df
-    :return: bar plot
     """
     years = list(data_df["date"].apply(lambda _: int(_[:4])))
     max_year, min_year = max(years), min(years)
@@ -32,7 +31,6 @@ def plot_year_count(data_df):
 def plot_day_count(data_df):
     """ Bar plot of the number of articles per day across the year
     :param data_df: cleaned data_df
-    :return: bar plot
     """
     days = list(data_df["date"].apply(lambda _: _[5:]))
     x = sorted(set(days))
@@ -56,7 +54,6 @@ def plot_day_count(data_df):
 def plot_hour_count(data_df):
     """Bar plot of the number of articles per hour across the day
     :param data_df: cleaned data_df
-    :return:
     """
     time = list(data_df["time"].apply(lambda _: _[:5]))
     x = [str(f"{hour}".zfill(2) + ":" + minute) for hour in range(12) for minute in ["00", "30"]] + ["12:00"]
