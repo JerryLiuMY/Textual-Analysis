@@ -15,4 +15,3 @@ def init_data_log():
         json.dump(data_log, f)
 
     print("data_log.json initialized")
-

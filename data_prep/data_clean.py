@@ -1,13 +1,17 @@
 import os
+import re
+import numpy as np
 import pandas as pd
 import json
-from global_settings import DATA_PATH, LOG_PATH
+from global_settings import DATA_PATH
+from global_settings import CLEAN_PATH, LOG_PATH
 from tools.utils import convert_datetime
 
 
-def save_raw_data():
+def save_data(raw_file, data_file):
     """ i) load original data ii) select useful columns iii) convert timestamp to datetime and iv) save raw data
-    :return: raw data dataframe
+    :param raw_file: name of raw file
+    :param data_file: name of data file
     """
 
     col_names = [
@@ -25,7 +29,7 @@ def save_raw_data():
     ]
 
     print("Loading raw data...")
-    data_df = pd.read_csv(os.path.join(DATA_PATH, "raw_data.csv"), names=col_names)
+    data_df = pd.read_csv(os.path.join(DATA_PATH, raw_file), names=col_names)
 
     print("Selecting useful columns...")
     data_df = data_df.loc[:, ["created_at", "text", "stock_mention"]]
@@ -37,15 +41,18 @@ def save_raw_data():
     data_df = data_df.loc[:, data_df.columns != "created_at"]
 
     print("Saving data...")
-    data_df.to_csv(os.path.join(DATA_PATH, "XueQiu.csv"), index=False)
+    data_df.to_csv(os.path.join(DATA_PATH, data_file), index=False)
 
 
-def clean_data(data_df):
+def clean_data(data_file, clean_file):
     """ Drop i) nan entries ii) entries with more than one stock mentioned iii) entries without csmar matches
-    :param data_df: raw data dataframe
+    :param data_file: name of data file
+    :param clean_file: name of the cleaned file
     :return: cleaned dataframe
     """
 
+    # load data file and log
+    data_df = pd.read_csv(os.path.join(DATA_PATH, data_file))
     with open(os.path.join(LOG_PATH, "data_log.json"), "r") as f:
         data_log = json.load(f)
 
@@ -65,14 +72,17 @@ def clean_data(data_df):
 
     # drop entries without matches with the csmar database
     print("Dropping entries without matches with the csmar database...")
+    stkcd_all = list(np.load(os.path.join(DATA_PATH, "stkcd_all.npy")))
+    data_df["stkcd"] = data_df["stock_mention"].apply(lambda _: re.sub('\D', '', f'{_}'))
+    data_df = data_df.loc[data_df["stkcd"].apply(lambda _: _ in stkcd_all), :]
     data_log["match_stkcd"] = data_df.shape[0]
-    data_df.reset_index(inplace=False)
 
-    # save log
+    # reset index & save log
+    data_df.reset_index(inplace=False)
+    data_df.to_csv(os.path.join(CLEAN_PATH, clean_file), index=False)
+
     with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
         json.dump(data_log, f)
-
-    return data_df
 
 
 def split_data(data_df):
@@ -84,8 +94,3 @@ def split_data(data_df):
         sub_path = os.path.join(DATA_PATH, "split", f"XueQiu_{idx}.csv")
         sub_data_df.to_csv(sub_path, index=False)
 
-
-if __name__ == "__main__":
-    from tools.log import init_data_log
-    init_data_log()
-    save_raw_data()
