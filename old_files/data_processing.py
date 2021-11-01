@@ -140,23 +140,6 @@ def get_price_cap_sp500_list(dsf_df, est_date, est_time, permno, oc):
 
 
 # ------------------------------ Query Data ------------------------------
-def filter_news(news_df):
-    # Filter news with exactly one ticker
-    company_list = np.array(news_df['Company'])
-    title_list = np.array(news_df['Title'])
-    article_list = np.array(news_df['Article'])
-    index_list = []
-    for i in range(len(company_list)):
-        if (company_list[i] is not None) and (len(company_list[i]) == 1):
-            content_list = np.append(title_list[i], article_list[i])
-            if len(content_list) != 0:
-                index_list.append(i)
-    news_df = news_df.iloc[index_list, :]
-    news_df = news_df.reset_index(inplace=False, drop=True)
-
-    return news_df
-
-
 def append_est_date_time(news_df):
     company_list = np.array(news_df['Company'])
     GMT_time_list = np.array(news_df['System_GMT_Time'])

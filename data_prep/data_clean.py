@@ -1,10 +1,10 @@
 import os
 import re
-import numpy as np
 import pandas as pd
 import json
 from global_settings import DATA_PATH
 from global_settings import CLEAN_PATH, LOG_PATH
+from global_settings import stkcd_all
 from tools.utils import convert_datetime
 
 
@@ -72,7 +72,6 @@ def clean_data(data_file, clean_file):
 
     # drop entries without matches with the csmar database
     print("Dropping entries without matches with the csmar database...")
-    stkcd_all = list(np.load(os.path.join(DATA_PATH, "stkcd_all.npy")))
     data_df["stkcd"] = data_df["stock_mention"].apply(lambda _: re.sub('\D', '', f'{_}'))
     data_df = data_df.loc[data_df["stkcd"].apply(lambda _: _ in stkcd_all), :]
     data_log["match_stkcd"] = data_df.shape[0]

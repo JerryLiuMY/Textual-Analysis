@@ -4,3 +4,5 @@ matplotlib
 python-dateutil
 mysql
 mysql-connector-python
+seaborn
+tqdm
