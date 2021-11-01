@@ -72,12 +72,14 @@ def clean_data(data_file, clean_file):
 
     # drop entries without matches with the csmar database
     print("Dropping entries without matches with the csmar database...")
+    data_df = data_df.loc[data_df["stock_mention"].apply(lambda _: len(_) <= 8), :]
     data_df["stkcd"] = data_df["stock_mention"].apply(lambda _: re.sub('\D', '', f'{_}'))
     data_df = data_df.loc[data_df["stkcd"].apply(lambda _: _ in stkcd_all), :]
     data_log["match_stkcd"] = data_df.shape[0]
 
     # reset index & save log
-    data_df.reset_index(inplace=False)
+    data_df.reset_index(inplace=True)
+    data_df["stkcd"] = data_df["stkcd"].apply('="{}"'.format)
     data_df.to_csv(os.path.join(CLEAN_PATH, clean_file), index=False)
 
     with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
