@@ -4,6 +4,8 @@ import pandas as pd
 import os
 import math
 from global_settings import CLEAN_PATH, RICH_PATH
+import mysql.connector
+from global_settings import user, host, password
 
 
 def enrich_data(sub_file):
@@ -29,12 +31,15 @@ def enrich_data(sub_file):
     # fetch type, cls, cap, ret, ret3
     mini_size = 100
     sub_df_rich = pd.DataFrame()
+
+    csmar = mysql.connector.connect(user=user, password=password, host=host, database="CSMAR")
+    cursor = csmar.cursor()
     for idx, iloc in enumerate(range(0, sub_df.shape[0], mini_size)):
         print(f"Working on {sub_file} -- current progress {idx + 1}/{math.ceil(sub_df.shape[0] / mini_size)}")
         mini_df = sub_df.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
-        result = mini_df.apply(lambda _: query_dalyr(_["stkcd"], _["date_0"], select="all"), axis=1)
-        cls_p1 = mini_df.apply(lambda _: query_dalyr(_["stkcd"], _["date_p1"], select="CLSPRC"), axis=1)
-        cls_m2 = mini_df.apply(lambda _: query_dalyr(_["stkcd"], _["date_m2"], select="CLSPRC"), axis=1)
+        result = mini_df.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_0"], select="all"), axis=1)
+        cls_p1 = mini_df.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_p1"], select="CLSPRC"), axis=1)
+        cls_m2 = mini_df.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_m2"], select="CLSPRC"), axis=1)
         result_df = pd.DataFrame(list(result), columns=["type", "cls", "cap", "ret"])
         cls_p1_df = pd.DataFrame(list(cls_p1))
         cls_m2_df = pd.DataFrame(list(cls_m2))
@@ -43,6 +48,8 @@ def enrich_data(sub_file):
 
         mini_df_rich = pd.concat([mini_df, result_df, ret3_df], axis=1)
         sub_df_rich = sub_df_rich.append(mini_df_rich)
+    cursor.close()
+    csmar.close()
 
     sub_df_rich.drop(columns=["shift", "stkcd", "date_t", "date_p1", "date_m2"], inplace=True)
     sub_df_rich.dropna(subset=["type", "cls", "cap", "ret", "ret3"], axis=0, inplace=True)
