@@ -4,6 +4,7 @@ from global_settings import LOG_PATH
 
 
 def init_data_log():
+    """Initialize the log file for step-by-step details for our sample filters."""
     data_log = {
         "original": 0,
         "available": 0,

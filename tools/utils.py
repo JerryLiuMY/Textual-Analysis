@@ -8,7 +8,6 @@ def convert_datetime(timestamp):
     :param timestamp: Epoch & Unix Timestamp
     :return: China date & time Timestamps
     """
-
     fmt_date = "%Y-%m-%d"
     fmt_time = "%H:%M:%S"
 
@@ -38,7 +37,7 @@ def shift_date(date, delta_day):
 
 
 def match_date(date):
-    """ Match a date to the nearest next trading date (itself inclusive)
+    """ Match a date to the next nearest trading date (the date itself inclusive)
     :param date: date string in the format of "%Y-%m-%d"
     :return: matched date in the format of "%Y-%m-%d"
     """

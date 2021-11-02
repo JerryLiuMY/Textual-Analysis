@@ -1,4 +1,5 @@
 import mysql.connector
+import numpy as np
 from global_settings import user, host, password
 
 
@@ -10,10 +11,14 @@ def query_dalyr(stkcd, date):
     """
     csmar = mysql.connector.connect(user=user, password=password, host=host, database="CSMAR")
     csmar_cursor = csmar.cursor()
+
     csmar_cursor.execute(f"""
         SELECT MARKETTYPE, CLSPRC, DSMVOSD, DRETND
         FROM TRD_Dalyr
         WHERE Stkcd = '{stkcd}' AND Trddt = '{date}'
         """)
 
-    return csmar_cursor.fetchall()
+    output = csmar_cursor.fetchall()
+    result = [np.nan] * 4 if len(output) == 0 else list(output[0])
+
+    return result

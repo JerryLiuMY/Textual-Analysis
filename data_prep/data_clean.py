@@ -40,7 +40,7 @@ def save_data(raw_file, data_file):
     data_df["time"] = datetime.apply(lambda _: _[1])
     data_df = data_df.loc[:, data_df.columns != "created_at"]
 
-    print(f"Saving {data_file}...")
+    print(f"Saving to {data_file}...")
     data_df.reset_index(inplace=True, drop=True)
     data_df.to_csv(os.path.join(DATA_PATH, data_file), index=False)
 
@@ -109,5 +109,5 @@ def split_data(clean_file, num):
         sub_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=False, drop=True)
         sub_file = clean_file.split(".")[0] + f"_{idx}.csv"
 
-        print(f"Saving {sub_file}...")
+        print(f"Saving to {sub_file}...")
         sub_df.to_csv(os.path.join(CLEAN_PATH, sub_file), index=False)
