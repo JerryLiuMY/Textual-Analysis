@@ -6,16 +6,14 @@ import math
 from global_settings import CLEAN_PATH, RICH_PATH
 
 
-def enrich_data(sub_df):
+def enrich_data(sub_file):
     """ add i) trading date ii) type, cls, cap, ret iii) ret3 to the sub dataframe to be enriched
     :param sub_file: sub file to be enriched
     :return:
     """
-
-    sub_file = "cleaned_0.csv"
-
+    
     # load sub file
-    # sub_df = pd.read_csv(os.path.join(CLEAN_PATH, sub_file))
+    sub_df = pd.read_csv(os.path.join(CLEAN_PATH, sub_file))
 
     # create auxiliary columns
     cls_time = "15:00:00"
@@ -33,7 +31,7 @@ def enrich_data(sub_df):
     sub_df_rich = pd.DataFrame()
     for idx, iloc in enumerate(range(0, sub_df.shape[0], mini_size)):
         print(f"Working on {sub_file} -- current progress {idx + 1}/{math.ceil(sub_df.shape[0] / mini_size)}")
-        mini_df = sub_df.iloc[iloc: iloc + mini_size, :]
+        mini_df = sub_df.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
         result = mini_df.apply(lambda _: query_dalyr(_["stkcd"], _["date_0"], select="all"), axis=1)
         cls_p1 = mini_df.apply(lambda _: query_dalyr(_["stkcd"], _["date_p1"], select="CLSPRC"), axis=1)
         cls_m2 = mini_df.apply(lambda _: query_dalyr(_["stkcd"], _["date_m2"], select="CLSPRC"), axis=1)
@@ -52,4 +50,4 @@ def enrich_data(sub_df):
 
     sub_file_rich = f"enriched_{sub_file.split('.')[0].split('_')[1]}.csv"
     print(f"Saving to {sub_file_rich}...")
-    sub_df.to_csv(os.path.join(RICH_PATH, sub_file_rich), index=False)
+    sub_df_rich.to_csv(os.path.join(RICH_PATH, sub_file_rich), index=False)
