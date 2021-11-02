@@ -11,7 +11,7 @@ def enrich_data(sub_file):
     :param sub_file: sub file to be enriched
     :return:
     """
-    
+
     # load sub file
     sub_df = pd.read_csv(os.path.join(CLEAN_PATH, sub_file))
 
