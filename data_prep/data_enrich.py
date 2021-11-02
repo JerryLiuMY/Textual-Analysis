@@ -3,17 +3,19 @@ from tools.sql import query_dalyr
 import pandas as pd
 import os
 import math
-from global_settings import CLEAN_PATH
+from global_settings import CLEAN_PATH, RICH_PATH
 
 
-def enrich_data(sub_file):
+def enrich_data(sub_df):
     """ add i) trading date ii) type, cls, cap, ret iii) ret3 to the sub dataframe to be enriched
     :param sub_file: sub file to be enriched
     :return:
     """
 
+    sub_file = "cleaned_0.csv"
+
     # load sub file
-    sub_df = pd.read_csv(os.path.join(CLEAN_PATH, sub_file))
+    # sub_df = pd.read_csv(os.path.join(CLEAN_PATH, sub_file))
 
     # create auxiliary columns
     cls_time = "15:00:00"
@@ -21,12 +23,12 @@ def enrich_data(sub_file):
     sub_df["stkcd"] = sub_df["stock_mention"].apply(lambda _: _[2:])
     sub_df["date_t"] = sub_df.apply(lambda _: shift_date(_["date"], _["shift"]), axis=1)
 
-    # match to the next trading date
+    # match to the trading date t, t-2, t+1
     sub_df["date_0"] = sub_df["date_t"].apply(lambda _: match_date(_, match_day=0))
     sub_df["date_p1"] = sub_df["date_t"].apply(lambda _: match_date(_, match_day=1))
     sub_df["date_m2"] = sub_df["date_t"].apply(lambda _: match_date(_, match_day=-2))
 
-    # fetch type, cls, cap, ret
+    # fetch type, cls, cap, ret, ret3
     mini_size = 100
     sub_df_rich = pd.DataFrame()
     for idx, iloc in enumerate(range(0, sub_df.shape[0], mini_size)):
@@ -38,10 +40,16 @@ def enrich_data(sub_file):
         result_df = pd.DataFrame(list(result), columns=["type", "cls", "cap", "ret"])
         cls_p1_df = pd.DataFrame(list(cls_p1))
         cls_m2_df = pd.DataFrame(list(cls_m2))
-        ret_3_df = cls_p1_df / cls_m2_df - 1.0
-        ret_3_df.columns = ["ret3"]
+        ret3_df = cls_p1_df / cls_m2_df - 1.0
+        ret3_df.columns = ["ret3"]
 
-        mini_df_rich = pd.concat([mini_df, result_df, ret_3_df], axis=1)
+        mini_df_rich = pd.concat([mini_df, result_df, ret3_df], axis=1)
         sub_df_rich = sub_df_rich.append(mini_df_rich)
 
-    return sub_df_rich
+    sub_df_rich.drop(columns=["shift", "stkcd", "date_t", "date_p1", "date_m2"], inplace=True)
+    sub_df_rich.dropna(subset=["type", "cls", "cap", "ret", "ret3"], axis=0, inplace=True)
+    sub_df_rich.reset_index(inplace=True, drop=True)
+
+    sub_file_rich = f"enriched_{sub_file.split('.')[0].split('_')[1]}.csv"
+    print(f"Saving to {sub_file_rich}...")
+    sub_df.to_csv(os.path.join(RICH_PATH, sub_file_rich), index=False)

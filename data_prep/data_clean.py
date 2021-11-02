@@ -87,23 +87,23 @@ def clean_data(data_file, clean_file):
     # reset index & save log
     print(f"Saving to {clean_file}...")
     data_df.reset_index(inplace=True, drop=True)
-    data_df.to_csv(os.path.join(CLEAN_PATH, clean_file), index=False)
+    data_df.to_csv(os.path.join(DATA_PATH, clean_file), index=False)
 
     with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
         json.dump(data_log, f)
 
 
-def split_data(clean_file, num):
+def split_data(clean_file, split_num):
     """ Split the cleaned data
     :param clean_file: name of the cleaned file
-    :param num: number of files to generate
+    :param split_num: number of files to generate
     """
 
     # load cleaned file
     print(f"Loading {clean_file}...")
-    data_df = pd.read_csv(os.path.join(CLEAN_PATH, clean_file))
+    data_df = pd.read_csv(os.path.join(DATA_PATH, clean_file))
     size = data_df.shape[0]
-    sub_size = int(size / num)
+    sub_size = int(size / split_num)
 
     for idx, iloc in enumerate(range(0, size, sub_size)):
         sub_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=False, drop=True)

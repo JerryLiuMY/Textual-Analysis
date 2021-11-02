@@ -6,6 +6,7 @@ import pandas as pd
 # data folder
 DATA_PATH = "/Users/mingyu/Desktop/data"
 CLEAN_PATH = os.path.join(DATA_PATH, "cleaned")
+RICH_PATH = os.path.join(DATA_PATH, "enriched")
 
 # output folder
 OUTPUT_PATH = "/Users/mingyu/Desktop/output"
