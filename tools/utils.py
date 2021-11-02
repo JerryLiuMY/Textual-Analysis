@@ -22,25 +22,29 @@ def convert_datetime(timestamp):
     return chn_date, chn_time
 
 
-def shift_date(date, delta_day):
+def shift_date(date, shift_day):
     """ Shift a date by a delta_day
     :param date: date string in the format of "%Y-%m-%d"
-    :param delta_day: number of days to lag
+    :param shift_day: number of days to lag
     :return: shifted date in the format of "%Y-%m-%d"
     """
     date_fmt = "%Y-%m-%d"
     date_dt = datetime.datetime.strptime(date, date_fmt)
-    shifted_date_dt = date_dt + datetime.timedelta(days=delta_day)
+    shifted_date_dt = date_dt + datetime.timedelta(days=shift_day)
     shifted_date = datetime.datetime.strftime(shifted_date_dt, date_fmt)
 
     return shifted_date
 
 
-def match_date(date):
-    """ Match a date to the next nearest trading date (the date itself inclusive)
+def match_date(date, match_day=0):
+    """ Match a date to the specified trading date
     :param date: date string in the format of "%Y-%m-%d"
+    :param match_day: number of days before / after the trading date to match
     :return: matched date in the format of "%Y-%m-%d"
     """
-    matched_date = trddt_all[trddt_all >= date][0]
+    if match_day >= 0:
+        matched_date = trddt_all[trddt_all >= date][match_day]
+    else:
+        matched_date = trddt_all[trddt_all < date][match_day]
 
     return matched_date

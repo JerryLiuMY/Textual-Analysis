@@ -62,7 +62,7 @@ def clean_data(data_file, clean_file):
     data_log["original"] = data_df.shape[0]
 
     # drop entries beyond available data date range
-    print(f"Selecting articles before {trddt_all[-2]}")
+    print(f"Selecting articles before {trddt_all[-3]}")
     data_df = data_df.loc[data_df["date"].apply(lambda _: _ <= trddt_all[-2]), :]
     data_log["available"] = data_df.shape[0]
 
