@@ -8,6 +8,7 @@
 |                                                     |  Remaining Sample Size  |  Observations Removed  |
 |-----------------------------------------------------|:-----------------------:|:----------------------:|
 | Total number of articles                            | 43,132,204              |                        |
-| Drop articles with no associated stock              | 37,668,241              | 5,463,963              |
-| Drop articles with more than one stock tagged       | 36,225,095              | 1,443,146              |
-| Drop articles without match with the CSMAR database | 25,044,730              | 11,179,650             |
+| Drop articles out of date range                     | 37,256,210              | 5,875,994              |
+| Drop articles with no associated stock              | 33,062,855              | 4,193,355              |
+| Drop articles with more than one stock tagged       | 32,143,209              | 919,646                |
+| Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
