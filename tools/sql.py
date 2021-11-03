@@ -3,6 +3,7 @@ import numpy as np
 
 def query_dalyr(cursor, stkcd, date, select="all"):
     """ Fetch characteristics of a stock on a particular date
+    :param cursor: csmar mysql.cursor object
     :param stkcd: company code
     :param date: date of query
     :param select: the variables to query

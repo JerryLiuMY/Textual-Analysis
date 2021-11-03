@@ -32,7 +32,7 @@ def save_data(raw_file, data_file):
     data_df = pd.read_csv(os.path.join(DATA_PATH, raw_file), names=col_names)
 
     print("Selecting useful columns...")
-    data_df = data_df.loc[:, ["created_at", "text", "stock_mention"]]
+    data_df = data_df.loc[:, ["created_at", "title", "text", "stock_mention"]]
 
     print("Converting to datetime...")
     datetime = data_df["created_at"].apply(convert_datetime)
