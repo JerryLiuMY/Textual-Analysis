@@ -2,7 +2,6 @@ pandas
 numpy
 matplotlib
 python-dateutil
-mysql
 mysql-connector-python
 seaborn
 tqdm
