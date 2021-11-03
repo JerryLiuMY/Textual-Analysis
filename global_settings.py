@@ -2,14 +2,18 @@ import os
 import json
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
-# data folder
-DATA_PATH = "/Users/mingyu/Desktop/data"
+# desktop path
+DESKTOP_PATH = str(Path(os.getcwd()).parent.absolute())
+
+# data path
+DATA_PATH = os.path.join(DESKTOP_PATH, "data")
 CLEAN_PATH = os.path.join(DATA_PATH, "cleaned")
 RICH_PATH = os.path.join(DATA_PATH, "enriched")
 
-# output folder
-OUTPUT_PATH = "/Users/mingyu/Desktop/output"
+# output path
+OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
 LOG_PATH = os.path.join(OUTPUT_PATH, "log")
 FIG_PATH = os.path.join(OUTPUT_PATH, "fig")
 
