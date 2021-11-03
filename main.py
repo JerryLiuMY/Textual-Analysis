@@ -24,13 +24,13 @@ if not os.path.isdir(RICH_PATH):
 # Data cleaning
 if __name__ == "__main__":
     # split data
-    raw_file = "raw.csv"
-    data_file = "data.csv"
-    clean_file = "cleaned.csv"
-    split_num = 250
-    save_data(raw_file, data_file)
-    clean_data(data_file, clean_file)
-    split_data(clean_file, split_num=split_num)
+    # raw_file = "raw.csv"
+    # data_file = "data.csv"
+    # clean_file = "cleaned.csv"
+    # split_num = 250
+    # save_data(raw_file, data_file)
+    # clean_data(data_file, clean_file)
+    # split_data(clean_file, split_num=split_num)
 
     # enrich data
     sub_file_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(CLEAN_PATH, "*"))]
