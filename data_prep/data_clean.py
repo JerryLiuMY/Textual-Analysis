@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import json
 from global_settings import DATA_PATH
-from global_settings import CLEAN_PATH, LOG_PATH
+from global_settings import LOG_PATH
 from global_settings import stkcd_all, trddt_all
 from tools.utils import convert_datetime
 from tools.log import init_data_log
@@ -91,23 +91,3 @@ def clean_data(data_file, clean_file):
 
     with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
         json.dump(data_log, f)
-
-
-def split_data(clean_file, split_num):
-    """ Split the cleaned data
-    :param clean_file: name of the cleaned file
-    :param split_num: number of files to generate
-    """
-
-    # load cleaned file
-    print(f"Loading {clean_file}...")
-    data_df = pd.read_csv(os.path.join(DATA_PATH, clean_file))
-    size = data_df.shape[0]
-    sub_size = int(size / split_num)
-
-    for idx, iloc in enumerate(range(0, size, sub_size)):
-        sub_df = data_df.iloc[iloc: iloc + sub_size, :].reset_index(inplace=False, drop=True)
-        sub_file = clean_file.split(".")[0] + f"_{str(idx).zfill(3)}.csv"
-
-        print(f"Saving to {sub_file}...")
-        sub_df.to_csv(os.path.join(CLEAN_PATH, sub_file), index=False)

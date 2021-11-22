@@ -3,9 +3,10 @@ import glob
 from global_settings import LOG_PATH
 from global_settings import CLEAN_PATH
 from global_settings import RICH_PATH
+from global_settings import WORD_PATH
 from data_prep.data_clean import save_data
+from data_prep.data_split import split_data
 from data_prep.data_clean import clean_data
-from data_prep.data_clean import split_data
 from data_prep.data_enrich import enrich_data
 from multiprocessing.pool import Pool
 
@@ -20,16 +21,21 @@ if not os.path.isdir(CLEAN_PATH):
 if not os.path.isdir(RICH_PATH):
     os.mkdir(RICH_PATH)
 
+if not os.path.isdir(WORD_PATH):
+    os.mkdir(WORD_PATH)
+
 
 # Data cleaning
 if __name__ == "__main__":
-    # split data
+    # clean data
     # raw_file = "raw.csv"
     # data_file = "data.csv"
-    # clean_file = "cleaned.csv"
-    # split_num = 250
     # save_data(raw_file, data_file)
     # clean_data(data_file, clean_file)
+
+    # split data
+    # clean_file = "cleaned.csv"
+    # split_num = 250
     # split_data(clean_file, split_num=split_num)
 
     # enrich data
