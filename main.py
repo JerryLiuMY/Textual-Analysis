@@ -27,18 +27,16 @@ if not os.path.isdir(WORD_PATH):
 
 
 if __name__ == "__main__":
-    # clean data
+    # # clean & split data
     # raw_file = "raw.csv"
     # data_file = "data.csv"
-    # save_data(raw_file, data_file)
-    # clean_data(data_file, clean_file)
-
-    # split data
     # clean_file = "cleaned.csv"
     # split_num = 250
+    # save_data(raw_file, data_file)
+    # clean_data(data_file, clean_file)
     # split_data(clean_file, split_num=split_num)
-
-    # enrich data
+    #
+    # # enrich data
     # sub_file_clean_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(CLEAN_PATH, "*"))]
     # sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
     # sub_file_clean_li = sorted([_ for _ in sub_file_clean_li if _.split(".")[0].split("_")[1] not in sub_file_rich_idx])
