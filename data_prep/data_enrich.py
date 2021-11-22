@@ -37,10 +37,10 @@ def enrich_data(sub_file_clean):
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Working on {sub_file_clean} -- progress {idx + 1} / {math.ceil(sub_df_clean.shape[0] / mini_size)}")
         cursor = csmar.cursor()
-        mini_df = sub_df_clean.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
-        result = mini_df.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_0"], select="all"), axis=1)
-        cls_p1 = mini_df.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_p1"], select="CLSPRC"), axis=1)
-        cls_m2 = mini_df.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_m2"], select="CLSPRC"), axis=1)
+        mini_df_clean = sub_df_clean.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
+        result = mini_df_clean.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_0"], select="all"), axis=1)
+        cls_p1 = mini_df_clean.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_p1"], select="CLSPRC"), axis=1)
+        cls_m2 = mini_df_clean.apply(lambda _: query_dalyr(cursor, _["stkcd"], _["date_m2"], select="CLSPRC"), axis=1)
         result_df = pd.DataFrame(list(result), columns=["type", "cls", "cap", "ret"])
 
         cls_p1_df = pd.DataFrame(list(cls_p1))
@@ -48,7 +48,7 @@ def enrich_data(sub_file_clean):
         ret3_df = cls_p1_df / cls_m2_df - 1.0
         ret3_df.columns = ["ret3"]
 
-        mini_df_rich = pd.concat([mini_df, result_df, ret3_df], axis=1)
+        mini_df_rich = pd.concat([mini_df_clean, result_df, ret3_df], axis=1)
         sub_df_rich = sub_df_rich.append(mini_df_rich)
         cursor.close()
 
