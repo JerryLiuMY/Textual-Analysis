@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from global_settings import DATA_PATH
 
-params = {
+params_dict = {
     "ssestm": {"pen": 0.01}
 }
 

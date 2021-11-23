@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from tools.params import full_dict
+from tools.params import params_dict
 
 
 def train_ssestm(df_rich, word_matrix):
@@ -29,14 +30,15 @@ def train_ssestm(df_rich, word_matrix):
     return O_hat
 
 
-def predict_ssestm(word_matrix, O_hat, pen):
+def predict_ssestm(word_matrix, O_hat, params):
     """
     :param word_matrix:
     :param O_hat: estimated O_hat
-    :param pen:
+    :param params: parameters for ssestm
     :return:
     """
 
+    pen = params["pen"]
     word_df = pd.DataFrame(word_matrix, columns=full_dict)
     D = word_df.div(word_df.sum(axis=1), axis=0).values.T
     p = np.linspace(0, 1, 1000)[1:-1]

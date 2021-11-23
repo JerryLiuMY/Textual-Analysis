@@ -1,5 +1,6 @@
 import os
 import glob
+import pandas as pd
 from global_settings import CLEAN_PATH
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
@@ -9,11 +10,10 @@ from data_prep.data_clean import clean_data
 from data_prep.data_enrich import enrich_data
 from data_proc.word_matrix import build_word
 from multiprocessing.pool import Pool
-import pandas as pd
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
-    """ Run data processing -- clean & enrich & split data
+    """ Run data processing -- clean, split & enrich data
     :param raw_file: raw file
     :param data_file: data file
     :param clean_file: cleaned file
@@ -29,11 +29,11 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     sub_file_clean_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(CLEAN_PATH, "*"))]
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
     sub_file_clean_li = sorted([_ for _ in sub_file_clean_li if _.split(".")[0].split("_")[1] not in sub_file_rich_idx])
-    num_proc = 8
 
+    num_proc = 8
     for idx in range(0, len(sub_file_clean_li), num_proc):
         pool = Pool(num_proc)
-        pool.map(enrich_data, sub_file_clean_li[idx: idx + num_proc])
+        pool.imap(enrich_data, sub_file_clean_li[idx: idx + num_proc])
         pool.close()
         pool.join()
 
@@ -47,7 +47,7 @@ def run_build_word():
 
     num_proc = 8
     pool = Pool(num_proc)
-    pool.map(build_word, sub_file_rich_li)
+    pool.imap(build_word, sub_file_rich_li)
     pool.close()
     pool.join()
 
