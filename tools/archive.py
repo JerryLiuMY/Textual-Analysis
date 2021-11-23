@@ -33,7 +33,7 @@ def create_dalym():
         np.save(f, dalym)
 
 
-def create_dates_all():
+def get_date0_range():
     """Fetch the range of date0 from the enriched dataframe"""
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
 

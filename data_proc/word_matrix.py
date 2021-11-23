@@ -16,7 +16,6 @@ def build_word(sub_file_rich):
 
     # load sub file enriched
     sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
-    sub_df_rich = sub_df_rich.iloc[:1000, :]
     def func(df): return df["text"] if df["title"] is np.nan else " ".join([df["title"], df["text"]])
 
     # build word matrix
