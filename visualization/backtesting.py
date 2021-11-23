@@ -13,7 +13,7 @@ def plot_backtest(return_df, num_days_cum, year_list):
     :param return_df: dataframe of returns
     :return:
     """
-    # return_file_list = []
+    return_file_list = []
     # RETURN_FOLDER = get_return_folder(dict_type)
     # for file in glob.glob(os.path.join(RETURN_FOLDER, '*.pkl')):
     #     return_file_list.append(file)
@@ -31,7 +31,7 @@ def plot_backtest(return_df, num_days_cum, year_list):
     # num_days_cum = np.cumsum(year_num_day_list)
     # num_days_cum = np.append(1, num_days_cum)
 
-    # Calculate cumulative return
+    # calculate cumulative return
     long_equal_ret = np.array(return_df["long_equal_ret"]) + 1
     long_equal_cum = np.log(np.cumprod(long_equal_ret))
     short_equal_ret = -np.array(return_df["short_equal_ret"]) + 1
@@ -46,22 +46,21 @@ def plot_backtest(return_df, num_days_cum, year_list):
     value_ret = long_value_ret + short_value_ret - 1
     value_cum = np.log(np.cumprod(value_ret))
 
-    sp500_ret = np.array(return_df["sp500_ret"]) + 1
-    sp500_cum = np.log(np.cumprod(sp500_ret))
+    index_ret = np.array(return_df["index_ret"]) + 1
+    index_cum = np.log(np.cumprod(index_ret))
 
-    # Plot cumulative return
-    fig = plt.figure(1, figsize=(14, 7))
-    plt.xlim(num_days_cum[0], num_days_cum[-1])
-    plt.xticks(num_days_cum[0::2], year_list[0::2])
-    plt.grid('on')
-    plt.plot(equal_cum, 'k-')
-    plt.plot(long_equal_cum, 'b-')
-    plt.plot(-short_equal_cum, 'r-')
-    plt.plot(value_cum, 'k--')
-    plt.plot(long_value_cum, 'b--')
-    plt.plot(-short_value_cum, 'r--')
-    plt.plot(sp500_cum, 'y-')
-    plt.legend(['L-S EW', 'L EW', 'S EW', 'L-S VW', 'L VW', 'S VW', 'SP500'])
-    plt.show()
+    # plot cumulative return
+    fig, ax = plt.subplots(1, 1, figsize=(14, 7))
+    ax.set_xlim(num_days_cum[0], num_days_cum[-1])
+    ax.set_xticks(num_days_cum[0::2], year_list[0::2])
+    ax.grid('on')
+    ax.plot(equal_cum, 'k-')
+    ax.plot(long_equal_cum, 'b-')
+    ax.plot(-short_equal_cum, 'r-')
+    ax.plot(value_cum, 'k--')
+    ax.plot(long_value_cum, 'b--')
+    ax.plot(-short_value_cum, 'r--')
+    ax.plot(index_cum, 'y-')
+    ax.legend(['L-S EW', 'L EW', 'S EW', 'L-S VW', 'L VW', 'S VW', 'SP500'])
 
     return fig
