@@ -1,9 +1,13 @@
 import mysql.connector
 from global_settings import user, host, password
 from global_settings import DATA_PATH
+from global_settings import RICH_PATH
 import mysql.connector
-import os
+import datetime
 import numpy as np
+import pandas as pd
+import glob
+import os
 
 
 def create_stkcd_all():
@@ -27,3 +31,19 @@ def create_dalym():
 
     with open(os.path.join(DATA_PATH, "dalym.csv"), "wb") as f:
         np.save(f, dalym)
+
+
+def create_dates_all():
+    """Fetch the range of date0 from the enriched dataframe"""
+    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
+
+    df_rich = pd.DataFrame()
+    for sub_file_rich in sorted(sub_file_rich_li):
+        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Loading {sub_file_rich}")
+        sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
+        df_rich = df_rich.append(sub_df_rich)
+
+    df_rich.reset_index(inplace=True, drop=True)
+    date0_all = sorted(set(df_rich["date_0"]))
+
+    return min(date0_all), max(date0_all)
