@@ -6,6 +6,7 @@ from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 import datetime
 import math
+from scipy.sparse import csc_matrix, save_npz
 
 # https://github.com/MengLingchao/Chinese_financial_sentiment_dictionary
 xlsx_dict = pd.ExcelFile(os.path.join(DATA_PATH, "Chinese_Dict.xlsx"))
@@ -36,6 +37,7 @@ def build_word(sub_file_rich):
         mini_word_df = pd.DataFrame(mini_word_matrix.tolist(), columns=full_dict)
         sub_word_df = sub_word_df.append(mini_word_df)
 
-    sub_word_file = f"word_{sub_file_rich.split('.')[0].split('_')[1]}.csv"
+    sub_word_sparse = csc_matrix(sub_word_df.values)
+    sub_word_file = f"word_{sub_file_rich.split('.')[0].split('_')[1]}.npz"
     print(f"Saving to {sub_word_file}...")
-    sub_word_df.to_csv(os.path.join(WORD_PATH, sub_word_file), index=False)
+    save_npz(os.path.join(WORD_PATH, sub_word_file), sub_word_sparse)
