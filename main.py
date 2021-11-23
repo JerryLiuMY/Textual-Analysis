@@ -33,7 +33,7 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     num_proc = 8
     for idx in range(0, len(sub_file_clean_li), num_proc):
         pool = Pool(num_proc)
-        pool.imap(enrich_data, sub_file_clean_li[idx: idx + num_proc])
+        pool.map(enrich_data, sub_file_clean_li[idx: idx + num_proc])
         pool.close()
         pool.join()
 
@@ -49,7 +49,7 @@ def run_build_word():
     num_proc = 8
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
-        pool.imap(build_word, sub_file_rich_li[idx: idx + num_proc])
+        pool.map(build_word, sub_file_rich_li[idx: idx + num_proc])
         pool.close()
         pool.join()
 
