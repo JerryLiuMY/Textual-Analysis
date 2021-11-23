@@ -1,15 +1,26 @@
 import numpy as np
+import pandas as pd
 
 
-def train_ssestm(df_rich, word_df):
+def train_ssestm(df_rich, word_matrix):
+    """ train ssestm model to get the O_hat estimate
+    :param df_rich: enriched dataframe
+    :param word_matrix: word count matrix
+    :return: estimated O_hat
+    """
+
+    word_df = pd.DataFrame(word_matrix)
     article_filter = (word_df.sum(axis=1) != 0)
     word_df = word_df.loc[article_filter, :]
     df_rich = df_rich.loc[article_filter, :]
-    n = word_df.shape[0]
 
+    # Get D_hat and W_hat
+    n = word_df.shape[0]
     D_hat = word_df.div(word_df.sum(axis=1), axis=0).values.T
     p_hat = np.argsort(df_rich["ret3"].values).reshape(1, -1) / n
     W_hat = np.concatenate((p_hat, 1 - p_hat))
+
+    # Calculate O hat
     O_hat = D_hat @ W_hat.T @ np.linalg.inv(W_hat @ W_hat.T)
     O_hat = O_hat.clip(min=0)
     O_hat = np.divide(O_hat, O_hat.sum(axis=0))
@@ -18,9 +29,16 @@ def train_ssestm(df_rich, word_df):
 
 
 def predict_ssestm(O_hat, word_df, pen):
-    np.linspace()
-    p_li = np.linspace(0, 1, 1000)[1:-1]
+    """
+    :param O_hat: estimated O_hat
+    :param word_df:
+    :param pen:
+    :return:
+    """
     D = word_df.div(word_df.sum(axis=1), axis=0).values.T
-    S = np.diag(1 / word_df.sum(axis=1).values)
-    likelihood = S @ D.T @ np.log(O_hat @ np.array([p_li, 1 - p_li])) + pen*np.log(p_li * (1 - p_li)).reshape(1, -1)
+    p = np.linspace(0, 1, 1000)[1:-1]
+    penalty = pen * np.log(p * (1 - p)).reshape(1, -1)
+    likelihood = D.T @ np.log(O_hat @ np.array([p, 1 - p])) + penalty
+    p_hat = p[np.argmax(likelihood, axis=1)]
 
+    return p_hat

@@ -1,18 +1,12 @@
-import pandas as pd
-import numpy as np
-import os
-from global_settings import DATA_PATH
+from tools.params import full_dict
+from scipy.sparse import csc_matrix, save_npz
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
+import pandas as pd
+import numpy as np
 import datetime
 import math
-from scipy.sparse import csc_matrix, save_npz
-
-# https://github.com/MengLingchao/Chinese_financial_sentiment_dictionary
-xlsx_dict = pd.ExcelFile(os.path.join(DATA_PATH, "Chinese_Dict.xlsx"))
-pos_dict = [_.strip() for _ in xlsx_dict.parse("positive").iloc[:, 0]]
-neg_dict = [_.strip() for _ in xlsx_dict.parse("negative").iloc[:, 0]]
-full_dict = pos_dict + neg_dict
+import os
 
 
 def build_word(sub_file_rich):
