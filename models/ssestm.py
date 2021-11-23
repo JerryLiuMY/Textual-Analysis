@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from tools.params import full_dict
 
 
 def train_ssestm(df_rich, word_matrix):
@@ -9,7 +10,7 @@ def train_ssestm(df_rich, word_matrix):
     :return: estimated O_hat
     """
 
-    word_df = pd.DataFrame(word_matrix)
+    word_df = pd.DataFrame(word_matrix, columns=full_dict)
     article_filter = (word_df.sum(axis=1) != 0)
     word_df = word_df.loc[article_filter, :]
     df_rich = df_rich.loc[article_filter, :]
@@ -28,13 +29,15 @@ def train_ssestm(df_rich, word_matrix):
     return O_hat
 
 
-def predict_ssestm(O_hat, word_df, pen):
+def predict_ssestm(word_matrix, O_hat, pen):
     """
+    :param word_matrix:
     :param O_hat: estimated O_hat
-    :param word_df:
     :param pen:
     :return:
     """
+
+    word_df = pd.DataFrame(word_matrix, columns=full_dict)
     D = word_df.div(word_df.sum(axis=1), axis=0).values.T
     p = np.linspace(0, 1, 1000)[1:-1]
     penalty = pen * np.log(p * (1 - p)).reshape(1, -1)
