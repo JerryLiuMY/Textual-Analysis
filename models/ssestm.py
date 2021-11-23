@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from tools.params import full_dict
-from tools.params import params_dict
 
 
 def train_ssestm(df_rich, word_matrix):
@@ -30,20 +29,24 @@ def train_ssestm(df_rich, word_matrix):
     return O_hat
 
 
-def predict_ssestm(word_matrix, O_hat, params):
-    """
-    :param word_matrix:
+def predict_ssestm(df_rich, word_matrix, O_hat, params):
+    """ predict the p_hat based on word_matrix and O_hat
+    :param df_rich: enriched dataframe
+    :param word_matrix: word_matrix
     :param O_hat: estimated O_hat
     :param params: parameters for ssestm
-    :return:
+    :return: p_hat values for the samples in the word_matrix
     """
 
     pen = params["pen"]
+    p_lin = np.linspace(0, 1, 1000)[1:-1]
+
     word_df = pd.DataFrame(word_matrix, columns=full_dict)
-    D = word_df.div(word_df.sum(axis=1), axis=0).values.T
-    p = np.linspace(0, 1, 1000)[1:-1]
-    penalty = pen * np.log(p * (1 - p)).reshape(1, -1)
-    likelihood = D.T @ np.log(O_hat @ np.array([p, 1 - p])) + penalty
-    p_hat = p[np.argmax(likelihood, axis=1)]
+    D_hat = word_df.div(word_df.sum(axis=1), axis=0).values.T
+
+    likelihood = D_hat.T @ np.log(O_hat @ np.array([p_lin, 1 - p_lin]))
+    penalty = pen * np.log(p_lin * (1 - p_lin)).reshape(1, -1)
+    objective = likelihood + penalty
+    p_hat = p_lin[np.argmax(objective, axis=1)]
 
     return p_hat
