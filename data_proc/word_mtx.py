@@ -1,6 +1,5 @@
-from params.params import full_dict
 from scipy.sparse import csc_matrix, save_npz
-from global_settings import RICH_PATH
+from global_settings import RICH_PATH, full_dict
 from global_settings import WORD_PATH
 import pandas as pd
 import numpy as np

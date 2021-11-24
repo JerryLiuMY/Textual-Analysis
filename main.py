@@ -1,7 +1,8 @@
 import os
 import glob
 import pandas as pd
-from global_settings import CLEAN_PATH
+from scipy.sparse import load_npz
+from global_settings import CLEAN_PATH, full_dict
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 from data_prep.data_clean import save_data
@@ -69,6 +70,6 @@ def run_ssestm():
 
     for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_word_file_li):
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
-        sub_word_df = pd.read_csv(os.path.join(WORD_PATH, sub_word_file))
+        sub_word_df = pd.DataFrame(load_npz(os.path.join(WORD_PATH, sub_word_file)).todense(), columns=full_dict)
         df_rich = df_rich.append(sub_df_rich)
         word_df = word_df.append(sub_word_df)

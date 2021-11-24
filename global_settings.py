@@ -30,3 +30,10 @@ PASS_PATH = os.path.join(DATA_PATH, "password")
 with open(os.path.join(PASS_PATH, "password.json"), "r") as f:
     pass_file = json.load(f)
     password = pass_file["password"]
+
+# dictionary
+# https://github.com/MengLingchao/Chinese_financial_sentiment_dictionary
+xlsx_dict = pd.ExcelFile(os.path.join(DATA_PATH, "Chinese_Dict.xlsx"))
+pos_dict = [_.strip() for _ in xlsx_dict.parse("positive").iloc[:, 0]]
+neg_dict = [_.strip() for _ in xlsx_dict.parse("negative").iloc[:, 0]]
+full_dict = pos_dict + neg_dict

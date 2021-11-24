@@ -22,5 +22,5 @@ if not os.path.isdir(WORD_PATH):
     os.mkdir(WORD_PATH)
 
 if __name__ == "__main__":
-    run_data_prep()
-    # run_word_mtx()
+    # run_data_prep()
+    run_word_mtx()

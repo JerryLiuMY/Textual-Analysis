@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from params.params import full_dict
+from global_settings import full_dict
 
 
 def train_ssestm(df_rich, word_matrix):
