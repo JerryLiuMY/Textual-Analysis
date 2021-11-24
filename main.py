@@ -1,7 +1,9 @@
 import os
 import glob
 import pandas as pd
-from scipy.sparse import load_npz
+import numpy as np
+import scipy as sp
+from scipy.sparse import load_npz, csc_matrix
 from global_settings import CLEAN_PATH, full_dict
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
@@ -46,7 +48,7 @@ def run_word_mtx():
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_word_file_idx])
 
-    num_proc = 16
+    num_proc = 8
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
         pool.imap(build_word_mtx, sub_file_rich_li[idx: idx + num_proc])
@@ -65,11 +67,15 @@ def run_ssestm():
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
     sub_word_file_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))])
 
+    # concatenate files
     df_rich = pd.DataFrame()
-    word_df = pd.DataFrame()
+    word_sps = csc_matrix(np.empty((0, len(full_dict)), np.int64))
 
     for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_word_file_li):
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
-        sub_word_df = pd.DataFrame(load_npz(os.path.join(WORD_PATH, sub_word_file)).todense(), columns=full_dict)
+        sub_word_sps = load_npz(os.path.join(WORD_PATH, sub_word_file))
         df_rich = df_rich.append(sub_df_rich)
-        word_df = word_df.append(sub_word_df)
+        word_sps = sp.sparse.vstack([word_sps, sub_word_sps], format="csc")
+
+    # train ssestm
+    word_mtx = word_sps.toarray()

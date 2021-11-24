@@ -26,11 +26,11 @@ def build_word_mtx(sub_file_rich):
               f"Working on {sub_file_rich} -- progress {idx + 1} / {math.ceil(sub_df_rich.shape[0] / mini_size)}")
 
         mini_df_rich = sub_df_rich.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
-        mini_word_matrix = mini_df_rich.apply(join_tt, axis=1).apply(lambda _: [_.count(word) for word in full_dict])
-        mini_word_df = pd.DataFrame(mini_word_matrix.tolist(), columns=full_dict)
+        mini_word_mtx = mini_df_rich.apply(join_tt, axis=1).apply(lambda _: [_.count(word) for word in full_dict])
+        mini_word_df = pd.DataFrame(mini_word_mtx.tolist(), columns=full_dict)
         sub_word_df = sub_word_df.append(mini_word_df)
 
-    sub_word_sparse = csc_matrix(sub_word_df.values)
+    sub_word_sps = csc_matrix(sub_word_df.values)
     sub_word_file = f"word_{sub_file_rich.split('.')[0].split('_')[1]}.npz"
     print(f"Saving to {sub_word_file}...")
-    save_npz(os.path.join(WORD_PATH, sub_word_file), sub_word_sparse)
+    save_npz(os.path.join(WORD_PATH, sub_word_file), sub_word_sps)

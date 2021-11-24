@@ -3,14 +3,14 @@ import pandas as pd
 from global_settings import full_dict
 
 
-def train_ssestm(df_rich, word_matrix):
+def train_ssestm(df_rich, word_mtx):
     """ train ssestm model to get the estimated O_hat
     :param df_rich: enriched dataframe
-    :param word_matrix: word count matrix
+    :param word_mtx: word count matrix
     :return: estimated O_hat
     """
 
-    word_df = pd.DataFrame(word_matrix, columns=full_dict)
+    word_df = pd.DataFrame(word_mtx, columns=full_dict)
     article_filter = (word_df.sum(axis=1) != 0)
     word_df = word_df.loc[article_filter, :]
     df_rich = df_rich.loc[article_filter, :]
