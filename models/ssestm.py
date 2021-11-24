@@ -4,7 +4,7 @@ from params.params import full_dict
 
 
 def train_ssestm(df_rich, word_matrix):
-    """ train ssestm model to get the O_hat estimate
+    """ train ssestm model to get the estimated O_hat
     :param df_rich: enriched dataframe
     :param word_matrix: word count matrix
     :return: estimated O_hat
@@ -30,7 +30,7 @@ def train_ssestm(df_rich, word_matrix):
 
 
 def predict_ssestm(df_rich, word_matrix, O_hat, params):
-    """ predict the p_hat based on word_matrix and O_hat
+    """ predict p_hat based on the word_matrix and the estimated O_hat
     :param df_rich: enriched dataframe
     :param word_matrix: word_matrix
     :param O_hat: estimated O_hat
