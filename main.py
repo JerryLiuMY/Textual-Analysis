@@ -45,7 +45,7 @@ def run_build_word():
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_word_file_idx])
 
-    num_proc = 4
+    num_proc = 8
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
         pool.imap(build_word, sub_file_rich_li[idx: idx + num_proc])
