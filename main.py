@@ -3,7 +3,8 @@ import glob
 import pandas as pd
 import numpy as np
 import scipy as sp
-from scipy.sparse import load_npz, csc_matrix
+from tqdm import tqdm
+from scipy.sparse import load_npz, csr_matrix
 from global_settings import CLEAN_PATH, full_dict
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
@@ -48,7 +49,7 @@ def run_word_mtx():
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_word_file_idx])
 
-    num_proc = 8
+    num_proc = 12
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
         pool.imap(build_word_mtx, sub_file_rich_li[idx: idx + num_proc])
@@ -67,15 +68,17 @@ def run_ssestm():
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
     sub_word_file_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))])
 
-    # concatenate files
+    # combine files
     df_rich = pd.DataFrame()
-    word_sps = csc_matrix(np.empty((0, len(full_dict)), np.int64))
+    word_sps = csr_matrix(np.empty((0, len(full_dict)), np.int64))
 
-    for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_word_file_li):
+    for sub_file_rich, sub_word_file in tqdm(list(zip(sub_file_rich_li, sub_word_file_li)), desc="Combining Files"):
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         sub_word_sps = load_npz(os.path.join(WORD_PATH, sub_word_file))
         df_rich = df_rich.append(sub_df_rich)
-        word_sps = sp.sparse.vstack([word_sps, sub_word_sps], format="csc")
+        word_sps = sp.sparse.vstack([word_sps, sub_word_sps])
 
+    df_rich.reset_index(inplace=True, drop=True)
+
+    return df_rich, word_sps
     # train ssestm
-    word_mtx = word_sps.toarray()

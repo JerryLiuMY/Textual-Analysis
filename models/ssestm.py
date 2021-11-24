@@ -1,27 +1,26 @@
 import numpy as np
 import pandas as pd
 from global_settings import full_dict
+from sklearn.preprocessing import Normalizer
 
 
-def train_ssestm(df_rich, word_mtx):
+def train_ssestm(df_rich, word_sps):
     """ train ssestm model to get the estimated O_hat
     :param df_rich: enriched dataframe
-    :param word_mtx: word count matrix
+    :param word_sps: sparse word count matrix
     :return: estimated O_hat
     """
 
-    word_df = pd.DataFrame(word_mtx, columns=full_dict)
-    article_filter = (word_df.sum(axis=1) != 0)
-    word_df = word_df.loc[article_filter, :]
-    df_rich = df_rich.loc[article_filter, :]
-
     # Get D_hat and W_hat
-    n = word_df.shape[0]
-    D_hat = word_df.div(word_df.sum(axis=1), axis=0).values.T
+    print("Setting D_hat and W_hat...")
+    n = df_rich.shape[0]
+    normalizer = Normalizer(norm="l1")
+    D_hat = normalizer.fit_transform(word_sps).T
     p_hat = np.argsort(df_rich["ret3"].values).reshape(1, -1) / n
     W_hat = np.concatenate((p_hat, 1 - p_hat))
 
     # Calculate O_hat
+    print("Computing O_hat...")
     O_hat = D_hat @ W_hat.T @ np.linalg.inv(W_hat @ W_hat.T)
     O_hat = O_hat.clip(min=0)
     O_hat = np.divide(O_hat, O_hat.sum(axis=0))
