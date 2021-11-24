@@ -8,7 +8,7 @@ from data_prep.data_clean import save_data
 from data_prep.data_split import split_data
 from data_prep.data_clean import clean_data
 from data_prep.data_enrich import enrich_data
-from data_proc.word_matrix import build_word
+from data_proc.word_mtx import build_word_mtx
 from multiprocessing.pool import Pool
 
 
@@ -38,7 +38,7 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
         pool.join()
 
 
-def run_build_word():
+def run_word_mtx():
     """ Build word matrix"""
     # build word matrix
     sub_file_rich_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
@@ -48,7 +48,7 @@ def run_build_word():
     num_proc = 16
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
-        pool.imap(build_word, sub_file_rich_li[idx: idx + num_proc])
+        pool.imap(build_word_mtx, sub_file_rich_li[idx: idx + num_proc])
         pool.close()
         pool.join()
 
@@ -72,8 +72,3 @@ def run_ssestm():
         sub_word_df = pd.read_csv(os.path.join(WORD_PATH, sub_word_file))
         df_rich = df_rich.append(sub_df_rich)
         word_df = word_df.append(sub_word_df)
-
-
-if __name__ == "__main__":
-    run_data_prep()
-    run_build_word()

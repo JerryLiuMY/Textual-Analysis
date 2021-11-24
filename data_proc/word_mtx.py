@@ -9,8 +9,8 @@ import math
 import os
 
 
-def build_word(sub_file_rich):
-    """ compute word matrix
+def build_word_mtx(sub_file_rich):
+    """ compute word count matrix
     :param sub_file_rich: enriched sub file
     """
 

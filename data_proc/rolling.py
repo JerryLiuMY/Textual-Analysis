@@ -1,7 +1,14 @@
 from global_settings import trddt_all
 
 
-def get_rolling(window_dict, date0_min, date0_max):
+def gen_rolling(window_dict, date0_min, date0_max):
+    """ generate rolling windows for training, validation and testing
+    :param window_dict: dictionary of window related parameters
+    :param date0_min: earliest date in the enriched data
+    :param date0_max: latest date in the enriched data
+    :return:
+    """
+
     trddt = trddt_all[(trddt_all >= date0_min) & (trddt_all <= date0_max)].tolist()
     trdmt = sorted(set([_[:-3] for _ in trddt]))
     trddt_chunck = [[d for d in trddt if d[:-3] == m] for m in trdmt]
