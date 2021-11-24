@@ -18,7 +18,7 @@ OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
 LOG_PATH = os.path.join(OUTPUT_PATH, "log")
 FIG_PATH = os.path.join(OUTPUT_PATH, "fig")
 
-# stkcd
+# stkcd & trddt
 stkcd_all = list(np.load(os.path.join(DATA_PATH, "stkcd_all.npy")))
 dalym = pd.read_csv(os.path.join(DATA_PATH, "dalym.csv"))
 trddt_all = np.array(sorted(set(dalym["Trddt"])))

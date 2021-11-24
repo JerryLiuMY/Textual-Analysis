@@ -16,7 +16,7 @@ def build_word(sub_file_rich):
 
     # load sub file enriched
     sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
-    def func(df): return df["text"] if df["title"] is np.nan else " ".join([df["title"], df["text"]])
+    def join_tt(df): return df["text"] if df["title"] is np.nan else " ".join([df["title"], df["text"]])
 
     # build word matrix
     mini_size = 100
@@ -27,7 +27,7 @@ def build_word(sub_file_rich):
               f"Working on {sub_file_rich} -- progress {idx + 1} / {math.ceil(sub_df_rich.shape[0] / mini_size)}")
 
         mini_df_rich = sub_df_rich.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
-        mini_word_matrix = mini_df_rich.apply(func, axis=1).apply(lambda _: [_.count(word) for word in full_dict])
+        mini_word_matrix = mini_df_rich.apply(join_tt, axis=1).apply(lambda _: [_.count(word) for word in full_dict])
         mini_word_df = pd.DataFrame(mini_word_matrix.tolist(), columns=full_dict)
         sub_word_df = sub_word_df.append(mini_word_df)
 
