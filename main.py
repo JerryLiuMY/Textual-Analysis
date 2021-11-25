@@ -47,7 +47,9 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
 
 
 def run_word_mtx():
-    """ Build word matrix"""
+    """
+    Build word matrix
+    """
     # build word matrix
     sub_file_rich_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
@@ -76,7 +78,7 @@ def run_experiment(model_name):
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
     sub_word_file_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))])
 
-    # combine files
+    # get df_rich & textual
     df_rich = pd.DataFrame()
     textual = csr_matrix(np.empty((0, len(full_dict)), np.int64))
     for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_word_file_li):
@@ -89,8 +91,10 @@ def run_experiment(model_name):
 
     df_rich.reset_index(inplace=True, drop=True)
 
-    # rolling window iterator & parameters iterator
+    # rolling window iterator
     window_iter = generate_window(window_dict, date0_min, date0_max)
+
+    # perform experiment
     ret_e, ret_v = experiment(df_rich, textual, window_iter, model_name)
 
     return ret_e, ret_v
