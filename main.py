@@ -14,10 +14,9 @@ from data_prep.data_clean import clean_data
 from data_prep.data_enrich import enrich_data
 from data_proc.word_mtx import build_word_mtx
 from multiprocessing.pool import Pool
-from params.params import window_dict
-from params.params import date0_min, date0_max
-from data_proc.rolling import generate_rolling
-from models.ssestm import train_ssestm, predict_ssestm
+from experiments.params import window_dict
+from experiments.params import date0_min, date0_max
+from experiments.generators import generate_rolling
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -86,18 +85,5 @@ def run_ssestm():
 
     # rolling window prediction
     rolling = generate_rolling(window_dict, date0_min, date0_max)
-    for [trddt_train, trddt_valid, trddt_test] in rolling:
-        train_idx = df_rich["date_0"].apply(lambda _: _ in trddt_train)
-        valid_idx = df_rich["date_0"].apply(lambda _: _ in trddt_valid)
-        test_idx = df_rich["date_0"].apply(lambda _: _ in trddt_test)
 
-        df_rich_train = df_rich.loc[train_idx, :].reset_index(inplace=False, drop=True)
-        df_rich_valid = df_rich.loc[valid_idx, :].reset_index(inplace=False, drop=True)
-        df_rich_test = df_rich.loc[test_idx, :].reset_index(inplace=False, drop=True)
-
-        word_sps_train = word_sps[train_idx, ]
-        word_sps_valid = word_sps[valid_idx, ]
-        word_sps_test = word_sps[test_idx, ]
-
-        O_hat = train_ssestm(df_rich_train, word_sps_train)
-        predict_ssestm(word_sps_valid, O_hat, df_rich_valid, params)
+    return
