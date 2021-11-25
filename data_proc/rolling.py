@@ -1,7 +1,7 @@
 from global_settings import trddt_all
 
 
-def gen_rolling(window_dict, date0_min, date0_max):
+def generate_rolling(window_dict, date0_min, date0_max):
     """ generate rolling windows for training, validation and testing
     :param window_dict: dictionary of window related parameters
     :param date0_min: earliest date in the enriched data

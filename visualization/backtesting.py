@@ -32,34 +32,34 @@ def plot_backtest(return_df, num_days_cum, year_list):
     # num_days_cum = np.append(1, num_days_cum)
 
     # calculate cumulative return
-    long_equal_ret = np.array(return_df["long_equal_ret"]) + 1
-    long_equal_cum = np.log(np.cumprod(long_equal_ret))
-    short_equal_ret = -np.array(return_df["short_equal_ret"]) + 1
-    short_equal_cum = np.log(np.cumprod(short_equal_ret))
-    equal_ret = long_equal_ret + short_equal_ret - 1
-    equal_cum = np.log(np.cumprod(equal_ret))
+    ret_le = np.array(return_df["ret_le"]) + 1
+    ret_se = -np.array(return_df["ret_se"]) + 1
+    ret_e = ret_le + ret_se - 1
+    cum_le = np.log(np.cumprod(ret_le))
+    cum_se = np.log(np.cumprod(ret_se))
+    cum_e = np.log(np.cumprod(ret_e))
 
-    long_value_ret = np.array(return_df["long_value_ret"]) + 1
-    long_value_cum = np.log(np.cumprod(long_value_ret))
-    short_value_ret = -np.array(return_df["short_value_ret"]) + 1
-    short_value_cum = np.log(np.cumprod(short_value_ret))
-    value_ret = long_value_ret + short_value_ret - 1
-    value_cum = np.log(np.cumprod(value_ret))
+    ret_lv = np.array(return_df["ret_lv"]) + 1
+    ret_sv = -np.array(return_df["ret_sv"]) + 1
+    ret_v = ret_lv + ret_sv - 1
+    cum_lv = np.log(np.cumprod(ret_lv))
+    cum_sv = np.log(np.cumprod(ret_sv))
+    cum_v = np.log(np.cumprod(ret_v))
 
-    index_ret = np.array(return_df["index_ret"]) + 1
-    index_cum = np.log(np.cumprod(index_ret))
+    mkt_ret = np.array(return_df["mkt_ret"]) + 1
+    index_cum = np.log(np.cumprod(mkt_ret))
 
     # plot cumulative return
     fig, ax = plt.subplots(1, 1, figsize=(14, 7))
     ax.set_xlim(num_days_cum[0], num_days_cum[-1])
     ax.set_xticks(num_days_cum[0::2], year_list[0::2])
     ax.grid('on')
-    ax.plot(equal_cum, 'k-')
-    ax.plot(long_equal_cum, 'b-')
-    ax.plot(-short_equal_cum, 'r-')
-    ax.plot(value_cum, 'k--')
-    ax.plot(long_value_cum, 'b--')
-    ax.plot(-short_value_cum, 'r--')
+    ax.plot(cum_e, 'k-')
+    ax.plot(cum_le, 'b-')
+    ax.plot(-cum_se, 'r-')
+    ax.plot(cum_v, 'k--')
+    ax.plot(cum_lv, 'b--')
+    ax.plot(-cum_sv, 'r--')
     ax.plot(index_cum, 'y-')
     ax.legend(['L-S EW', 'L EW', 'S EW', 'L-S VW', 'L VW', 'S VW', 'SP500'])
 

@@ -1,7 +1,7 @@
 import numpy as np
+from sklearn.preprocessing import Normalizer
 import pandas as pd
 from global_settings import full_dict
-from sklearn.preprocessing import Normalizer
 
 
 def train_ssestm(df_rich, word_sps):
@@ -12,15 +12,13 @@ def train_ssestm(df_rich, word_sps):
     """
 
     # Get D_hat and W_hat
-    print("Setting D_hat and W_hat...")
     n = df_rich.shape[0]
     normalizer = Normalizer(norm="l1")
-    D_hat = normalizer.fit_transform(word_sps).T
+    D_hat = normalizer.fit_transform(word_sps).T.toarray()
     p_hat = np.argsort(df_rich["ret3"].values).reshape(1, -1) / n
     W_hat = np.concatenate((p_hat, 1 - p_hat))
 
     # Calculate O_hat
-    print("Computing O_hat...")
     O_hat = D_hat @ W_hat.T @ np.linalg.inv(W_hat @ W_hat.T)
     O_hat = O_hat.clip(min=0)
     O_hat = np.divide(O_hat, O_hat.sum(axis=0))
@@ -28,20 +26,20 @@ def train_ssestm(df_rich, word_sps):
     return O_hat
 
 
-def predict_ssestm(df_rich, word_matrix, O_hat, params):
+def predict_ssestm(word_sps, O_hat, df_rich, params):
     """ predict p_hat based on the word_matrix and the estimated O_hat
     :param df_rich: enriched dataframe
-    :param word_matrix: word_matrix
+    :param word_sps: word_matrix
     :param O_hat: estimated O_hat
     :param params: parameters for ssestm
     :return: p_hat values for the samples in the word_matrix
     """
 
     pen = params["pen"]
-    word_df = pd.DataFrame(word_matrix, columns=full_dict)
 
     # Get D_hat and W_lin
-    D_hat = word_df.div(word_df.sum(axis=1), axis=0).values.T
+    normalizer = Normalizer(norm="l1")
+    D_hat = normalizer.fit_transform(word_sps).T.toarray()
     p_lin = np.linspace(0, 1, 1000)[1:-1]
     W_lin = np.array([p_lin, 1 - p_lin])
 
@@ -51,4 +49,10 @@ def predict_ssestm(df_rich, word_matrix, O_hat, params):
     objective = likelihood + penalty
     p_hat = p_lin[np.argmax(objective, axis=1)]
 
-    return p_hat
+    num_stocks = int(len(p_hat) * 0.05)
+    ret_le = df_rich.iloc[np.argsort(p_hat)[-num_stocks:], :]["ret"].mean()
+    ret_se = df_rich.iloc[np.argsort(p_hat)[:num_stocks], :]["ret"].mean()
+    ret_lv = df_rich.iloc[np.argsort(p_hat)[-num_stocks:], :]["ret"].mean()
+    ret_sv = df_rich.iloc[np.argsort(p_hat)[:num_stocks], :]["ret"].mean()
+
+    return ret_le, ret_se, ret_lv, ret_sv
