@@ -1,6 +1,6 @@
 import numpy as np
-from sklearn.preprocessing import Normalizer
 from global_settings import perc_ls
+from sklearn.preprocessing import Normalizer
 
 
 def fit_ssestm(df_rich, word_sps, *args):
@@ -25,12 +25,13 @@ def fit_ssestm(df_rich, word_sps, *args):
     return O_hat
 
 
-def pre_ssestm(df_rich, word_sps, param, O_hat):
+def pre_ssestm(df_rich, word_sps, param, O_hat, ev):
     """ predict p_hat based on the word_matrix and the estimated O_hat
     :param df_rich: enriched dataframe
     :param word_sps: word_matrix
     :param param: parameters for ssestm
     :param O_hat: estimated O_hat
+    :param ev: equal vs. value weighted type
     :return: p_hat values for the samples in the word_matrix
     """
 
@@ -48,10 +49,21 @@ def pre_ssestm(df_rich, word_sps, param, O_hat):
     objective = likelihood + penalty
     p_hat = p_lin[np.argmax(objective, axis=1)]
 
+    # Calculate equal and value weighted returns
     num_ls = int(len(p_hat) * 0.05)
-    ret_le = df_rich.iloc[np.argsort(p_hat)[-num_ls:], :]["ret"].mean()
-    ret_se = -df_rich.iloc[np.argsort(p_hat)[:num_ls], :]["ret"].mean()
-    ret_lv = df_rich.iloc[np.argsort(p_hat)[-num_ls:], :]["ret"].mean()
-    ret_sv = -df_rich.iloc[np.argsort(p_hat)[:num_ls], :]["ret"].mean()
+    sorted_idx = np.argsort(p_hat)
+    df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
+    df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]
 
-    return ret_le, ret_se, ret_lv, ret_sv
+    if ev == "e":
+        ret_l = df_rich_l["ret"].mean()
+        ret_s = df_rich_s["ret"].mean()
+    elif ev == "v":
+        ret_l = np.average(df_rich_l["ret"], weights=df_rich_l["cap"])
+        ret_s = np.average(df_rich_s["ret"], weights=df_rich_s["cap"])
+    else:
+        raise ValueError("Invalid weighting type")
+
+    ret = ret_l - ret_s
+
+    return ret

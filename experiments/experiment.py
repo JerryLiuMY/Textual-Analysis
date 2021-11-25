@@ -1,25 +1,51 @@
+import numpy as np
 
 
-def evaluation(df_rich, word_sps, fit_func, pre_func, window_iter, params_iter):
+def experiment(df_rich, word_sps, window_iter, params_iter, fit_func, pre_func):
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
+
+        best_cum_e = -np.inf
+        best_cum_v = -np.inf
+        best_params_e = dict()
+        best_params_v = dict()
+        best_model_e =
+        best_model_v =
+
         for params in params_iter:
             train_idx = df_rich["date_0"].apply(lambda _: _ in trddt_train)
             df_rich_train = df_rich.loc[train_idx, :].reset_index(inplace=False, drop=True)
             word_sps_train = word_sps[train_idx, ]
             model = fit_func(df_rich_train, word_sps_train, params)
 
-            for dt in trddt_valid:
+            valid_ret_e = np.empty(len(trddt_valid))
+            valid_ret_v = np.empty(len(trddt_valid))
+            for i, dt in enumerate(trddt_valid):
                 valid_idx = df_rich["date_0"].apply(lambda _: _ == dt)
                 df_rich_valid = df_rich.loc[valid_idx, :].reset_index(inplace=False, drop=True)
-                word_sps_valid = word_sps[valid_idx, ]
-                ret = pre_func(df_rich_valid, word_sps_valid, params, model)
-                ret_le, ret_se, ret_lv, ret_sv = ret
+                word_sps_valid = word_sps[valid_idx, :]
+                valid_ret_e[i] = pre_func(df_rich_valid, word_sps_valid, params, model, ev="e")
+                valid_ret_v[i] = pre_func(df_rich_valid, word_sps_valid, params, model, ev="v")
 
-            for dt in trddt_test:
-                test_idx = df_rich["date_0"].apply(lambda _: _ == dt)
-                df_rich_test = df_rich.loc[test_idx, :].reset_index(inplace=False, drop=True)
-                word_sps_test = word_sps[test_idx, ]
-                ret = pre_func(df_rich_test, word_sps_test, params, model)
-                ret_le, ret_se, ret_lv, ret_sv = ret
+            valid_cum_e = np.log(np.cumprod(valid_ret_e + 1))
+            valid_cum_v = np.log(np.cumprod(valid_ret_v + 1))
 
-            pass
+            if valid_cum_e[-1] > best_cum_e:
+                best_cum_e = valid_cum_e[-1]
+                best_params_e = params
+                best_model_e = model
+
+            if valid_cum_v[-1] > best_cum_v:
+                best_cum_v = valid_cum_v[-1]
+                best_params_v = params
+                best_model_v = model
+
+        ret_e = np.empty(len(trddt_test))
+        ret_v = np.empty(len(trddt_test))
+        for i, dt in enumerate(trddt_test):
+            test_idx = df_rich["date_0"].apply(lambda _: _ == dt)
+            df_rich_test = df_rich.loc[test_idx, :].reset_index(inplace=False, drop=True)
+            word_sps_test = word_sps[test_idx, :]
+            ret_e[i] = pre_func(df_rich_test, word_sps_test, best_params_e, best_model_e, ev="e")
+            ret_v[i] = pre_func(df_rich_test, word_sps_test, best_params_v, best_model_v, ev="v")
+
+        return ret_e, ret_v
