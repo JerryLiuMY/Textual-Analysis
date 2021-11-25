@@ -2,7 +2,7 @@ from global_settings import trddt_all
 import itertools
 
 
-def generate_rolling(window_dict, date0_min, date0_max):
+def generate_window(window_dict, date0_min, date0_max):
     """ generate rolling windows for a set of experiments
     :param window_dict: dictionary of window related parameters
     :param date0_min: earliest date in the enriched data
@@ -27,8 +27,9 @@ def generate_rolling(window_dict, date0_min, date0_max):
         trddt_train = flatten(trddt_train_chunck)
         trddt_valid = flatten(trddt_valid_chunck)
         trddt_test = flatten(trddt_test_chunck)
+        window = [trddt_train, trddt_valid, trddt_test]
 
-        yield [trddt_train, trddt_valid, trddt_test]
+        yield window
 
 
 def generate_params(params_dict, model_name):
@@ -37,6 +38,8 @@ def generate_params(params_dict, model_name):
     :param model_name: name of the model
     """
 
-    keys, vals_tup = zip(*params_dict[model_name].items())
-    for vals in itertools.product(*vals_tup):
-        yield dict(zip(keys, vals))
+    keys, vals_tuple = zip(*params_dict[model_name].items())
+    for vals in itertools.product(*vals_tuple):
+        params = dict(zip(keys, vals))
+
+        yield params

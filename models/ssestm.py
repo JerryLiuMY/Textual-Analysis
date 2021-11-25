@@ -4,7 +4,7 @@ import pandas as pd
 from global_settings import full_dict
 
 
-def fit_ssestm(df_rich, word_sps):
+def fit_ssestm(df_rich, word_sps, *args):
     """ train ssestm model to get the estimated O_hat
     :param df_rich: enriched dataframe
     :param word_sps: sparse word count matrix
@@ -26,16 +26,16 @@ def fit_ssestm(df_rich, word_sps):
     return O_hat
 
 
-def predict_ssestm(O_hat, word_sps, df_rich, params):
+def predict_ssestm(df_rich, word_sps, param, O_hat):
     """ predict p_hat based on the word_matrix and the estimated O_hat
-    :param O_hat: estimated O_hat
-    :param word_sps: word_matrix
     :param df_rich: enriched dataframe
-    :param params: parameters for ssestm
+    :param word_sps: word_matrix
+    :param param: parameters for ssestm
+    :param O_hat: estimated O_hat
     :return: p_hat values for the samples in the word_matrix
     """
 
-    pen = params["pen"]
+    pen = param["pen"]
 
     # Get D_hat and W_lin
     normalizer = Normalizer(norm="l1")

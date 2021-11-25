@@ -16,7 +16,7 @@ from data_proc.word_mtx import build_word_mtx
 from multiprocessing.pool import Pool
 from experiments.params import window_dict
 from experiments.params import date0_min, date0_max
-from experiments.generators import generate_rolling
+from experiments.generators import generate_window
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -84,6 +84,6 @@ def run_ssestm():
     df_rich.reset_index(inplace=True, drop=True)
 
     # rolling window prediction
-    rolling = generate_rolling(window_dict, date0_min, date0_max)
+    rolling = generate_window(window_dict, date0_min, date0_max)
 
     return
