@@ -13,7 +13,7 @@ from data_prep.data_clean import save_data
 from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
-from data_proc.word_mtx import build_word_sps
+from data_proc.word_sps import build_word_sps
 from experiments.params import window_dict
 from experiments.params import date0_min, date0_max
 from experiments.generators import generate_window
