@@ -9,14 +9,16 @@ from global_settings import CLEAN_PATH, full_dict
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 from data_prep.data_clean import save_data
-from data_prep.data_split import split_data
 from data_prep.data_clean import clean_data
+from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
 from data_proc.word_mtx import build_word_mtx
 from multiprocessing.pool import Pool
-from experiments.params import window_dict
+from experiments.params import window_dict, params_dict
 from experiments.params import date0_min, date0_max
-from experiments.generators import generate_window
+from experiments.generators import generate_window, generate_params
+from experiments.experiment import experiment
+from models.ssestm import fit_ssestm, pre_ssestm
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -40,7 +42,7 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     num_proc = 16
     for idx in range(0, len(sub_file_clean_li), num_proc):
         pool = Pool(num_proc)
-        pool.imap(enrich_data, sub_file_clean_li[idx: idx + num_proc])
+        pool.map(enrich_data, sub_file_clean_li[idx: idx + num_proc])
         pool.close()
         pool.join()
 
@@ -55,7 +57,7 @@ def run_word_mtx():
     num_proc = 12
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
-        pool.imap(build_word_mtx, sub_file_rich_li[idx: idx + num_proc])
+        pool.map(build_word_mtx, sub_file_rich_li[idx: idx + num_proc])
         pool.close()
         pool.join()
 
@@ -84,6 +86,6 @@ def run_ssestm():
     df_rich.reset_index(inplace=True, drop=True)
 
     # rolling window prediction
-    rolling = generate_window(window_dict, date0_min, date0_max)
-
-    return
+    window_iter = generate_window(window_dict, date0_min, date0_max)
+    params_iter = generate_params(params_dict, "ssestm")
+    experiment(df_rich, word_sps, window_iter, params_iter, fit_func=fit_ssestm, pre_func=pre_ssestm)
