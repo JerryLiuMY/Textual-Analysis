@@ -27,6 +27,7 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     :param clean_file: cleaned file
     :return:
     """
+
     # clean & split data
     split_num = 750
     save_data(raw_file, data_file)
@@ -63,9 +64,10 @@ def run_word_sps():
         pool.join()
 
 
-def run_experiment(model_name):
+def run_experiment(model_name, perc_ls):
     """ Run experiment
     :param model_name: model name
+    :param perc_ls: percentage of long-short portfolio
     :return: ret_e, ret_v
     """
 
@@ -95,6 +97,6 @@ def run_experiment(model_name):
     window_iter = generate_window(window_dict, date0_min, date0_max)
 
     # perform experiment
-    ret_e, ret_v = experiment(df_rich, textual, window_iter, model_name)
+    ret_e, ret_v = experiment(df_rich, textual, window_iter, model_name, perc_ls)
 
     return ret_e, ret_v

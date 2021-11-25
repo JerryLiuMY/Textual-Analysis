@@ -1,5 +1,4 @@
 import numpy as np
-from global_settings import perc_ls
 from sklearn.preprocessing import Normalizer
 
 
@@ -26,12 +25,13 @@ def fit_ssestm(df_rich, word_sps, *args):
     return model
 
 
-def pre_ssestm(df_rich, word_sps, params, model, ev):
+def pre_ssestm(df_rich, word_sps, params, model, perc_ls, ev):
     """ predict p_hat based on the word_matrix and the estimated O_hat
     :param df_rich: enriched dataframe
     :param word_sps: word_matrix
     :param params: parameters for ssestm
     :param model: fitted model
+    :param perc_ls: equal vs. value weighted type
     :param ev: equal vs. value weighted type
     :return: p_hat values for the samples in the word_matrix
     """
@@ -41,8 +41,11 @@ def pre_ssestm(df_rich, word_sps, params, model, ev):
     O_hat = model
 
     # Get D_hat and W_lin
+    zero_idx = (np.sum(O_hat, axis=1) == 0.0)
     normalizer = Normalizer(norm="l1")
-    D_hat = normalizer.fit_transform(word_sps).T.toarray()
+    O_hat = O_hat[~zero_idx, :]
+    D_hat = normalizer.fit_transform(word_sps).T
+    D_hat = D_hat[~zero_idx, :].toarray()
     p_lin = np.linspace(0, 1, 1000)[1:-1]
     W_lin = np.array([p_lin, 1 - p_lin])
 
@@ -53,7 +56,7 @@ def pre_ssestm(df_rich, word_sps, params, model, ev):
     p_hat = np.take(p_lin, np.argmax(objective, axis=1))
 
     # Calculate equal and value weighted returns
-    num_ls = int(len(p_hat) * 0.05)
+    num_ls = int(len(p_hat) * perc_ls)
     sorted_idx = np.argsort(p_hat)
     df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
     df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]
@@ -69,4 +72,4 @@ def pre_ssestm(df_rich, word_sps, params, model, ev):
 
     ret = ret_l - ret_s
 
-    return ret
+    return ret, ret_l, ret_s

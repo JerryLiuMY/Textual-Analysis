@@ -5,13 +5,15 @@ from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
 
 
-def experiment(df_rich, textual, window_iter, model_name):
-    """ train models over the sequence of windows and get cumulative return
+def experiment(df_rich, textual, window_iter, model_name, perc_ls):
+    """ train models over a sequence of windows and get cumulative return
     :param df_rich: enriched dataframe
     :param textual: textual information (e.g. sparse matrix, embedding)
     :param window_iter: rolling window
     :param model_name: parameters iterator
-    :return: equal weighted and value weighted returns
+    :param perc_ls: percentage of long-short portfolio
+    :return ret_e_win: equal weighted return (ret, ret_l, ret_s) with shape=[len(trddt), 3]
+    :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt), 3]
     """
 
     if model_name == "ssestm":
@@ -20,14 +22,14 @@ def experiment(df_rich, textual, window_iter, model_name):
     else:
         raise ValueError("Invalid model name")
 
-    ret_e = np.empty(0)
-    ret_v = np.empty(0)
+    ret_e = np.empty([0, 3])
+    ret_v = np.empty([0, 3])
 
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}; "
               f"Validation {trddt_valid[0][:-3]} to {trddt_valid[-1][:-3]}; "
-              f"Testing {trddt_test[0][:-3]} to {trddt_test[-1][:-3]} ")
+              f"Testing {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}")
 
         trddt_window = trddt_train + trddt_valid + trddt_test
         window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_window)
@@ -35,14 +37,15 @@ def experiment(df_rich, textual, window_iter, model_name):
         textual_win = textual[window_idx, :]
         window = [trddt_train, trddt_valid, trddt_test]
         params_iter = generate_params(params_dict, model_name)
-        ret_e_win, ret_v_win = experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func)
+        ret_win = experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls)
+        ret_e_win, ret_v_win = ret_win
         ret_e = np.concatenate([ret_e, ret_e_win], axis=0)
         ret_v = np.concatenate([ret_v, ret_v_win], axis=0)
 
     return ret_e, ret_v
 
 
-def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func):
+def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls):
     """ train models over a window and get cumulative return
     :param df_rich_win: enriched dataframe within the window 
     :param textual_win: textual information (e.g. sparse matrix, embedding) within the window
@@ -50,6 +53,9 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
     :param params_iter: parameters iterator
     :param fit_func: parameters iterator
     :param pre_func: parameters iterator
+    :param perc_ls: percentage of long-short portfolio
+    :return ret_e_win: equal weighted return (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
+    :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
     """
 
     [trddt_train, trddt_valid, trddt_test] = window
@@ -81,8 +87,8 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
             valid_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
             textual_win_valid = textual_win[valid_idx, :]
-            ret_e_win_valid[i] = pre_func(df_rich_win_valid, textual_win_valid, params, model, ev="e")
-            ret_v_win_valid[i] = pre_func(df_rich_win_valid, textual_win_valid, params, model, ev="v")
+            ret_e_win_valid[i] = pre_func(df_rich_win_valid, textual_win_valid, params, model, perc_ls, "e")[0]
+            ret_v_win_valid[i] = pre_func(df_rich_win_valid, textual_win_valid, params, model, perc_ls, "v")[0]
 
         cum_e_valid = np.log(np.cumprod(ret_e_win_valid + 1))
         cum_v_valid = np.log(np.cumprod(ret_v_win_valid + 1))
@@ -100,13 +106,13 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
     # building returns
     print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
           f"-Building return...")
-    ret_e_win_test = np.empty(len(trddt_test))
-    ret_v_win_test = np.empty(len(trddt_test))
+    ret_e_win = np.empty([len(trddt_test), 3])
+    ret_v_win = np.empty([len(trddt_test), 3])
     for i, dt in enumerate(trddt_test):
         test_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
         df_rich_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
         textual_test = textual_win[test_idx, :]
-        ret_e_win_test[i] = pre_func(df_rich_test, textual_test, best_params_e, best_model_e, ev="e")
-        ret_v_win_test[i] = pre_func(df_rich_test, textual_test, best_params_v, best_model_v, ev="v")
+        ret_e_win[i, :] = pre_func(df_rich_test, textual_test, best_params_e, best_model_e, perc_ls, "e")
+        ret_v_win[i, :] = pre_func(df_rich_test, textual_test, best_params_v, best_model_v, perc_ls, "v")
 
-    return ret_e_win_test, ret_v_win_test
+    return ret_e_win, ret_v_win

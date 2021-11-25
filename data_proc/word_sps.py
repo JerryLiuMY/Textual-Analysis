@@ -1,7 +1,6 @@
 from scipy.sparse import csr_matrix, save_npz
 from global_settings import RICH_PATH, full_dict
 from global_settings import WORD_PATH
-import numpy as np
 import pandas as pd
 import datetime
 import math
@@ -9,7 +8,7 @@ import os
 
 
 def build_word_sps(sub_file_rich):
-    """ compute word count matrix
+    """ compute word count sparse matrix
     :param sub_file_rich: enriched sub file
     """
 

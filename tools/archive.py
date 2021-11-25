@@ -17,9 +17,7 @@ def create_stkcd_all():
     csmar_cursor.execute(f"""SELECT Stkcd FROM TRD_Dalyr""")
     stkcd_query = csmar_cursor.fetchall()
     stkcd_all = sorted(set([_[0] for _ in stkcd_query]))
-
-    with open(os.path.join(DATA_PATH, "stkcd_all.npy"), "wb") as f:
-        np.save(f, stkcd_all)
+    np.save(os.path.join(DATA_PATH, "stkcd_all.npy"), stkcd_all)
 
 
 def create_dalym():
@@ -28,9 +26,7 @@ def create_dalym():
     csmar_cursor = csmar.cursor()
     csmar_cursor.execute(f"""SELECT * FROM TRD_Dalym""")
     dalym = csmar_cursor.fetchall()
-
-    with open(os.path.join(DATA_PATH, "dalym.csv"), "wb") as f:
-        np.save(f, dalym)
+    dalym.to_csv(os.path.join(DATA_PATH, "dalym.csv"))
 
 
 def get_date0_range():

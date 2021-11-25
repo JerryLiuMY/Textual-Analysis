@@ -5,6 +5,7 @@ from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 from main import run_data_prep
 from main import run_word_sps
+from main import run_experiment
 
 
 # Create directories

@@ -8,5 +8,7 @@ window_dict = {
 }
 
 params_dict = {
-    "ssestm": {"pen": [0, 1e-6, 1e-5, 1e-4]}
+    "ssestm": {"pen": [0.0]}
 }
+
+perc_ls = 0.05
