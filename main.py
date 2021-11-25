@@ -3,7 +3,8 @@ import glob
 import pandas as pd
 import numpy as np
 import scipy as sp
-from tqdm import tqdm
+import datetime
+from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
 from global_settings import CLEAN_PATH, full_dict
 from global_settings import RICH_PATH
@@ -13,7 +14,6 @@ from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
 from data_proc.word_mtx import build_word_mtx
-from multiprocessing.pool import Pool
 from experiments.params import window_dict, params_dict
 from experiments.params import date0_min, date0_max
 from experiments.generators import generate_window, generate_params
@@ -64,7 +64,7 @@ def run_word_mtx():
 
 def run_ssestm():
     """ Run ssestm"""
-    # define file index
+    # define index
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
     if sorted(sub_file_rich_idx) != sorted(sub_word_file_idx):
@@ -76,8 +76,9 @@ def run_ssestm():
     # combine files
     df_rich = pd.DataFrame()
     word_sps = csr_matrix(np.empty((0, len(full_dict)), np.int64))
-
-    for sub_file_rich, sub_word_file in tqdm(list(zip(sub_file_rich_li, sub_word_file_li)), desc="Combining Files"):
+    for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_word_file_li):
+        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+              f"Combining {sub_file_rich} and {sub_word_file}")
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         sub_word_sps = load_npz(os.path.join(WORD_PATH, sub_word_file))
         df_rich = df_rich.append(sub_df_rich)
@@ -88,4 +89,5 @@ def run_ssestm():
     # rolling window prediction
     window_iter = generate_window(window_dict, date0_min, date0_max)
     params_iter = generate_params(params_dict, "ssestm")
-    experiment(df_rich, word_sps, window_iter, params_iter, fit_func=fit_ssestm, pre_func=pre_ssestm)
+    test_ret = experiment(df_rich, word_sps, window_iter, params_iter, fit_func=fit_ssestm, pre_func=pre_ssestm)
+    test_ret_e, test_ret_v = test_ret
