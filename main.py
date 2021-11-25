@@ -13,7 +13,7 @@ from data_prep.data_clean import save_data
 from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
-from data_proc.word_mtx import build_word_mtx
+from data_proc.word_mtx import build_word_sps
 from experiments.params import window_dict
 from experiments.params import date0_min, date0_max
 from experiments.generators import generate_window
@@ -46,11 +46,11 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
         pool.join()
 
 
-def run_word_mtx():
+def run_word_sps():
     """
-    Build word matrix
+    Build word sparse matrix
     """
-    # build word matrix
+
     sub_file_rich_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_word_file_idx])
@@ -58,7 +58,7 @@ def run_word_mtx():
     num_proc = 12
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
-        pool.map(build_word_mtx, sub_file_rich_li[idx: idx + num_proc])
+        pool.map(build_word_sps, sub_file_rich_li[idx: idx + num_proc])
         pool.close()
         pool.join()
 

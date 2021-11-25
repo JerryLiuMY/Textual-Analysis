@@ -4,7 +4,7 @@ from global_settings import CLEAN_PATH
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 from main import run_data_prep
-from main import run_word_mtx
+from main import run_word_sps
 
 
 # Create directories
@@ -22,4 +22,4 @@ if not os.path.isdir(WORD_PATH):
 
 if __name__ == "__main__":
     # run_data_prep()
-    run_word_mtx()
+    run_word_sps()

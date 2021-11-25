@@ -29,7 +29,8 @@ def experiment(df_rich, textual, window_iter, model_name):
               f"Validation {trddt_valid[0][:-3]} to {trddt_valid[-1][:-3]}; "
               f"Testing {trddt_test[0][:-3]} to {trddt_test[-1][:-3]} ")
 
-        window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_train)
+        trddt_window = trddt_train + trddt_valid + trddt_test
+        window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_window)
         df_rich_win = df_rich.loc[window_idx, :].reset_index(inplace=False, drop=True)
         textual_win = textual[window_idx, :]
         window = [trddt_train, trddt_valid, trddt_test]
