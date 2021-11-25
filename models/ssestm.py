@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import Normalizer
-import pandas as pd
-from global_settings import full_dict
+from global_settings import perc_ls
 
 
 def fit_ssestm(df_rich, word_sps, *args):
@@ -26,7 +25,7 @@ def fit_ssestm(df_rich, word_sps, *args):
     return O_hat
 
 
-def predict_ssestm(df_rich, word_sps, param, O_hat):
+def pre_ssestm(df_rich, word_sps, param, O_hat):
     """ predict p_hat based on the word_matrix and the estimated O_hat
     :param df_rich: enriched dataframe
     :param word_sps: word_matrix
@@ -49,10 +48,10 @@ def predict_ssestm(df_rich, word_sps, param, O_hat):
     objective = likelihood + penalty
     p_hat = p_lin[np.argmax(objective, axis=1)]
 
-    num_stocks = int(len(p_hat) * 0.05)
-    ret_le = df_rich.iloc[np.argsort(p_hat)[-num_stocks:], :]["ret"].mean()
-    ret_se = df_rich.iloc[np.argsort(p_hat)[:num_stocks], :]["ret"].mean()
-    ret_lv = df_rich.iloc[np.argsort(p_hat)[-num_stocks:], :]["ret"].mean()
-    ret_sv = df_rich.iloc[np.argsort(p_hat)[:num_stocks], :]["ret"].mean()
+    num_ls = int(len(p_hat) * 0.05)
+    ret_le = df_rich.iloc[np.argsort(p_hat)[-num_ls:], :]["ret"].mean()
+    ret_se = -df_rich.iloc[np.argsort(p_hat)[:num_ls], :]["ret"].mean()
+    ret_lv = df_rich.iloc[np.argsort(p_hat)[-num_ls:], :]["ret"].mean()
+    ret_sv = -df_rich.iloc[np.argsort(p_hat)[:num_ls], :]["ret"].mean()
 
     return ret_le, ret_se, ret_lv, ret_sv

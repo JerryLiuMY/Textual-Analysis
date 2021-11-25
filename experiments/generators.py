@@ -27,9 +27,8 @@ def generate_window(window_dict, date0_min, date0_max):
         trddt_train = flatten(trddt_train_chunck)
         trddt_valid = flatten(trddt_valid_chunck)
         trddt_test = flatten(trddt_test_chunck)
-        window = [trddt_train, trddt_valid, trddt_test]
 
-        yield window
+        yield [trddt_train, trddt_valid, trddt_test]
 
 
 def generate_params(params_dict, model_name):
