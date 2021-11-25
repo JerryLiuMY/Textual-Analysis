@@ -2,14 +2,23 @@ import numpy as np
 
 
 def experiment(df_rich, word_sps, window_iter, params_iter, fit_func, pre_func):
-    for [trddt_train, trddt_valid, trddt_test] in window_iter:
+    """ train ssestm model to get the estimated O_hat
+    :param df_rich: enriched dataframe
+    :param word_sps: sparse word count matrix
+    :param window_iter: rolling window iterator
+    :param params_iter: parameters iterator
+    :param fit_func: parameters iterator
+    :param pre_func: parameters iterator
+    :return: equal weighted and value weighted returns
+    """
 
+    for [trddt_train, trddt_valid, trddt_test] in window_iter:
         best_cum_e = -np.inf
         best_cum_v = -np.inf
         best_params_e = dict()
         best_params_v = dict()
-        best_model_e =
-        best_model_v =
+        best_model_e = None
+        best_model_v = None
 
         for params in params_iter:
             train_idx = df_rich["date_0"].apply(lambda _: _ in trddt_train)

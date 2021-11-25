@@ -21,21 +21,24 @@ def fit_ssestm(df_rich, word_sps, *args):
     O_hat = D_hat @ W_hat.T @ np.linalg.inv(W_hat @ W_hat.T)
     O_hat = O_hat.clip(min=0)
     O_hat = np.divide(O_hat, O_hat.sum(axis=0))
+    model = O_hat
 
-    return O_hat
+    return model
 
 
-def pre_ssestm(df_rich, word_sps, param, O_hat, ev):
+def pre_ssestm(df_rich, word_sps, params, model, ev):
     """ predict p_hat based on the word_matrix and the estimated O_hat
     :param df_rich: enriched dataframe
     :param word_sps: word_matrix
-    :param param: parameters for ssestm
-    :param O_hat: estimated O_hat
+    :param params: parameters for ssestm
+    :param model: fitted model
     :param ev: equal vs. value weighted type
     :return: p_hat values for the samples in the word_matrix
     """
 
-    pen = param["pen"]
+    # recover parameters
+    pen = params["pen"]
+    O_hat = model
 
     # Get D_hat and W_lin
     normalizer = Normalizer(norm="l1")
@@ -47,7 +50,7 @@ def pre_ssestm(df_rich, word_sps, param, O_hat, ev):
     likelihood = D_hat.T @ np.log(O_hat @ W_lin)
     penalty = pen * np.log(W_lin[0, :] * W_lin[1, :]).reshape(1, -1)
     objective = likelihood + penalty
-    p_hat = p_lin[np.argmax(objective, axis=1)]
+    p_hat = np.take(p_lin, np.argmax(objective, axis=1))
 
     # Calculate equal and value weighted returns
     num_ls = int(len(p_hat) * 0.05)
