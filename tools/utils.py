@@ -48,3 +48,9 @@ def match_date(date, match_day=0):
         matched_date = trddt_all[trddt_all < date][match_day]
 
     return matched_date
+
+
+def get_window():
+
+
+    pass

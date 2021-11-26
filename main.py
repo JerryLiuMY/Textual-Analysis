@@ -9,6 +9,7 @@ from scipy.sparse import load_npz, csr_matrix
 from global_settings import CLEAN_PATH, full_dict
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
+from global_settings import OUTPUT_PATH
 from data_prep.data_clean import save_data
 from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
@@ -68,7 +69,6 @@ def run_experiment(model_name, perc_ls):
     """ Run experiment
     :param model_name: model name
     :param perc_ls: percentage of long-short portfolio
-    :return: ret_e, ret_v
     """
 
     # define index
@@ -97,6 +97,8 @@ def run_experiment(model_name, perc_ls):
     window_iter = generate_window(window_dict, date0_min, date0_max)
 
     # perform experiment
-    ret_e, ret_v = experiment(df_rich, textual, window_iter, model_name, perc_ls)
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    if not os.path.isdir(model_path):
+        os.mkdir(model_path)
 
-    return ret_e, ret_v
+    experiment(df_rich, textual, window_iter, model_name, perc_ls)

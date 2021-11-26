@@ -1,8 +1,12 @@
+import os
 import numpy as np
+import pandas as pd
 import datetime
 from experiments.params import params_dict
 from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
+from global_settings import OUTPUT_PATH
+import json
 
 
 def experiment(df_rich, textual, window_iter, model_name, perc_ls):
@@ -16,20 +20,31 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt), 3]
     """
 
+    # create directories
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    for ev in ["e", "v"]:
+        params_sub_path = os.path.join(model_path, f"params_{ev}")
+        if not os.path.isdir(params_sub_path):
+            os.mkdir(params_sub_path)
+
+        model_sub_path = os.path.join(model_path, f"model_{ev}")
+        if not os.path.isdir(model_sub_path):
+            os.mkdir(model_sub_path)
+
+    # define functions
     if model_name == "ssestm":
         fit_func = fit_ssestm
         pre_func = pre_ssestm
     else:
         raise ValueError("Invalid model name")
 
-    ret_e = np.empty([0, 3])
-    ret_v = np.empty([0, 3])
+    # define dataframes
+    ret_e_df = pd.DataFrame(columns=["ret", "ret_l", "ret_s"])
+    ret_v_df = pd.DataFrame(columns=["ret", "ret_l", "ret_s"])
 
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}; "
-              f"Validation {trddt_valid[0][:-3]} to {trddt_valid[-1][:-3]}; "
-              f"Testing {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}")
+              f"Working on {trddt_train[0][:-3]} to {trddt_test[-1][:-3]}")
 
         trddt_window = trddt_train + trddt_valid + trddt_test
         window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_window)
@@ -37,12 +52,25 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         textual_win = textual[window_idx, :]
         window = [trddt_train, trddt_valid, trddt_test]
         params_iter = generate_params(params_dict, model_name)
-        ret_win = experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls)
-        ret_e_win, ret_v_win = ret_win
-        ret_e = np.concatenate([ret_e, ret_e_win], axis=0)
-        ret_v = np.concatenate([ret_v, ret_v_win], axis=0)
+        outputs = experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls)
+        ret_e_win, ret_v_win = outputs[0]
+        best_params_e, best_params_v = outputs[1]
+        best_model_e, best_model_v = outputs[2]
 
-    return ret_e, ret_v
+        # save returns
+        ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test[0][:-3], columns=["ret", "ret_l", "ret_s"])
+        ret_v_win_df = pd.DataFrame(ret_v_win, index=trddt_test[0][:-3], columns=["ret", "ret_l", "ret_s"])
+        ret_e_df = pd.concat([ret_e_df, ret_e_win_df], axis=0)
+        ret_v_df = pd.concat([ret_v_df, ret_v_win_df], axis=0)
+
+        # save parameters
+        save_params(best_params_e, model_name, trddt_test, "e")
+        save_params(best_params_v, model_name, trddt_test, "v")
+        save_model(best_model_e, model_name, trddt_test, "e")
+        save_model(best_model_v, model_name, trddt_test, "v")
+
+    ret_e_df.to_csv(os.path.join(model_path, "ret_e.csv"))
+    ret_v_df.to_csv(os.path.join(model_path, "ret_v.csv"))
 
 
 def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls):
@@ -72,7 +100,7 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
 
         # training
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"--Training...")
+              f"--Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}...")
         train_idx = df_rich_win["date_0"].apply(lambda _: _ in trddt_train)
         df_rich_win_train = df_rich_win.loc[train_idx, :].reset_index(inplace=False, drop=True)
         textual_win_train = textual_win[train_idx, :]
@@ -80,7 +108,7 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
 
         # validation
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"--Validation...")
+              f"--Validation {trddt_valid[0][:-3]} to {trddt_valid[-1][:-3]}...")
         ret_e_win_valid = np.empty(len(trddt_valid))
         ret_v_win_valid = np.empty(len(trddt_valid))
         for i, dt in enumerate(trddt_valid):
@@ -105,7 +133,7 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
 
     # building returns
     print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-          f"-Building return...")
+          f"-Building return {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}...")
     ret_e_win = np.empty([len(trddt_test), 3])
     ret_v_win = np.empty([len(trddt_test), 3])
     for i, dt in enumerate(trddt_test):
@@ -115,4 +143,20 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
         ret_e_win[i, :] = pre_func(df_rich_test, textual_test, best_params_e, best_model_e, perc_ls, "e")
         ret_v_win[i, :] = pre_func(df_rich_test, textual_test, best_params_v, best_model_v, perc_ls, "v")
 
-    return ret_e_win, ret_v_win
+    return (ret_e_win, ret_v_win), (best_params_e, best_params_v), (best_model_e, best_model_v)
+
+
+def save_params(params, model_name, trddt_test, ev):
+    params_path = os.path.join(OUTPUT_PATH, model_name)
+    params_sub_path = os.path.join(params_path, f"params_{ev}")
+
+    with open(os.path.join(params_sub_path, f"{trddt_test[0][:-3]}.json"), "w") as f:
+        json.dump(params, f)
+
+
+def save_model(model, model_name, trddt_test, ev):
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    model_sub_path = os.path.join(model_path, f"model_{ev}")
+
+    if model_name == "ssestm":
+        np.save(os.path.join(model_sub_path, f"{trddt_test[0][:-3]}.npy"), model)
