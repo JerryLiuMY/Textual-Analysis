@@ -6,7 +6,7 @@ from experiments.params import params_dict
 from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
 from global_settings import OUTPUT_PATH
-import json
+from tools.exp_tools import save_params, save_model
 
 
 def experiment(df_rich, textual, window_iter, model_name, perc_ls):
@@ -58,8 +58,8 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         best_model_e, best_model_v = outputs[2]
 
         # save returns
-        ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test[0][:-3], columns=["ret", "ret_l", "ret_s"])
-        ret_v_win_df = pd.DataFrame(ret_v_win, index=trddt_test[0][:-3], columns=["ret", "ret_l", "ret_s"])
+        ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test, columns=["ret", "ret_l", "ret_s"])
+        ret_v_win_df = pd.DataFrame(ret_v_win, index=trddt_test, columns=["ret", "ret_l", "ret_s"])
         ret_e_df = pd.concat([ret_e_df, ret_e_win_df], axis=0)
         ret_v_df = pd.concat([ret_v_df, ret_v_win_df], axis=0)
 
@@ -145,18 +145,3 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
 
     return (ret_e_win, ret_v_win), (best_params_e, best_params_v), (best_model_e, best_model_v)
 
-
-def save_params(params, model_name, trddt_test, ev):
-    params_path = os.path.join(OUTPUT_PATH, model_name)
-    params_sub_path = os.path.join(params_path, f"params_{ev}")
-
-    with open(os.path.join(params_sub_path, f"{trddt_test[0][:-3]}.json"), "w") as f:
-        json.dump(params, f)
-
-
-def save_model(model, model_name, trddt_test, ev):
-    model_path = os.path.join(OUTPUT_PATH, model_name)
-    model_sub_path = os.path.join(model_path, f"model_{ev}")
-
-    if model_name == "ssestm":
-        np.save(os.path.join(model_sub_path, f"{trddt_test[0][:-3]}.npy"), model)
