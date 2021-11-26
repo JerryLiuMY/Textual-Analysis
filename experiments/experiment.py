@@ -6,7 +6,7 @@ from experiments.params import params_dict
 from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
 from global_settings import OUTPUT_PATH
-from tools.exp_tools import save_params, save_model
+from tools.exp_tools import save_params, save_model, get_return
 
 
 def experiment(df_rich, textual, window_iter, model_name, perc_ls):
@@ -69,7 +69,9 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         save_model(best_model_e, model_name, trddt_test, "e")
         save_model(best_model_v, model_name, trddt_test, "v")
 
+    # noinspection PyTypeChecker
     ret_e_df.to_csv(os.path.join(model_path, "ret_e.csv"))
+    # noinspection PyTypeChecker
     ret_v_df.to_csv(os.path.join(model_path, "ret_v.csv"))
 
 
@@ -115,8 +117,9 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
             valid_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
             textual_win_valid = textual_win[valid_idx, :]
-            ret_e_win_valid[i] = pre_func(df_rich_win_valid, textual_win_valid, params, model, perc_ls, "e")[0]
-            ret_v_win_valid[i] = pre_func(df_rich_win_valid, textual_win_valid, params, model, perc_ls, "v")[0]
+            p_hat = pre_func(textual_win_valid, params, model)
+            ret_e_win_valid[i] = get_return(df_rich_win_valid, p_hat, perc_ls, "e")
+            ret_v_win_valid[i] = get_return(df_rich_win_valid, p_hat, perc_ls, "v")
 
         cum_e_valid = np.log(np.cumprod(ret_e_win_valid + 1))
         cum_v_valid = np.log(np.cumprod(ret_v_win_valid + 1))
@@ -144,4 +147,3 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
         ret_v_win[i, :] = pre_func(df_rich_test, textual_test, best_params_v, best_model_v, perc_ls, "v")
 
     return (ret_e_win, ret_v_win), (best_params_e, best_params_v), (best_model_e, best_model_v)
-

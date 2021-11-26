@@ -8,7 +8,7 @@ sns.set()
 plt.style.use('ggplot')
 
 
-def plot_backtest(return_df, num_days_cum, year_list):
+def plot_backtest(return_df, num_days_cum):
     """ plot cumulative return from backtesting
     :param return_df: dataframe of returns
     :return:
@@ -52,7 +52,7 @@ def plot_backtest(return_df, num_days_cum, year_list):
     # plot cumulative return
     fig, ax = plt.subplots(1, 1, figsize=(14, 7))
     ax.set_xlim(num_days_cum[0], num_days_cum[-1])
-    ax.set_xticks(num_days_cum[0::2], year_list[0::2])
+    # ax.set_xticks(num_days_cum[0::2], year_list[0::2])
     ax.grid('on')
     ax.plot(cum_e, 'k-')
     ax.plot(cum_le, 'b-')

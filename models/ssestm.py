@@ -25,14 +25,11 @@ def fit_ssestm(df_rich, word_sps, *args):
     return model
 
 
-def pre_ssestm(df_rich, word_sps, params, model, perc_ls, ev):
+def pre_ssestm(word_sps, params, model):
     """ predict p_hat based on the word_matrix and the estimated O_hat
-    :param df_rich: enriched dataframe
     :param word_sps: word_matrix
     :param params: parameters for ssestm
     :param model: fitted model
-    :param perc_ls: equal vs. value weighted type
-    :param ev: equal vs. value weighted type
     :return: p_hat values for the samples in the word_matrix
     """
 
@@ -55,21 +52,4 @@ def pre_ssestm(df_rich, word_sps, params, model, perc_ls, ev):
     objective = likelihood + penalty
     p_hat = np.take(p_lin, np.argmax(objective, axis=1))
 
-    # Calculate equal and value weighted returns
-    num_ls = int(len(p_hat) * perc_ls)
-    sorted_idx = np.argsort(p_hat)
-    df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
-    df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]
-
-    if ev == "e":
-        ret_l = df_rich_l["ret"].mean()
-        ret_s = df_rich_s["ret"].mean()
-    elif ev == "v":
-        ret_l = np.average(df_rich_l["ret"], weights=df_rich_l["cap"])
-        ret_s = np.average(df_rich_s["ret"], weights=df_rich_s["cap"])
-    else:
-        raise ValueError("Invalid weighting type")
-
-    ret = ret_l - ret_s
-
-    return ret, ret_l, ret_s
+    return p_hat

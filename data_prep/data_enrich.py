@@ -60,4 +60,5 @@ def enrich_data(sub_file_clean):
 
     sub_file_rich = f"enriched_{sub_file_clean.split('.')[0].split('_')[1]}.csv"
     print(f"Saving to {sub_file_rich}...")
+    # noinspection PyTypeChecker
     sub_df_rich.to_csv(os.path.join(RICH_PATH, sub_file_rich), index=False)

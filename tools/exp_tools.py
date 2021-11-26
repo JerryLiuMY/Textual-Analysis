@@ -4,6 +4,33 @@ import numpy as np
 from global_settings import OUTPUT_PATH
 
 
+def get_return(df_rich, p_hat, perc_ls, ev):
+    """ Get returns from the predicted p-hat values
+    :param df_rich: enriched dataframe
+    :param p_hat: enriched dataframe
+    :param perc_ls: equal vs. value weighted type
+    :param ev: equal vs. value weighted type
+    """
+    # Calculate equal and value weighted returns
+    num_ls = int(len(p_hat) * perc_ls)
+    sorted_idx = np.argsort(p_hat)
+    df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
+    df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]
+
+    if ev == "e":
+        ret_l = df_rich_l["ret"].mean()
+        ret_s = df_rich_s["ret"].mean()
+    elif ev == "v":
+        ret_l = np.average(df_rich_l["ret"], weights=df_rich_l["cap"])
+        ret_s = np.average(df_rich_s["ret"], weights=df_rich_s["cap"])
+    else:
+        raise ValueError("Invalid weighting type")
+
+    ret = ret_l - ret_s
+
+    return ret, ret_l, ret_s
+
+
 def save_params(params, model_name, trddt_test, ev):
     """ Save model parameters
     :param params: parameters to be saved
