@@ -39,8 +39,8 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         raise ValueError("Invalid model name")
 
     # define dataframes
-    ret_e_df = pd.DataFrame(columns=["ret", "ret_l", "ret_s"])
-    ret_v_df = pd.DataFrame(columns=["ret", "ret_l", "ret_s"])
+    ret_e_df = pd.DataFrame(columns=["ret_e", "ret_le", "ret_se"])
+    ret_v_df = pd.DataFrame(columns=["ret_v", "ret_lv", "ret_sv"])
 
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -58,8 +58,8 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         best_model_e, best_model_v = outputs[2]
 
         # save returns
-        ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test, columns=["ret", "ret_l", "ret_s"])
-        ret_v_win_df = pd.DataFrame(ret_v_win, index=trddt_test, columns=["ret", "ret_l", "ret_s"])
+        ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test, columns=["ret_e", "ret_le", "ret_se"])
+        ret_v_win_df = pd.DataFrame(ret_v_win, index=trddt_test, columns=["ret_v", "ret_lv", "ret_sv"])
         ret_e_df = pd.concat([ret_e_df, ret_e_win_df], axis=0)
         ret_v_df = pd.concat([ret_v_df, ret_v_win_df], axis=0)
 
@@ -69,10 +69,9 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         save_model(best_model_e, model_name, trddt_test, "e")
         save_model(best_model_v, model_name, trddt_test, "v")
 
+    ret_df = pd.concat([ret_e_df, ret_v_df], axis=1)
     # noinspection PyTypeChecker
-    ret_e_df.to_csv(os.path.join(model_path, "ret_e.csv"))
-    # noinspection PyTypeChecker
-    ret_v_df.to_csv(os.path.join(model_path, "ret_v.csv"))
+    ret_df.to_csv(os.path.join(model_path, "ret_df.csv"))
 
 
 def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls):

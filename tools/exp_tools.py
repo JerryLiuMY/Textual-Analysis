@@ -21,14 +21,14 @@ def get_return(df_rich, target, perc_ls, ev):
 
     if ev == "e":
         ret_l = df_rich_l["ret"].mean()
-        ret_s = df_rich_s["ret"].mean()
+        ret_s = -df_rich_s["ret"].mean()
     elif ev == "v":
         ret_l = np.average(df_rich_l["ret"], weights=df_rich_l["cap"])
-        ret_s = np.average(df_rich_s["ret"], weights=df_rich_s["cap"])
+        ret_s = -np.average(df_rich_s["ret"], weights=df_rich_s["cap"])
     else:
         raise ValueError("Invalid weighting type")
 
-    ret = ret_l - ret_s
+    ret = ret_l + ret_s
 
     return ret, ret_l, ret_s
 

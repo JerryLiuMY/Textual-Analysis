@@ -6,10 +6,12 @@ import scipy as sp
 import datetime
 from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
-from global_settings import CLEAN_PATH, full_dict
+from global_settings import CLEAN_PATH
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 from global_settings import OUTPUT_PATH
+from global_settings import full_dict
+from global_settings import dalym
 from data_prep.data_clean import save_data
 from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
@@ -19,6 +21,7 @@ from experiments.params import window_dict
 from experiments.params import date0_min, date0_max
 from experiments.generators import generate_window
 from experiments.experiment import experiment
+from visualization.backtest import plot_backtest
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -102,3 +105,9 @@ def run_experiment(model_name, perc_ls):
         os.mkdir(model_path)
 
     experiment(df_rich, textual, window_iter, model_name, perc_ls)
+
+
+def run_backtest(model_name):
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    ret_df = pd.read_csv(os.path.join(model_path, "ret_df.csv"), index_col=0)
+    plot_backtest(ret_df, dalym)
