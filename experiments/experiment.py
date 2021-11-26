@@ -1,12 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
-import datetime
 from experiments.params import params_dict
 from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
 from global_settings import OUTPUT_PATH
 from tools.exp_tools import save_params, save_model, get_return
+from datetime import datetime
 
 
 def experiment(df_rich, textual, window_iter, model_name, perc_ls):
@@ -43,7 +43,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     ret_v_df = pd.DataFrame(columns=["ret", "ret_l", "ret_s"])
 
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Working on {trddt_train[0][:-3]} to {trddt_test[-1][:-3]}")
 
         trddt_window = trddt_train + trddt_valid + trddt_test
@@ -97,11 +97,11 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
     best_model_v = None
 
     for params in params_iter:
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"-Working on {'; '.join([str(key) + '=' + str(value) for key, value in params.items()])}")
 
         # training
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"--Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}...")
         train_idx = df_rich_win["date_0"].apply(lambda _: _ in trddt_train)
         df_rich_win_train = df_rich_win.loc[train_idx, :].reset_index(inplace=False, drop=True)
@@ -109,7 +109,7 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
         model = fit_func(df_rich_win_train, textual_win_train, params)
 
         # validation
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"--Validation {trddt_valid[0][:-3]} to {trddt_valid[-1][:-3]}...")
         ret_e_win_valid = np.empty(len(trddt_valid))
         ret_v_win_valid = np.empty(len(trddt_valid))
@@ -135,7 +135,7 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
             best_model_v = model
 
     # building returns
-    print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
           f"-Building return {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}...")
     ret_e_win = np.empty([len(trddt_test), 3])
     ret_v_win = np.empty([len(trddt_test), 3])

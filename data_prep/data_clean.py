@@ -34,9 +34,9 @@ def save_data(raw_file, data_file):
     data_df = data_df.loc[:, ["created_at", "title", "text", "stock_mention"]]
 
     print("Converting to datetime...")
-    datetime = data_df["created_at"].apply(convert_datetime)
-    data_df["date"] = datetime.apply(lambda _: _[0])
-    data_df["time"] = datetime.apply(lambda _: _[1])
+    created_at = data_df["created_at"].apply(convert_datetime)
+    data_df["date"] = created_at.apply(lambda _: _[0])
+    data_df["time"] = created_at.apply(lambda _: _[1])
     data_df = data_df.loc[:, data_df.columns != "created_at"]
 
     print(f"Saving to {data_file}...")

@@ -2,6 +2,7 @@ import json
 import os
 import numpy as np
 from global_settings import OUTPUT_PATH
+from datetime import datetime
 
 
 def get_return(df_rich, p_hat, perc_ls, ev):
@@ -11,6 +12,7 @@ def get_return(df_rich, p_hat, perc_ls, ev):
     :param perc_ls: equal vs. value weighted type
     :param ev: equal vs. value weighted type
     """
+
     # Calculate equal and value weighted returns
     num_ls = int(len(p_hat) * perc_ls)
     sorted_idx = np.argsort(p_hat)
@@ -38,10 +40,12 @@ def save_params(params, model_name, trddt_test, ev):
     :param trddt_test: testing trading dates
     :param ev: equal/value weighted type
     """
+
     params_path = os.path.join(OUTPUT_PATH, model_name)
     params_sub_path = os.path.join(params_path, f"params_{ev}")
 
-    with open(os.path.join(params_sub_path, f"{trddt_test[0][:-3]}.json"), "w") as f:
+    trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
+    with open(os.path.join(params_sub_path, f"{trddt_test_Ym}.json"), "w") as f:
         json.dump(params, f)
 
 
@@ -57,7 +61,8 @@ def save_model(model, model_name, trddt_test, ev):
     model_sub_path = os.path.join(model_path, f"model_{ev}")
 
     if model_name == "ssestm":
-        np.save(os.path.join(model_sub_path, f"{trddt_test[0][:-3]}.npy"), model)
+        trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
+        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), model)
 
 
 def get_window(window_iter, trddt_test_Ym):
@@ -67,6 +72,6 @@ def get_window(window_iter, trddt_test_Ym):
     """
 
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
-        if trddt_test[0][:-3] == trddt_test_Ym:
+        if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
             window = [trddt_train, trddt_valid, trddt_test]
             return window

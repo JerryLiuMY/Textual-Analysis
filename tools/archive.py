@@ -3,7 +3,7 @@ from global_settings import user, host, password
 from global_settings import DATA_PATH
 from global_settings import RICH_PATH
 import mysql.connector
-import datetime
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import glob
@@ -35,7 +35,7 @@ def get_date0_range():
 
     df_rich = pd.DataFrame()
     for sub_file_rich in sorted(sub_file_rich_li):
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Loading {sub_file_rich}")
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Loading {sub_file_rich}")
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         df_rich = df_rich.append(sub_df_rich)
 

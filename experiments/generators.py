@@ -7,7 +7,6 @@ def generate_window(window_dict, date0_min, date0_max):
     :param window_dict: dictionary of window related parameters
     :param date0_min: earliest date in the enriched data
     :param date0_max: latest date in the enriched data
-    :return:
     """
 
     trddt = trddt_all[(trddt_all >= date0_min) & (trddt_all <= date0_max)].tolist()

@@ -2,7 +2,7 @@ from scipy.sparse import csr_matrix, save_npz
 from global_settings import RICH_PATH, full_dict
 from global_settings import WORD_PATH
 import pandas as pd
-import datetime
+from datetime import datetime
 import math
 import os
 
@@ -23,7 +23,7 @@ def build_word_sps(sub_file_rich):
     sub_word_df = pd.DataFrame()
 
     for idx, iloc in enumerate(range(0, sub_df_rich.shape[0], mini_size)):
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Working on {sub_file_rich} -- progress {idx + 1} / {math.ceil(sub_df_rich.shape[0] / mini_size)}")
 
         mini_df_rich = sub_df_rich.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)

@@ -3,7 +3,7 @@ from tools.sql import query_dalyr
 from global_settings import CLEAN_PATH, RICH_PATH
 from global_settings import user, host, password
 import mysql.connector
-import datetime
+from datetime import datetime
 import pandas as pd
 import math
 import os
@@ -34,7 +34,7 @@ def enrich_data(sub_file_clean):
 
     csmar = mysql.connector.connect(user=user, password=password, host=host, database="CSMAR")
     for idx, iloc in enumerate(range(0, sub_df_clean.shape[0], mini_size)):
-        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Working on {sub_file_clean} -- progress {idx + 1} / {math.ceil(sub_df_clean.shape[0] / mini_size)}")
         cursor = csmar.cursor()
         mini_df_clean = sub_df_clean.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)

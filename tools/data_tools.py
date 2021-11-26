@@ -1,7 +1,7 @@
-import datetime
 import json
 import os
 from dateutil import tz
+from datetime import datetime, timedelta
 from global_settings import trddt_all, LOG_PATH
 
 
@@ -15,7 +15,7 @@ def convert_datetime(timestamp):
 
     from_zone = tz.gettz("UTC")
     to_zone = tz.gettz("Asia/Shanghai")
-    utc_datetime = datetime.datetime.utcfromtimestamp(float(timestamp) / 1000.)
+    utc_datetime = datetime.utcfromtimestamp(float(timestamp) / 1000.)
     utc_datetime = utc_datetime.replace(tzinfo=from_zone)
     chn_datetime = utc_datetime.astimezone(to_zone)
     chn_date = chn_datetime.strftime(fmt_date)
@@ -31,9 +31,9 @@ def shift_date(date, shift_day):
     :return: shifted date in the format of "%Y-%m-%d"
     """
     date_fmt = "%Y-%m-%d"
-    date_dt = datetime.datetime.strptime(date, date_fmt)
-    shifted_date_dt = date_dt + datetime.timedelta(days=shift_day)
-    shifted_date = datetime.datetime.strftime(shifted_date_dt, date_fmt)
+    date_dt = datetime.strptime(date, date_fmt)
+    shifted_date_dt = date_dt + timedelta(days=shift_day)
+    shifted_date = datetime.strftime(shifted_date_dt, date_fmt)
 
     return shifted_date
 
