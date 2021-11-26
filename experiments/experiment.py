@@ -98,11 +98,11 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
 
     for params in params_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"-Working on {'; '.join([str(key) + '=' + str(value) for key, value in params.items()])}")
+              f"* Working on {'; '.join([str(key) + '=' + str(value) for key, value in params.items()])}")
 
         # training
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"--Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}...")
+              f"*-* Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}...")
         train_idx = df_rich_win["date_0"].apply(lambda _: _ in trddt_train)
         df_rich_win_train = df_rich_win.loc[train_idx, :].reset_index(inplace=False, drop=True)
         textual_win_train = textual_win[train_idx, :]
@@ -110,16 +110,21 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
 
         # validation
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"--Validation {trddt_valid[0][:-3]} to {trddt_valid[-1][:-3]}...")
+              f"*-* Validation {trddt_valid[0][:-3]} to {trddt_valid[-1][:-3]}...")
         ret_e_win_valid = np.empty(len(trddt_valid))
         ret_v_win_valid = np.empty(len(trddt_valid))
         for i, dt in enumerate(trddt_valid):
             valid_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
+            if sum(valid_idx) == 0:
+                ret_e_win_valid[i] = 0
+                ret_v_win_valid[i] = 0
+                continue
+
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
             textual_win_valid = textual_win[valid_idx, :]
-            p_hat = pre_func(textual_win_valid, params, model)
-            ret_e_win_valid[i] = get_return(df_rich_win_valid, p_hat, perc_ls, "e")
-            ret_v_win_valid[i] = get_return(df_rich_win_valid, p_hat, perc_ls, "v")
+            target = pre_func(textual_win_valid, params, model)
+            ret_e_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "e")[0]
+            ret_v_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "v")[0]
 
         cum_e_valid = np.log(np.cumprod(ret_e_win_valid + 1))
         cum_v_valid = np.log(np.cumprod(ret_v_win_valid + 1))
@@ -136,14 +141,21 @@ def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_
 
     # building returns
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-          f"-Building return {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}...")
+          f"* Building returns {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}...")
     ret_e_win = np.empty([len(trddt_test), 3])
     ret_v_win = np.empty([len(trddt_test), 3])
     for i, dt in enumerate(trddt_test):
         test_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
-        df_rich_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
-        textual_test = textual_win[test_idx, :]
-        ret_e_win[i, :] = pre_func(df_rich_test, textual_test, best_params_e, best_model_e, perc_ls, "e")
-        ret_v_win[i, :] = pre_func(df_rich_test, textual_test, best_params_v, best_model_v, perc_ls, "v")
+        if sum(test_idx) == 0:
+            ret_e_win[i] = 0
+            ret_v_win[i] = 0
+            continue
+
+        df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
+        textual_win_test = textual_win[test_idx, :]
+        target_e = pre_func(textual_win_test, best_params_e, best_model_e)
+        target_v = pre_func(textual_win_test, best_params_v, best_model_v)
+        ret_e_win[i, :] = get_return(df_rich_win_test, target_e, perc_ls, "e")
+        ret_v_win[i, :] = get_return(df_rich_win_test, target_v, perc_ls, "v")
 
     return (ret_e_win, ret_v_win), (best_params_e, best_params_v), (best_model_e, best_model_v)

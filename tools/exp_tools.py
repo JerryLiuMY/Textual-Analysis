@@ -5,17 +5,17 @@ from global_settings import OUTPUT_PATH
 from datetime import datetime
 
 
-def get_return(df_rich, p_hat, perc_ls, ev):
+def get_return(df_rich, target, perc_ls, ev):
     """ Get returns from the predicted p-hat values
     :param df_rich: enriched dataframe
-    :param p_hat: enriched dataframe
+    :param target: predicted target for portfolio construction
     :param perc_ls: equal vs. value weighted type
     :param ev: equal vs. value weighted type
     """
 
     # Calculate equal and value weighted returns
-    num_ls = int(len(p_hat) * perc_ls)
-    sorted_idx = np.argsort(p_hat)
+    num_ls = int(len(target) * perc_ls)
+    sorted_idx = np.argsort(target)
     df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
     df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]
 
