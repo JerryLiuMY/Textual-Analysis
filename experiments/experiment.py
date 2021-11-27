@@ -16,7 +16,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     :param window_iter: rolling window
     :param model_name: parameters iterator
     :param perc_ls: percentage of long-short portfolio
-    :return ret_e_win: equal weighted return (ret, ret_l, ret_s) with shape=[len(trddt), 3]
+    :return ret_e_win: equal weighted returns (ret, ret_l, ret_s) with shape=[len(trddt), 3]
     :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt), 3]
     """
 

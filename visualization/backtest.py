@@ -43,10 +43,11 @@ def plot_backtest(ret_df, dalym):
         ticklabs.append(ticklab_cur)
         trddt_Ym = (ticklab_cur + relativedelta(months=6)).strftime("%Y-%m")
         def match_Ym(series): return datetime.strptime(series, "%Y-%m-%d").strftime("%Y-%m") == trddt_Ym
-        if len(ret_df.index[pd.Series(ret_df.index).apply(match_Ym)]) == 0:
-            break
+        matched_dates = ret_df.index[pd.Series(ret_df.index).apply(match_Ym)]
+        if len(matched_dates) != 0:
+            ticklab_cur = datetime.strptime(matched_dates[0], "%Y-%m-%d")
         else:
-            ticklab_cur = datetime.strptime(ret_df.index[pd.Series(ret_df.index).apply(match_Ym)][0], "%Y-%m-%d")
+            break
 
     def ticklab_to_tick(ticklab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == ticklab))[0][0]
     ticklabs = [ticklab.strftime("%Y-%m-%d") for ticklab in ticklabs]

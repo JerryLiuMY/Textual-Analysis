@@ -33,5 +33,5 @@ if __name__ == "__main__":
     # run_data_prep()
     # run_word_sps()
     model_name = "ssestm"
-    # run_experiment(model_name, perc_ls)
-    run_backtest(model_name)
+    run_experiment(model_name, perc_ls)
+    # run_backtest(model_name)
