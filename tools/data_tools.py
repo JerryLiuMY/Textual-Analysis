@@ -5,7 +5,23 @@ from datetime import datetime, timedelta
 from global_settings import trddt_all, LOG_PATH
 
 
-def convert_datetime(timestamp):
+def init_data_log():
+    """Initialize the log file for step-by-step details for our sample filters."""
+    data_log = {
+        "original": 0,
+        "available": 0,
+        "drop_nan": 0,
+        "single_tag": 0,
+        "match_stkcd": 0
+    }
+
+    with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
+        json.dump(data_log, f)
+
+    print("data_log.json initialized")
+
+
+def convert_zone(timestamp):
     """ Epoch & Unix Timestamp
     :param timestamp: Epoch & Unix Timestamp
     :return: China date & time Timestamps
@@ -50,19 +66,3 @@ def match_date(date, match_day=0):
         matched_date = trddt_all[trddt_all < date][match_day]
 
     return matched_date
-
-
-def init_data_log():
-    """Initialize the log file for step-by-step details for our sample filters."""
-    data_log = {
-        "original": 0,
-        "available": 0,
-        "drop_nan": 0,
-        "single_tag": 0,
-        "match_stkcd": 0
-    }
-
-    with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
-        json.dump(data_log, f)
-
-    print("data_log.json initialized")

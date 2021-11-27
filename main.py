@@ -6,7 +6,7 @@ import scipy as sp
 import datetime
 from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
-from global_settings import CLEAN_PATH
+from global_settings import CLEAN_PATH, date0_min, date0_max
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 from global_settings import OUTPUT_PATH
@@ -18,7 +18,6 @@ from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
 from data_proc.word_sps import build_word_sps
 from experiments.params import window_dict
-from experiments.params import date0_min, date0_max
 from experiments.generators import generate_window
 from experiments.experiment import experiment
 from visualization.backtest import plot_backtest

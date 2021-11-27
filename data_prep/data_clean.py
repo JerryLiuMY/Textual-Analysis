@@ -4,7 +4,7 @@ import json
 from global_settings import DATA_PATH
 from global_settings import LOG_PATH
 from global_settings import stkcd_all, trddt_all
-from tools.data_tools import convert_datetime, init_data_log
+from tools.data_tools import convert_zone, init_data_log
 
 
 def save_data(raw_file, data_file):
@@ -34,7 +34,7 @@ def save_data(raw_file, data_file):
     data_df = data_df.loc[:, ["created_at", "title", "text", "stock_mention"]]
 
     print("Converting to datetime...")
-    created_at = data_df["created_at"].apply(convert_datetime)
+    created_at = data_df["created_at"].apply(convert_zone)
     data_df["date"] = created_at.apply(lambda _: _[0])
     data_df["time"] = created_at.apply(lambda _: _[1])
     data_df = data_df.loc[:, data_df.columns != "created_at"]

@@ -35,27 +35,27 @@ def plot_backtest(ret_df, dalym):
     mkt_cum = np.log(np.cumprod(mkt_ret + 1))
 
     # xticks and xticklabels
-    tick_lab_beg = datetime.strptime(ret_df.index[0], "%Y-%m-%d")
-    tick_lab_end = datetime.strptime(ret_df.index[-1], "%Y-%m-%d")
-    tick_lab_cur = tick_lab_beg
-    tick_labs = []
-    while tick_lab_cur <= tick_lab_end:
-        tick_labs.append(tick_lab_cur)
-        trddt_Ym = (tick_lab_cur + relativedelta(months=6)).strftime("%Y-%m")
+    ticklab_beg = datetime.strptime(ret_df.index[0], "%Y-%m-%d")
+    ticklab_end = datetime.strptime(ret_df.index[-1], "%Y-%m-%d")
+    ticklab_cur = ticklab_beg
+    ticklabs = []
+    while ticklab_cur <= ticklab_end:
+        ticklabs.append(ticklab_cur)
+        trddt_Ym = (ticklab_cur + relativedelta(months=6)).strftime("%Y-%m")
         def match_Ym(series): return datetime.strptime(series, "%Y-%m-%d").strftime("%Y-%m") == trddt_Ym
         if len(ret_df.index[pd.Series(ret_df.index).apply(match_Ym)]) == 0:
             break
         else:
-            tick_lab_cur = datetime.strptime(ret_df.index[pd.Series(ret_df.index).apply(match_Ym)][0], "%Y-%m-%d")
+            ticklab_cur = datetime.strptime(ret_df.index[pd.Series(ret_df.index).apply(match_Ym)][0], "%Y-%m-%d")
 
-    def lab_to_tick(tick_lab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == tick_lab))[0][0]
-    tick_labs = [_.strftime("%Y-%m-%d") for _ in tick_labs]
-    ticks = [lab_to_tick(tick_lab) for tick_lab in tick_labs]
+    def ticklab_to_tick(ticklab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == ticklab))[0][0]
+    ticklabs = [ticklab.strftime("%Y-%m-%d") for ticklab in ticklabs]
+    ticks = [ticklab_to_tick(ticklab) for ticklab in ticklabs]
 
     # plot cumulative return
     fig, ax = plt.subplots(1, 1, figsize=(14, 7))
     ax.set_xticks(ticks)
-    ax.set_xticklabels(tick_labs)
+    ax.set_xticklabels(ticklabs)
     ax.grid("on")
     ax.plot(cum_e, "k-")
     ax.plot(cum_le, "b-")
