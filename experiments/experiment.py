@@ -20,7 +20,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt), 3]
     """
 
-    # create directories
+    # create sub directories
     model_path = os.path.join(OUTPUT_PATH, model_name)
     for ev in ["e", "v"]:
         params_sub_path = os.path.join(model_path, f"params_{ev}")
@@ -52,7 +52,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         textual_win = textual[window_idx, :]
         window = [trddt_train, trddt_valid, trddt_test]
         params_iter = generate_params(params_dict, model_name)
-        outputs = experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls)
+        outputs = experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls)
         ret_e_win, ret_v_win = outputs[0]
         best_params_e, best_params_v = outputs[1]
         best_model_e, best_model_v = outputs[2]
@@ -74,14 +74,14 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     ret_df.to_csv(os.path.join(model_path, "ret_df.csv"))
 
 
-def experiment_win(df_rich_win, textual_win, window, params_iter, fit_func, pre_func, perc_ls):
+def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls):
     """ train models over a window and get cumulative return
     :param df_rich_win: enriched dataframe within the window 
     :param textual_win: textual information (e.g. sparse matrix, embedding) within the window
     :param window: [trddt_train, trddt_valid, trddt_test] window
-    :param params_iter: parameters iterator
     :param fit_func: parameters iterator
     :param pre_func: parameters iterator
+    :param params_iter: parameters iterator
     :param perc_ls: percentage of long-short portfolio
     :return ret_e_win: equal weighted return (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
     :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]

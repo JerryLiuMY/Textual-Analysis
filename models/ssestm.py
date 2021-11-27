@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import Normalizer
+from scipy.sparse import csr_matrix
 
 
 def fit_ssestm(df_rich, word_sps, *args):
@@ -12,16 +13,13 @@ def fit_ssestm(df_rich, word_sps, *args):
     # Get D_hat and W_hat
     n = df_rich.shape[0]
     normalizer = Normalizer(norm="l1")
-    D_hat = normalizer.fit_transform(word_sps).T.toarray()
-    p_hat = np.argsort(df_rich["ret3"].values).reshape(1, -1) / n - 0.5
-
-    # zero_idx = (np.sum(D_hat, axis=0) == 0)
-    # D_hat = D_hat[:, ~zero_idx]
-    # p_hat = p_hat[:, ~zero_idx]
+    D_hat = normalizer.fit_transform(word_sps).T
+    p_hat = np.argsort(df_rich["ret3"].values).reshape(1, -1) / n
 
     # Calculate O_hat
     W_hat = np.concatenate((p_hat, 1 - p_hat))
-    O_hat = D_hat @ W_hat.T @ np.linalg.inv(W_hat @ W_hat.T)
+    O_hat = D_hat @ csr_matrix(W_hat.T @ np.linalg.inv(W_hat @ W_hat.T))
+    O_hat = O_hat.toarray()
     O_hat = O_hat.clip(min=0)
     O_hat = np.divide(O_hat, O_hat.sum(axis=0))
     model = O_hat
@@ -29,11 +27,11 @@ def fit_ssestm(df_rich, word_sps, *args):
     return model
 
 
-def pre_ssestm(word_sps, params, model):
+def pre_ssestm(word_sps, model, params):
     """ predict p_hat based on the word_matrix and the estimated O_hat
     :param word_sps: word_matrix
-    :param params: parameters for ssestm
     :param model: fitted model
+    :param params: parameters for ssestm
     :return: p_hat values for the samples in the word_matrix
     """
 

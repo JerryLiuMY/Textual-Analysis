@@ -1,5 +1,6 @@
 import os
 import glob
+import jieba
 import pandas as pd
 import numpy as np
 import scipy as sp
@@ -12,6 +13,7 @@ from global_settings import WORD_PATH
 from global_settings import OUTPUT_PATH
 from global_settings import full_dict
 from global_settings import dalym
+from global_settings import stop_list
 from data_prep.data_clean import save_data
 from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
@@ -51,9 +53,7 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
 
 
 def run_word_sps():
-    """
-    Build word sparse matrix
-    """
+    """Build word sparse matrix"""
 
     sub_file_rich_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
@@ -67,11 +67,8 @@ def run_word_sps():
         pool.join()
 
 
-def run_experiment(model_name, perc_ls):
-    """ Run experiment
-    :param model_name: model name
-    :param perc_ls: percentage of long-short portfolio
-    """
+def build_ssestm():
+    """ Build experiment for ssestm"""
 
     # define index
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
@@ -82,20 +79,62 @@ def run_experiment(model_name, perc_ls):
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
     sub_word_file_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))])
 
-    # get df_rich & textual
+    # get df_rich & word_sps
     df_rich = pd.DataFrame()
-    textual = csr_matrix(np.empty((0, len(full_dict)), np.int64))
+    word_sps = csr_matrix(np.empty((0, len(full_dict)), np.int64))
     for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_word_file_li):
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Combining {sub_file_rich} and {sub_word_file}")
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         sub_word_sps = load_npz(os.path.join(WORD_PATH, sub_word_file))
         df_rich = df_rich.append(sub_df_rich)
-        textual = sp.sparse.vstack([textual, sub_word_sps], format="csr")
+        word_sps = sp.sparse.vstack([word_sps, sub_word_sps], format="csr")
 
     df_rich.reset_index(inplace=True, drop=True)
 
-    # rolling window iterator
+    return df_rich, word_sps
+
+
+def build_doc2vec():
+    """ Build experiment for doc2vec"""
+
+    # define index
+    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
+    def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
+    def cut_doc(doc): return [word for word in " ".join(jieba.cut(doc)).split() if word not in stop_list]
+
+    # get df_rich & doc_cut
+    df_rich = pd.DataFrame()
+    doc_cut = pd.Series()
+    for sub_file_rich in sub_file_rich_li:
+        print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+              f"Working on {sub_file_rich}")
+        sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
+        sub_df_rich["title"] = sub_df_rich["title"].astype(str)
+        sub_df_rich["text"] = sub_df_rich["text"].astype(str)
+        sub_doc_cut = sub_df_rich.apply(join_tt, axis=1).apply(cut_doc)
+        df_rich = df_rich.append(sub_df_rich)
+        doc_cut = pd.concat([doc_cut, sub_doc_cut], axis=0)
+
+    df_rich.reset_index(inplace=True, drop=True)
+    doc_cut.reset_index(inplace=True, drop=True)
+    doc_cut.name = "doc_cut"
+
+    return df_rich, doc_cut
+
+
+def run_experiment(model_name, perc_ls):
+    """ Run experiments"""
+
+    # get df_rich & textual
+    if model_name == "ssestm":
+        df_rich, textual = build_ssestm()
+    elif model_name == "doc2vec":
+        df_rich, textual = build_doc2vec()
+    else:
+        raise ValueError("Invalid model name")
+
+    # rolling window
     window_iter = generate_window(window_dict, date0_min, date0_max)
 
     # perform experiment
