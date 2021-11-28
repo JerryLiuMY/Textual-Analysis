@@ -30,7 +30,6 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     :param raw_file: raw file
     :param data_file: data file
     :param clean_file: cleaned file
-    :return:
     """
 
     # clean & split data

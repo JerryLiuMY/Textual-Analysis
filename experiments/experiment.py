@@ -1,14 +1,14 @@
 import os
 import numpy as np
 import pandas as pd
+from datetime import datetime
+from global_settings import OUTPUT_PATH
 from experiments.params import params_dict
 from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
-from global_settings import OUTPUT_PATH
-from tools.exp_tools import save_params, save_model, get_return
-from datetime import datetime
-from tools.exp_tools import get_textual
+from tools.exp_tools import get_textual, get_return
+from tools.exp_tools import save_params, save_model
 
 
 def experiment(df_rich, textual, window_iter, model_name, perc_ls):
@@ -88,7 +88,7 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
     :param pre_func: parameters iterator
     :param params_iter: parameters iterator
     :param perc_ls: percentage of long-short portfolio
-    :return ret_e_win: equal weighted return (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
+    :return ret_e_win: equal weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
     :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
     """
 

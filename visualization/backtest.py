@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
-plt.style.use('ggplot')
+plt.style.use("ggplot")
 
 
 def plot_backtest(ret_df, dalym):
