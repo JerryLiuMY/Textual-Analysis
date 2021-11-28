@@ -8,12 +8,16 @@ import pandas as pd
 
 
 def get_textual(textual, idx):
+    """ Get textual data from boolean array
+    :param textual: textual data
+    :param idx: boolean array of index
+    """
     if isinstance(textual, np.ndarray):
-        return textual[idx, :]
-    elif isinstance(textual, pd.DataFrame):
-        return textual.iloc[idx, :]
+        return textual[idx]
     elif isinstance(textual, pd.Series):
-        return textual.iloc[idx]
+        return textual.loc[idx].reset_index(inplace=False, drop=True)
+    elif isinstance(textual, pd.DataFrame):
+        return textual.loc[idx, :].reset_index(inplace=False, drop=True)
     else:
         raise ValueError("Textual size not recognized")
 
@@ -94,4 +98,3 @@ def save_model(model, model_name, trddt_test, ev):
         joblib.dump(logreg, os.path.join(model_sub_path, f"{trddt_test_Ym}_logreg.joblib"))
     else:
         raise ValueError("Invalid model name")
-

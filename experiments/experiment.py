@@ -59,8 +59,8 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         params_iter = generate_params(params_dict, model_name)
         outputs = experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls)
         ret_e_win, ret_v_win = outputs[0]
-        best_params_e, best_params_v = outputs[1]
-        best_model_e, best_model_v = outputs[2]
+        best_model_e, best_model_v = outputs[1]
+        best_params_e, best_params_v = outputs[2]
 
         # save returns
         ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test, columns=["ret_e", "ret_le", "ret_se"])
@@ -69,10 +69,10 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         ret_v_df = pd.concat([ret_v_df, ret_v_win_df], axis=0)
 
         # save parameters
-        save_params(best_params_e, model_name, trddt_test, "e")
-        save_params(best_params_v, model_name, trddt_test, "v")
         save_model(best_model_e, model_name, trddt_test, "e")
         save_model(best_model_v, model_name, trddt_test, "v")
+        save_params(best_params_e, model_name, trddt_test, "e")
+        save_params(best_params_v, model_name, trddt_test, "v")
 
     ret_df = pd.concat([ret_e_df, ret_v_df], axis=1)
     # noinspection PyTypeChecker
@@ -126,7 +126,7 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
 
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
             textual_win_valid = get_textual(textual_win, valid_idx)
-            target = pre_func(textual_win_valid, params, model)
+            target = pre_func(textual_win_valid, model, params)
             ret_e_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "e")[0]
             ret_v_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "v")[0]
 
@@ -157,9 +157,9 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
 
         df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
         textual_win_test = get_textual(textual_win, test_idx)
-        target_e = pre_func(textual_win_test, best_params_e, best_model_e)
-        target_v = pre_func(textual_win_test, best_params_v, best_model_v)
+        target_e = pre_func(textual_win_test, best_model_e, best_params_e)
+        target_v = pre_func(textual_win_test, best_model_v, best_params_v)
         ret_e_win[i, :] = get_return(df_rich_win_test, target_e, perc_ls, "e")
         ret_v_win[i, :] = get_return(df_rich_win_test, target_v, perc_ls, "v")
 
-    return (ret_e_win, ret_v_win), (best_params_e, best_params_v), (best_model_e, best_model_v)
+    return (ret_e_win, ret_v_win), (best_model_e, best_model_v), (best_params_e, best_params_v)
