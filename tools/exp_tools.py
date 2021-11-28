@@ -5,6 +5,7 @@ from global_settings import OUTPUT_PATH
 from datetime import datetime
 import joblib
 import pandas as pd
+from scipy.sparse import issparse
 
 
 def get_textual(textual, idx):
@@ -13,14 +14,14 @@ def get_textual(textual, idx):
     :param idx: boolean array of index
     """
 
-    if isinstance(textual, np.ndarray):
+    if isinstance(textual, np.ndarray) or issparse(textual):
         return textual[idx]
     elif isinstance(textual, pd.Series):
         return textual.loc[idx].reset_index(inplace=False, drop=True)
     elif isinstance(textual, pd.DataFrame):
         return textual.loc[idx, :].reset_index(inplace=False, drop=True)
     else:
-        raise ValueError("Textual size not recognized")
+        raise ValueError("Textual type not recognized")
 
 
 def save_model(model, model_name, trddt_test, ev):

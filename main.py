@@ -125,6 +125,11 @@ def build_doc2vec():
 def run_experiment(model_name, perc_ls):
     """ Run experiments"""
 
+    # create path
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    if not os.path.isdir(model_path):
+        os.mkdir(model_path)
+
     # get df_rich & textual
     if model_name == "ssestm":
         df_rich, textual = build_ssestm()
@@ -137,10 +142,6 @@ def run_experiment(model_name, perc_ls):
     window_iter = generate_window(window_dict, date0_min, date0_max)
 
     # perform experiment
-    model_path = os.path.join(OUTPUT_PATH, model_name)
-    if not os.path.isdir(model_path):
-        os.mkdir(model_path)
-
     experiment(df_rich, textual, window_iter, model_name, perc_ls)
 
 
