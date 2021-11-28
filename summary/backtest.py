@@ -1,17 +1,23 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from global_settings import OUTPUT_PATH
 plt.style.use("ggplot")
 
 
-def plot_backtest(ret_df, dalym):
+def plot_backtest(model_name, dalym):
     """ plot cumulative return from backtesting
-    :param ret_df: dataframe of equal weighted returns
+    :param model_name: model name
     :param dalym: dataframe of index
     :return:
     """
+
+    # define model path
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    ret_df = pd.read_csv(os.path.join(model_path, "ret_df.csv"), index_col=0)
 
     # equal weighted returns
     ret_le = np.array(ret_df["ret_le"])
@@ -66,5 +72,7 @@ def plot_backtest(ret_df, dalym):
     ax.plot(-cum_sv, "r--")
     ax.plot(mkt_cum, 'y-')
     ax.legend(["L-S EW", "L EW", "S EW", "L-S VW", "L VW", "S VW", "Index"])
+    ax.set_xlabel("Dates")
+    ax.set_ylabel("log(cum_ret)")
 
-    return fig
+    fig.savefig(os.path.join(model_path, "backtest.pdf"), bbox_inches="tight")

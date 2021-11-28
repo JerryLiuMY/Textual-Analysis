@@ -146,6 +146,5 @@ def run_experiment(model_name, perc_ls):
 
 
 def run_backtest(model_name):
-    model_path = os.path.join(OUTPUT_PATH, model_name)
-    ret_df = pd.read_csv(os.path.join(model_path, "ret_df.csv"), index_col=0)
-    plot_backtest(ret_df, dalym)
+    """ Run backtest"""
+    plot_backtest(model_name, dalym)

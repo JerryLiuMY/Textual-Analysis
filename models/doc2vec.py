@@ -31,7 +31,7 @@ def fit_doc2vec(df_rich, doc_cut, params):
     doc2vec.train(doc_tag, total_examples=doc2vec.corpus_count, epochs=epochs)
     vec = np.stack(doc_tag.apply(lambda _: doc2vec.infer_vector(_.words, alpha=0.025, epochs=50)).to_numpy())
 
-    # train logistic regression
+    # train logistic regression (change to DNN / SVC)
     tag = doc_tag.apply(lambda _: _.tags[0]).to_numpy()
     logreg = LogisticRegression(n_jobs=4)
     logreg.fit(vec, tag)

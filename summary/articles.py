@@ -25,7 +25,7 @@ def plot_year_count(data_df):
     ax.set_xlabel("Year")
     ax.set_ylabel("Num. Articles")
 
-    fig.savefig(os.path.join(FIG_PATH, "yearly_count.pdf"), bbox_inches='tight')
+    fig.savefig(os.path.join(FIG_PATH, "yearly_count.pdf"), bbox_inches="tight")
 
 
 def plot_day_count(data_df):
@@ -48,7 +48,7 @@ def plot_day_count(data_df):
     ax.set_xlabel("Month")
     ax.set_ylabel("Num. Articles")
 
-    fig.savefig(os.path.join(FIG_PATH, "daily_count.pdf"), bbox_inches='tight')
+    fig.savefig(os.path.join(FIG_PATH, "daily_count.pdf"), bbox_inches="tight")
 
 
 def plot_hour_count(data_df):
@@ -70,4 +70,4 @@ def plot_hour_count(data_df):
     ax.set_xlabel("Month")
     ax.set_ylabel("Num. Articles")
 
-    fig.savefig(os.path.join(FIG_PATH, "hourly_count.pdf"), bbox_inches='tight')
+    fig.savefig(os.path.join(FIG_PATH, "hourly_count.pdf"), bbox_inches="tight")
