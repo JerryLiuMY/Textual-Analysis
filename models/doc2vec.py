@@ -46,7 +46,7 @@ def pre_doc2vec(doc_cut, model, *args):
 
     # make predictions
     doc2vec, logreg = model
-    vec = np.stack(doc_cut.apply(lambda _: doc2vec.infer_vector(_.words, alpha=0.025, epochs=50)).to_numpy())
+    vec = np.stack(doc_cut.apply(lambda _: doc2vec.infer_vector(_, alpha=0.025, epochs=50)).to_numpy())
     tag = logreg.predict(vec)
 
     return tag

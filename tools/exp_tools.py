@@ -12,6 +12,7 @@ def get_textual(textual, idx):
     :param textual: textual data
     :param idx: boolean array of index
     """
+
     if isinstance(textual, np.ndarray):
         return textual[idx]
     elif isinstance(textual, pd.Series):
@@ -20,18 +21,6 @@ def get_textual(textual, idx):
         return textual.loc[idx, :].reset_index(inplace=False, drop=True)
     else:
         raise ValueError("Textual size not recognized")
-
-
-def get_window(window_iter, trddt_test_Ym):
-    """ Getting window from trddt_test in the format of %Y-%m
-    :param window_iter: window iterator
-    :param trddt_test_Ym: trddt_test in the format of %Y-%m
-    """
-
-    for [trddt_train, trddt_valid, trddt_test] in window_iter:
-        if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
-            window = [trddt_train, trddt_valid, trddt_test]
-            return window
 
 
 def get_return(df_rich, target, perc_ls, ev):
@@ -62,22 +51,6 @@ def get_return(df_rich, target, perc_ls, ev):
     return ret, ret_l, ret_s
 
 
-def save_params(params, model_name, trddt_test, ev):
-    """ Save model parameters
-    :param params: parameters to be saved
-    :param model_name: model name
-    :param trddt_test: testing trading dates
-    :param ev: equal/value weighted type
-    """
-
-    params_path = os.path.join(OUTPUT_PATH, model_name)
-    params_sub_path = os.path.join(params_path, f"params_{ev}")
-
-    trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
-    with open(os.path.join(params_sub_path, f"{trddt_test_Ym}.json"), "w") as f:
-        json.dump(params, f)
-
-
 def save_model(model, model_name, trddt_test, ev):
     """ Save trained model
     :param model: model to be saved
@@ -98,3 +71,31 @@ def save_model(model, model_name, trddt_test, ev):
         joblib.dump(logreg, os.path.join(model_sub_path, f"{trddt_test_Ym}_logreg.joblib"))
     else:
         raise ValueError("Invalid model name")
+
+
+def save_params(params, model_name, trddt_test, ev):
+    """ Save model parameters
+    :param params: parameters to be saved
+    :param model_name: model name
+    :param trddt_test: testing trading dates
+    :param ev: equal/value weighted type
+    """
+
+    params_path = os.path.join(OUTPUT_PATH, model_name)
+    params_sub_path = os.path.join(params_path, f"params_{ev}")
+
+    trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
+    with open(os.path.join(params_sub_path, f"{trddt_test_Ym}.json"), "w") as f:
+        json.dump(params, f)
+
+
+# def get_window(window_iter, trddt_test_Ym):
+#     """ Getting window from trddt_test in the format of %Y-%m
+#     :param window_iter: window iterator
+#     :param trddt_test_Ym: trddt_test in the format of %Y-%m
+#     """
+#
+#     for [trddt_train, trddt_valid, trddt_test] in window_iter:
+#         if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
+#             window = [trddt_train, trddt_valid, trddt_test]
+#             return window
