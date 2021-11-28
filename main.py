@@ -22,7 +22,7 @@ from data_proc.word_sps import build_word_sps
 from experiments.params import window_dict
 from experiments.generators import generate_window
 from experiments.experiment import experiment
-from visualization.backtest import plot_backtest
+from summary.backtest import plot_backtest
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
