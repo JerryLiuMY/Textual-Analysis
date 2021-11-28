@@ -71,6 +71,9 @@ def get_return(df_rich, target, perc_ls, ev):
 
     # Calculate equal and value weighted returns
     num_ls = int(len(target) * perc_ls)
+    if num_ls == 0:
+        return 0., 0., 0.
+
     sorted_idx = np.argsort(target)
     df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
     df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]

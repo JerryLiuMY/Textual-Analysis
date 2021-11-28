@@ -120,8 +120,8 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
         for i, dt in enumerate(trddt_valid):
             valid_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
             if sum(valid_idx) == 0:
-                ret_e_win_valid[i] = 0
-                ret_v_win_valid[i] = 0
+                ret_e_win_valid[i] = 0.
+                ret_v_win_valid[i] = 0.
                 continue
 
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
@@ -151,8 +151,8 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
     for i, dt in enumerate(trddt_test):
         test_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
         if sum(test_idx) == 0:
-            ret_e_win[i] = 0
-            ret_v_win[i] = 0
+            ret_e_win[i] = 0.
+            ret_v_win[i] = 0.
             continue
 
         df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)

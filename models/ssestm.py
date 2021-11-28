@@ -10,13 +10,13 @@ def fit_ssestm(df_rich, word_sps, *args):
     :return: estimated O_hat
     """
 
-    # Get D_hat and W_hat
+    # get D_hat and W_hat
     n = df_rich.shape[0]
     normalizer = Normalizer(norm="l1")
     D_hat = normalizer.fit_transform(word_sps).T
     p_hat = np.argsort(df_rich["ret3"].values).reshape(1, -1) / n
 
-    # Calculate O_hat
+    # calculate O_hat
     W_hat = np.concatenate((p_hat, 1 - p_hat))
     O_hat = D_hat @ csr_matrix(W_hat.T @ np.linalg.inv(W_hat @ W_hat.T))
     O_hat = O_hat.toarray()
@@ -35,11 +35,11 @@ def pre_ssestm(word_sps, model, params):
     :return: p_hat values for the samples in the word_matrix
     """
 
-    # Recover parameters
+    # recover parameters
     pen = params["pen"]
     O_hat = model
 
-    # Get D_hat and W_lin
+    # get D_hat and W_lin
     zero_idx = (np.sum(O_hat, axis=1) == 0.0)
     normalizer = Normalizer(norm="l1")
     O_hat = O_hat[~zero_idx, :]
@@ -48,7 +48,7 @@ def pre_ssestm(word_sps, model, params):
     p_lin = np.linspace(0, 1, 1000)[1:-1]
     W_lin = np.array([p_lin, 1 - p_lin])
 
-    # Calculate p_hat
+    # calculate p_hat
     likelihood = D_hat.T @ np.log(O_hat @ W_lin)
     penalty = pen * np.log(W_lin[0, :] * W_lin[1, :]).reshape(1, -1)
     objective = likelihood + penalty
