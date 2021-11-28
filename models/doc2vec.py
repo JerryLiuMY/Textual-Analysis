@@ -25,9 +25,10 @@ def fit_doc2vec(df_rich, doc_cut, params):
     # train doc2vec
     window = params["window"]
     vector_size = params["vector_size"]
+    epochs = params["epochs"]
     doc2vec = Doc2Vec(doc_tag, window=window, vector_size=vector_size, min_count=1, sample=1e-3, workers=4)
     doc2vec.build_vocab(doc_tag)
-    doc2vec.train(doc_tag, total_examples=doc2vec.corpus_count, epochs=50)
+    doc2vec.train(doc_tag, total_examples=doc2vec.corpus_count, epochs=epochs)
     vec = np.stack(doc_tag.apply(lambda _: doc2vec.infer_vector(_.words, alpha=0.025, epochs=50)).to_numpy())
 
     # train logistic regression

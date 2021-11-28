@@ -6,7 +6,7 @@ window_dict = {
 
 params_dict = {
     "ssestm": {"pen": [0.0]},
-    "doc2vec": {"window": [10], "vector_size": [50]}
+    "doc2vec": {"window": [10], "vector_size": [20], "epochs": [10]}
 }
 
 perc_ls = 0.05
