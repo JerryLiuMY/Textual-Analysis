@@ -1,34 +1,40 @@
 import pandas as pd
 import numpy as np
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+from sklearn.linear_model import LogisticRegression
 
 
 def fit_doc2vec(df_rich, doc_cut, params):
-    """ train doc2vec model
+    """ train doc2vec doc2vec
     :param df_rich: enriched dataframe
     :param doc_cut: articles cut with jieba
     :param params: parameters for doc2vec
     :return: estimated O_hat
     """
 
-    # Get D_hat and W_hat
+    # get document tags
     num_bin = 20
     n = df_rich.shape[0]
     p_hat = np.argsort(df_rich["ret3"].values) / n
     tag = np.digitize(p_hat, np.linspace(0, 1, num_bin + 1), right=False)
 
     # tag documents
-    def tag_doc(df): return TaggedDocument(df["doc_cut"], tags=[df["tag"]])
     doc_tag_df = pd.concat([doc_cut, pd.Series(tag, name="tag")], axis=1)
-    doc_tag = doc_tag_df.apply(tag_doc, axis=1)
+    doc_tag = doc_tag_df.apply(lambda _: TaggedDocument(_["doc_cut"], tags=[_["tag"]]), axis=1)
 
-    # train model
+    # train doc2vec
     window = params["window"]
     vector_size = params["vector_size"]
-    model = Doc2Vec(doc_tag, min_count=1, window=window, vector_size=vector_size, sample=1e-3, nagative=5, workers=4)
-    model.train(doc_tag, total_examples=model.corpus_count, epochs=10)
+    doc2vec = Doc2Vec(doc_tag, min_count=1, window=window, vector_size=vector_size, sample=1e-3, workers=4)
+    doc2vec.train(doc_tag, total_examples=doc2vec.corpus_count, epochs=10)
+    vec = np.stack(doc_tag.apply(lambda _: doc2vec.infer_vector(_.words, alpha=0.025, epochs=50)).to_numpy())
+    tag = doc_tag.apply(lambda _: _.tags[0]).to_numpy()
 
-    return model
+    # train logistic regression
+    logreg = LogisticRegression(n_jobs=1)
+    logreg.fit(vec, tag)
+
+    return doc2vec, logreg
 
 
 def pre_doc2vec(doc_cut, model, *args):
@@ -38,5 +44,9 @@ def pre_doc2vec(doc_cut, model, *args):
     :return: document tag
     """
 
-    vector = model.infer_vector(doc_words=doc_cut, alpha=0.025, steps=500)
+    # make predictions
+    doc2vec, logreg = model
+    vec = np.stack(doc_cut.apply(lambda _: doc2vec.infer_vector(_.words, alpha=0.025, epochs=50)).to_numpy())
+    tag = logreg.predict(vec)
 
+    return tag

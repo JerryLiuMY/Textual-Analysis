@@ -59,10 +59,16 @@ def save_model(model, model_name, trddt_test, ev):
 
     model_path = os.path.join(OUTPUT_PATH, model_name)
     model_sub_path = os.path.join(model_path, f"model_{ev}")
+    trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
 
     if model_name == "ssestm":
-        trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
         np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), model)
+    elif model_name == "doc2vec":
+        doc2vec, logreg = model[0], model[1]
+        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), doc2vec)
+        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), logreg)
+    else:
+        raise ValueError("Invalid model name")
 
 
 def get_window(window_iter, trddt_test_Ym):

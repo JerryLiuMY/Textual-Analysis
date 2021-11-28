@@ -4,6 +4,7 @@ import pandas as pd
 from experiments.params import params_dict
 from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
+from models.doc2vec import fit_doc2vec, pre_doc2vec
 from global_settings import OUTPUT_PATH
 from tools.exp_tools import save_params, save_model, get_return
 from datetime import datetime
@@ -35,6 +36,9 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     if model_name == "ssestm":
         fit_func = fit_ssestm
         pre_func = pre_ssestm
+    elif model_name == "doc2vec":
+        fit_func = fit_doc2vec
+        pre_func = pre_doc2vec
     else:
         raise ValueError("Invalid model name")
 
