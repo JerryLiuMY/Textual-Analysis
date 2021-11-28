@@ -8,6 +8,7 @@ from models.doc2vec import fit_doc2vec, pre_doc2vec
 from global_settings import OUTPUT_PATH
 from tools.exp_tools import save_params, save_model, get_return
 from datetime import datetime
+from tools.exp_tools import get_textual
 
 
 def experiment(df_rich, textual, window_iter, model_name, perc_ls):
@@ -53,7 +54,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         trddt_window = trddt_train + trddt_valid + trddt_test
         window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_window)
         df_rich_win = df_rich.loc[window_idx, :].reset_index(inplace=False, drop=True)
-        textual_win = textual[window_idx, :]
+        textual_win = get_textual(textual, window_idx)
         window = [trddt_train, trddt_valid, trddt_test]
         params_iter = generate_params(params_dict, model_name)
         outputs = experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls)
@@ -108,7 +109,7 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
               f"*-* Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}...")
         train_idx = df_rich_win["date_0"].apply(lambda _: _ in trddt_train)
         df_rich_win_train = df_rich_win.loc[train_idx, :].reset_index(inplace=False, drop=True)
-        textual_win_train = textual_win[train_idx, :]
+        textual_win_train = get_textual(textual_win, train_idx)
         model = fit_func(df_rich_win_train, textual_win_train, params)
 
         # validation
@@ -124,7 +125,7 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
                 continue
 
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
-            textual_win_valid = textual_win[valid_idx, :]
+            textual_win_valid = get_textual(textual_win, valid_idx)
             target = pre_func(textual_win_valid, params, model)
             ret_e_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "e")[0]
             ret_v_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "v")[0]
@@ -155,7 +156,7 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
             continue
 
         df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
-        textual_win_test = textual_win[test_idx, :]
+        textual_win_test = get_textual(textual_win, test_idx)
         target_e = pre_func(textual_win_test, best_params_e, best_model_e)
         target_v = pre_func(textual_win_test, best_params_v, best_model_v)
         ret_e_win[i, :] = get_return(df_rich_win_test, target_e, perc_ls, "e")

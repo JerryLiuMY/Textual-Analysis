@@ -13,8 +13,8 @@ def fit_doc2vec(df_rich, doc_cut, params):
     """
 
     # get document tags
-    num_bin = 20
     n = df_rich.shape[0]
+    num_bin = 20
     p_hat = np.argsort(df_rich["ret3"].values) / n
     tag = np.digitize(p_hat, np.linspace(0, 1, num_bin + 1), right=False)
 
@@ -31,7 +31,7 @@ def fit_doc2vec(df_rich, doc_cut, params):
     tag = doc_tag.apply(lambda _: _.tags[0]).to_numpy()
 
     # train logistic regression
-    logreg = LogisticRegression(n_jobs=1)
+    logreg = LogisticRegression(n_jobs=4)
     logreg.fit(vec, tag)
 
     return doc2vec, logreg

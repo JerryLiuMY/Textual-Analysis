@@ -26,13 +26,12 @@ if not os.path.isdir(FIG_PATH):
 if __name__ == "__main__":
     from main import run_data_prep
     from main import run_word_sps
-    from main import build_ssestm
+    from main import run_experiment
     from main import run_backtest
     from experiments.params import perc_ls
 
     # run_data_prep()
     # run_word_sps()
-    # model_name = "ssestm"
-    # run_ssestm(perc_ls)
+    model_name = "doc2vec"
+    run_experiment(model_name, perc_ls)
     # run_backtest(model_name)
-    pass

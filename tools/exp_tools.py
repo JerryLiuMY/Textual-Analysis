@@ -3,6 +3,31 @@ import os
 import numpy as np
 from global_settings import OUTPUT_PATH
 from datetime import datetime
+import joblib
+import pandas as pd
+
+
+def get_textual(textual, idx):
+    if isinstance(textual, np.ndarray):
+        return textual[idx, :]
+    elif isinstance(textual, pd.DataFrame):
+        return textual.iloc[idx, :]
+    elif isinstance(textual, pd.Series):
+        return textual.iloc[idx]
+    else:
+        raise ValueError("Textual size not recognized")
+
+
+def get_window(window_iter, trddt_test_Ym):
+    """ Getting window from trddt_test in the format of %Y-%m
+    :param window_iter: window iterator
+    :param trddt_test_Ym: trddt_test in the format of %Y-%m
+    """
+
+    for [trddt_train, trddt_valid, trddt_test] in window_iter:
+        if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
+            window = [trddt_train, trddt_valid, trddt_test]
+            return window
 
 
 def get_return(df_rich, target, perc_ls, ev):
@@ -62,22 +87,11 @@ def save_model(model, model_name, trddt_test, ev):
     trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
 
     if model_name == "ssestm":
-        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), model)
+        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}_O_hat.npy"), model)
     elif model_name == "doc2vec":
         doc2vec, logreg = model[0], model[1]
-        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), doc2vec)
-        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), logreg)
+        doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}_doc2vec.npy"))
+        joblib.dump(logreg, os.path.join(model_sub_path, f"{trddt_test_Ym}_logreg.joblib"))
     else:
         raise ValueError("Invalid model name")
 
-
-def get_window(window_iter, trddt_test_Ym):
-    """ Getting window from trddt_test in the format of %Y-%m
-    :param window_iter: window iterator
-    :param trddt_test_Ym: trddt_test in the format of %Y-%m
-    """
-
-    for [trddt_train, trddt_valid, trddt_test] in window_iter:
-        if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
-            window = [trddt_train, trddt_valid, trddt_test]
-            return window
