@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from sklearn.linear_model import LogisticRegression
+from scipy.stats import rankdata
 
 
 def fit_doc2vec(df_rich, doc_cut, params):
@@ -15,7 +16,7 @@ def fit_doc2vec(df_rich, doc_cut, params):
     # get document tags
     n = df_rich.shape[0]
     num_bin = 20
-    p_hat = np.argsort(df_rich["ret3"].values) / n
+    p_hat = (rankdata(df_rich["ret3"].values) - 1).astype(int) / n
     tag = np.digitize(p_hat, np.linspace(0, 1, num_bin + 1), right=False)
 
     # tag documents
