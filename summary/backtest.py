@@ -21,7 +21,7 @@ def plot_backtest(model_name, dalym):
 
     # equal weighted returns
     ret_le = np.array(ret_df["ret_le"])
-    ret_se = np.array(ret_df["ret_se"])
+    ret_se = -np.array(ret_df["ret_se"])
     ret_e = np.array(ret_df["ret_e"])
     cum_le = np.log(np.cumprod(ret_le + 1))
     cum_se = np.log(np.cumprod(ret_se + 1))
@@ -29,7 +29,7 @@ def plot_backtest(model_name, dalym):
 
     # value weighted returns
     ret_lv = np.array(ret_df["ret_lv"])
-    ret_sv = np.array(ret_df["ret_sv"])
+    ret_sv = -np.array(ret_df["ret_sv"])
     ret_v = np.array(ret_df["ret_v"])
     cum_lv = np.log(np.cumprod(ret_lv + 1))
     cum_sv = np.log(np.cumprod(ret_sv + 1))

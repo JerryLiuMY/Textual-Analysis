@@ -35,11 +35,10 @@ if __name__ == "__main__":
     from experiments.params import perc_ls
 
     model_name = "ssestm"
-    # model_name = "doc2vec"
     run_experiment(model_name, perc_ls)
 
 
-# if __name__ == "__main__":
-#     from main import run_backtest
-#     model_name = "ssestm"
-#     run_backtest(model_name)
+if __name__ == "__main__":
+    from main import run_backtest
+    model_name = "ssestm"
+    run_backtest(model_name)
