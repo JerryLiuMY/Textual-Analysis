@@ -1,3 +1,5 @@
+perc_ls = 0.05
+
 window_dict = {
     "train_win": 12,
     "valid_win": 12 + 6,
@@ -8,5 +10,3 @@ params_dict = {
     "ssestm": {"pen": [0.0]},
     "doc2vec": {"window": [10], "vector_size": [20], "epochs": [10]}
 }
-
-perc_ls = 0.05

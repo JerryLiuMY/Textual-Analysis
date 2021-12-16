@@ -1,10 +1,10 @@
 import os
-import glob
 import jieba
 import pandas as pd
 import numpy as np
 import scipy as sp
 import datetime
+from glob import glob
 from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
 from global_settings import CLEAN_PATH, date0_min, date0_max
@@ -39,8 +39,8 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     split_data(clean_file, split_num=split_num)
 
     # enrich data
-    sub_file_clean_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(CLEAN_PATH, "*"))]
-    sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
+    sub_file_clean_li = [_.split("/")[-1] for _ in glob(os.path.join(CLEAN_PATH, "*.csv"))]
+    sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
     sub_file_clean_li = sorted([_ for _ in sub_file_clean_li if _.split(".")[0].split("_")[1] not in sub_file_rich_idx])
 
     num_proc = 16
@@ -54,8 +54,8 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
 def run_word_sps():
     """Build word sparse matrix"""
 
-    sub_file_rich_li = [_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
-    sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
+    sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
+    sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(WORD_PATH, "*.npz"))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_word_file_idx])
 
     num_proc = 12
@@ -70,13 +70,13 @@ def build_ssestm():
     """ Build experiment for ssestm"""
 
     # define index
-    sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))]
-    sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))]
+    sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
+    sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(WORD_PATH, "*.npz"))]
     if sorted(sub_file_rich_idx) != sorted(sub_word_file_idx):
         raise ValueError("Mismatch between enriched files and word matrix files")
 
-    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
-    sub_word_file_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(WORD_PATH, "*"))])
+    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
+    sub_word_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(WORD_PATH, "*.npz"))])
 
     # get df_rich & word_sps
     df_rich = pd.DataFrame()
@@ -98,7 +98,7 @@ def build_doc2vec():
     """ Build experiment for doc2vec"""
 
     # define index
-    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
+    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
     def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
     def cut_doc(doc): return [word for word in " ".join(jieba.cut(doc)).split() if word not in stop_list]
 

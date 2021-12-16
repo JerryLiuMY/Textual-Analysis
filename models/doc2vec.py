@@ -16,7 +16,7 @@ def fit_doc2vec(df_rich, doc_cut, params):
     # get document tags
     n = df_rich.shape[0]
     num_bin = 20
-    p_hat = (rankdata(df_rich["ret3"].values) - 1).astype(int) / n
+    p_hat = (rankdata(df_rich["ret3"].values) - 1).reshape(1, -1) / n
     tag = np.digitize(p_hat, np.linspace(0, 1, num_bin + 1), right=False)
 
     # tag documents

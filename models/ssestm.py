@@ -15,7 +15,7 @@ def fit_ssestm(df_rich, word_sps, *args):
     n = df_rich.shape[0]
     normalizer = Normalizer(norm="l1")
     D_hat = normalizer.fit_transform(word_sps).T
-    p_hat = (rankdata(df_rich["ret3"].values) - 1).astype(int) / n
+    p_hat = (rankdata(df_rich["ret3"].values) - 1).reshape(1, -1) / n
 
     # calculate O_hat
     W_hat = np.concatenate((p_hat, 1 - p_hat))
