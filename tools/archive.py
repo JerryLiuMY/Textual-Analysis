@@ -6,7 +6,7 @@ import mysql.connector
 from datetime import datetime
 import numpy as np
 import pandas as pd
-import glob
+from glob import glob
 import os
 
 
@@ -31,7 +31,7 @@ def create_dalym():
 
 def get_date0_range():
     """Fetch the range of date0 from the enriched dataframe"""
-    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob.glob(os.path.join(RICH_PATH, "*"))])
+    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
 
     df_rich = pd.DataFrame()
     for sub_file_rich in sorted(sub_file_rich_li):

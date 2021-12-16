@@ -39,30 +39,12 @@ def plot_backtest(model_name, dalym):
     dalym = dalym.loc[dalym["Trddt"].apply(lambda _: _ in ret_df.index), :]
     mkt_ret = dalym.groupby(by=["Trddt"]).apply(lambda _: np.average(_["Dretmdos"], weights=_["Dnvaltrdtl"], axis=0))
     mkt_cum = np.log(np.cumprod(mkt_ret + 1))
-
-    # xticks and xticklabels
-    ticklab_beg = datetime.strptime(ret_df.index[0], "%Y-%m-%d")
-    ticklab_end = datetime.strptime(ret_df.index[-1], "%Y-%m-%d")
-    ticklab_cur = ticklab_beg
-    ticklabs = []
-    while ticklab_cur <= ticklab_end:
-        ticklabs.append(ticklab_cur)
-        trddt_Ym = (ticklab_cur + relativedelta(months=6)).strftime("%Y-%m")
-        def match_Ym(series): return datetime.strptime(series, "%Y-%m-%d").strftime("%Y-%m") == trddt_Ym
-        matched_dates = ret_df.index[pd.Series(ret_df.index).apply(match_Ym)]
-        if len(matched_dates) != 0:
-            ticklab_cur = datetime.strptime(matched_dates[0], "%Y-%m-%d")
-        else:
-            break
-
-    def ticklab_to_tick(ticklab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == ticklab))[0][0]
-    ticklabs = [ticklab.strftime("%Y-%m-%d") for ticklab in ticklabs]
-    ticks = [ticklab_to_tick(ticklab) for ticklab in ticklabs]
+    xticks, xlabs = get_xticklabs(ret_df)
 
     # plot cumulative return
     fig, ax = plt.subplots(1, 1, figsize=(14, 7))
-    ax.set_xticks(ticks)
-    ax.set_xticklabels(ticklabs)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xlabs)
     ax.grid("on")
     ax.plot(cum_e, "k-")
     ax.plot(cum_le, "b-")
@@ -76,3 +58,26 @@ def plot_backtest(model_name, dalym):
     ax.set_ylabel("log(cum_ret)")
 
     fig.savefig(os.path.join(model_path, "backtest.pdf"), bbox_inches="tight")
+
+
+def get_xticklabs(ret_df):
+    # xticks and xticklabels
+    lab_beg = datetime.strptime(ret_df.index[0], "%Y-%m-%d")
+    lab_end = datetime.strptime(ret_df.index[-1], "%Y-%m-%d")
+    lab_cur = lab_beg
+    xlabs = []
+    while lab_cur <= lab_end:
+        xlabs.append(lab_cur)
+        trddt_Ym = (lab_cur + relativedelta(months=6)).strftime("%Y-%m")
+        def match_Ym(series): return datetime.strptime(series, "%Y-%m-%d").strftime("%Y-%m") == trddt_Ym
+        matched_dates = ret_df.index[pd.Series(ret_df.index).apply(match_Ym)]
+        if len(matched_dates) != 0:
+            lab_cur = datetime.strptime(matched_dates[0], "%Y-%m-%d")
+        else:
+            break
+
+    def lab_to_tick(ticklab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == ticklab))[0][0]
+    xlabs = [ticklab.strftime("%Y-%m-%d") for ticklab in xlabs]
+    xticks = [lab_to_tick(ticklab) for ticklab in xlabs]
+
+    return xticks, xlabs
