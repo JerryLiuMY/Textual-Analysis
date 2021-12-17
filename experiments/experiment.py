@@ -75,7 +75,6 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         save_params(best_params_v, model_name, trddt_test, "v")
 
     ret_df = pd.concat([ret_e_df, ret_v_df], axis=1)
-    # noinspection PyTypeChecker
     ret_df.to_csv(os.path.join(model_path, "ret_df.csv"))
 
 

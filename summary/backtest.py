@@ -12,7 +12,6 @@ def plot_backtest(model_name, dalym):
     """ plot cumulative return from backtesting
     :param model_name: model name
     :param dalym: dataframe of index
-    :return:
     """
 
     # define model path
@@ -39,9 +38,9 @@ def plot_backtest(model_name, dalym):
     dalym = dalym.loc[dalym["Trddt"].apply(lambda _: _ in ret_df.index), :]
     mkt_ret = dalym.groupby(by=["Trddt"]).apply(lambda _: np.average(_["Dretmdos"], weights=_["Dnvaltrdtl"], axis=0))
     mkt_cum = np.log(np.cumprod(mkt_ret + 1))
-    xticks, xlabs = get_xticklabs(ret_df)
 
     # plot cumulative return
+    xticks, xlabs = get_xticklabs(ret_df)
     fig, ax = plt.subplots(1, 1, figsize=(14, 7))
     ax.set_xticks(xticks)
     ax.set_xticklabels(xlabs)
@@ -61,11 +60,16 @@ def plot_backtest(model_name, dalym):
 
 
 def get_xticklabs(ret_df):
-    # xticks and xticklabels
+    """ get xticks and xlabs for cumulative returns of backtesting
+    :param ret_df: return dataframe over the rolling period
+    """
+
+    # define tick labels
     lab_beg = datetime.strptime(ret_df.index[0], "%Y-%m-%d")
     lab_end = datetime.strptime(ret_df.index[-1], "%Y-%m-%d")
     lab_cur = lab_beg
     xlabs = []
+
     while lab_cur <= lab_end:
         xlabs.append(lab_cur)
         trddt_Ym = (lab_cur + relativedelta(months=6)).strftime("%Y-%m")
@@ -76,6 +80,7 @@ def get_xticklabs(ret_df):
         else:
             break
 
+    # define ticks
     def lab_to_tick(ticklab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == ticklab))[0][0]
     xlabs = [ticklab.strftime("%Y-%m-%d") for ticklab in xlabs]
     xticks = [lab_to_tick(ticklab) for ticklab in xlabs]
