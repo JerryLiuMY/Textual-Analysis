@@ -22,7 +22,16 @@ from data_proc.word_sps import build_word_sps
 from experiments.params import window_dict
 from experiments.generators import generate_window
 from experiments.experiment import experiment
-from summary.backtest import plot_backtest
+from summary.backtest import backtest
+
+
+def create_dirs(paths):
+    """ Create directories"""
+
+    # Create directories
+    for path in paths:
+        if not os.path.isdir(path):
+            os.mkdir(path)
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -147,4 +156,6 @@ def run_experiment(model_name, perc_ls):
 
 def run_backtest(model_name):
     """ Run backtest"""
-    plot_backtest(model_name, dalym)
+
+    # backtest
+    backtest(model_name, dalym)

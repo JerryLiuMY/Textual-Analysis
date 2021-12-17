@@ -8,7 +8,7 @@ from global_settings import OUTPUT_PATH
 plt.style.use("ggplot")
 
 
-def plot_backtest(model_name, dalym):
+def backtest(model_name, dalym):
     """ plot cumulative return from backtesting
     :param model_name: model name
     :param dalym: dataframe of index
@@ -39,6 +39,12 @@ def plot_backtest(model_name, dalym):
     mkt_ret = dalym.groupby(by=["Trddt"]).apply(lambda _: np.average(_["Dretmdos"], weights=_["Dnvaltrdtl"], axis=0))
     mkt_cum = np.log(np.cumprod(mkt_ret + 1))
 
+    # compute average returns & sharpe ratios
+    ave_le, ave_se, ave_e = map(get_ave, [cum_le, cum_se, cum_e])
+    ave_lv, ave_sv, ave_v = map(get_ave, [cum_lv, cum_sv, cum_v])
+    sha_le, sha_se, sha_e = map(get_sha, [ret_le, ret_se, ret_e])
+    sha_lv, sha_sv, sha_v = map(get_sha, [ret_lv, ret_sv, ret_v])
+
     # plot cumulative return
     xticks, xlabs = get_xticklabs(ret_df)
     fig, ax = plt.subplots(1, 1, figsize=(14, 7))
@@ -57,6 +63,22 @@ def plot_backtest(model_name, dalym):
     ax.set_ylabel("log(cum_ret)")
 
     fig.savefig(os.path.join(model_path, "backtest.pdf"), bbox_inches="tight")
+
+
+def get_ave(cum):
+    """ get average return from array of cumulative returns
+    :param cum: array of cumulative returns
+    """
+
+    return (np.exp(cum[-1]) - 1) / (len(cum) - 1)
+
+
+def get_sha(ret):
+    """ get sharpe ratio from array of returns
+    :param ret: array of daily returns
+    """
+
+    return ((np.mean(ret)) / np.std(ret)) * np.sqrt(252)
 
 
 def get_xticklabs(ret_df):
