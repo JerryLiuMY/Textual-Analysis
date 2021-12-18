@@ -153,8 +153,8 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
     for i, dt in enumerate(trddt_test):
         test_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
         if sum(test_idx) == 0:
-            ret_e_win[i, 0:6], ret_e_win[i, 6:9] = [np.empty(0, dtype=object)] * 6, 0.
-            ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0, dtype=object)] * 6, 0.
+            ret_e_win[i, 0:6], ret_e_win[i, 6:9] = [np.empty(0, dtype=object)] * 6, [0., 0., 0.]
+            ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0, dtype=object)] * 6, [0., 0., 0.]
             continue
 
         df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)

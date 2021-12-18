@@ -82,9 +82,7 @@ def get_ave(cum):
     :param cum: array of cumulative returns
     """
 
-    ave = (np.exp(cum[-1]) - 1) / (len(cum) - 1)
-
-    return ave
+    return (np.exp(cum[-1]) - 1) / (len(cum) - 1)
 
 
 def get_sha(ret):
@@ -92,9 +90,7 @@ def get_sha(ret):
     :param ret: array of daily returns
     """
 
-    sha = (np.mean(ret) / np.std(ret)) * np.sqrt(252)
-
-    return sha
+    return (np.mean(ret) / np.std(ret)) * np.sqrt(252)
 
 
 def get_xticklabs(ret_df):
