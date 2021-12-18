@@ -2,12 +2,12 @@ from global_settings import CLEAN_PATH
 from global_settings import RICH_PATH
 from global_settings import WORD_PATH
 from global_settings import LOG_PATH
-from global_settings import FIG_PATH
+from global_settings import LOG_PATH
 
 
 if __name__ == "__main__":
     from main import create_dirs
-    PATHS = [CLEAN_PATH, RICH_PATH, WORD_PATH, LOG_PATH, FIG_PATH]
+    PATHS = [CLEAN_PATH, RICH_PATH, WORD_PATH, LOG_PATH, LOG_PATH]
     create_dirs(PATHS)
 
 

@@ -16,7 +16,6 @@ WORD_PATH = os.path.join(DATA_PATH, "word")
 # output path
 OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
 LOG_PATH = os.path.join(OUTPUT_PATH, "log")
-FIG_PATH = os.path.join(OUTPUT_PATH, "fig")
 
 # stkcd & trddt
 stkcd_all = list(np.load(os.path.join(DATA_PATH, "stkcd_all.npy")))

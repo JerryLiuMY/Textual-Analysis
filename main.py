@@ -132,7 +132,7 @@ def build_doc2vec():
 
 
 def run_experiment(model_name, perc_ls):
-    """ Run experiments"""
+    """ Run experiment"""
 
     # create path
     model_path = os.path.join(OUTPUT_PATH, model_name)

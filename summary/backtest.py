@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -44,6 +45,17 @@ def backtest(model_name, dalym):
     ave_lv, ave_sv, ave_v = map(get_ave, [cum_lv, cum_sv, cum_v])
     sha_le, sha_se, sha_e = map(get_sha, [ret_le, ret_se, ret_e])
     sha_lv, sha_sv, sha_v = map(get_sha, [ret_lv, ret_sv, ret_v])
+    ave_idx, sha_idx = get_ave(mkt_cum), get_sha(mkt_ret)
+    summary = {
+        "ave_le": ave_le, "ave_se": ave_se, "ave_e": ave_e,
+        "ave_lv": ave_lv, "ave_sv": ave_sv, "ave_v": ave_v,
+        "sha_le": sha_le, "sha_se": sha_se, "sha_e": sha_e,
+        "sha_lv": sha_lv, "sha_sv": sha_sv, "sha_v": sha_v,
+        "ave_idx": ave_idx, "sha_idx": sha_idx
+    }
+
+    with open(os.path.join(model_path, f"summary.json"), "w") as f:
+        json.dump(summary, f, indent=2)
 
     # plot cumulative return
     xticks, xlabs = get_xticklabs(ret_df)
@@ -66,11 +78,13 @@ def backtest(model_name, dalym):
 
 
 def get_ave(cum):
-    """ get average return from array of cumulative returns
+    """ get average daily return from array of cumulative returns
     :param cum: array of cumulative returns
     """
 
-    return (np.exp(cum[-1]) - 1) / (len(cum) - 1)
+    ave = (np.exp(cum[-1]) - 1) / (len(cum) - 1)
+
+    return ave
 
 
 def get_sha(ret):
@@ -78,7 +92,9 @@ def get_sha(ret):
     :param ret: array of daily returns
     """
 
-    return ((np.mean(ret)) / np.std(ret)) * np.sqrt(252)
+    sha = (np.mean(ret) / np.std(ret)) * np.sqrt(252)
+
+    return sha
 
 
 def get_xticklabs(ret_df):
