@@ -8,6 +8,7 @@ from experiments.generators import generate_params
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
 from tools.exp_tools import get_textual, get_return
+from tools.exp_tools import get_stocks, get_weights, get_returns
 from tools.exp_tools import save_params, save_model
 
 
@@ -44,8 +45,10 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         raise ValueError("Invalid model name")
 
     # define dataframes
-    ret_e_df = pd.DataFrame(columns=["ret_e", "ret_le", "ret_se"])
-    ret_v_df = pd.DataFrame(columns=["ret_v", "ret_lv", "ret_sv"])
+    columns_e = ["stks_le", "stks_se", "rets_le", "rets_se", "wgts_le", "wgts_se", "ret_e", "ret_le", "ret_se"]
+    columns_v = ["stks_lv", "stks_sv", "rets_lv", "rets_sv", "wgts_lv", "wgts_sv", "ret_v", "ret_lv", "ret_sv"]
+    ret_e_df = pd.DataFrame(columns=columns_e)
+    ret_v_df = pd.DataFrame(columns=columns_v)
 
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -58,17 +61,17 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         window = [trddt_train, trddt_valid, trddt_test]
         params_iter = generate_params(params_dict, model_name)
         outputs = experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls)
-        ret_e_win, ret_v_win = outputs[0]
-        best_model_e, best_model_v = outputs[1]
-        best_params_e, best_params_v = outputs[2]
+        best_model_e, best_model_v = outputs[0]
+        best_params_e, best_params_v = outputs[1]
+        ret_e_win, ret_v_win = outputs[2]
 
         # save returns
-        ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test, columns=["ret_e", "ret_le", "ret_se"])
-        ret_v_win_df = pd.DataFrame(ret_v_win, index=trddt_test, columns=["ret_v", "ret_lv", "ret_sv"])
+        ret_e_win_df = pd.DataFrame(ret_e_win, index=trddt_test, columns=columns_e)
+        ret_v_win_df = pd.DataFrame(ret_v_win, index=trddt_test, columns=columns_v)
         ret_e_df = pd.concat([ret_e_df, ret_e_win_df], axis=0)
         ret_v_df = pd.concat([ret_v_df, ret_v_win_df], axis=0)
 
-        # save parameters
+        # save model & parameters
         save_model(best_model_e, model_name, trddt_test, "e")
         save_model(best_model_v, model_name, trddt_test, "v")
         save_params(best_params_e, model_name, trddt_test, "e")
@@ -142,23 +145,29 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
             best_params_v = params
             best_model_v = model
 
-    # building returns
+    # building out-of-sample predictions
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
           f"* Building returns {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}...")
-    ret_e_win = np.empty([len(trddt_test), 3])
-    ret_v_win = np.empty([len(trddt_test), 3])
+    ret_e_win = np.empty([len(trddt_test), 9], dtype=object)
+    ret_v_win = np.empty([len(trddt_test), 9], dtype=object)
     for i, dt in enumerate(trddt_test):
         test_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
         if sum(test_idx) == 0:
-            ret_e_win[i] = 0.
-            ret_v_win[i] = 0.
+            ret_e_win[i, 0:6], ret_e_win[i, 6:9] = [np.empty(0, dtype=object)] * 6, 0.
+            ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0, dtype=object)] * 6, 0.
             continue
 
         df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
         textual_win_test = get_textual(textual_win, test_idx)
         target_e = pre_func(textual_win_test, best_model_e, best_params_e)
         target_v = pre_func(textual_win_test, best_model_v, best_params_v)
-        ret_e_win[i, :] = get_return(df_rich_win_test, target_e, perc_ls, "e")
-        ret_v_win[i, :] = get_return(df_rich_win_test, target_v, perc_ls, "v")
+        ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, target_e, perc_ls)
+        ret_v_win[i, 0:2] = get_stocks(df_rich_win_test, target_v, perc_ls)
+        ret_e_win[i, 2:4] = get_returns(df_rich_win_test, target_e, perc_ls)
+        ret_v_win[i, 2:4] = get_returns(df_rich_win_test, target_v, perc_ls)
+        ret_e_win[i, 4:6] = get_weights(df_rich_win_test, target_e, perc_ls, "e")
+        ret_v_win[i, 4:6] = get_weights(df_rich_win_test, target_v, perc_ls, "v")
+        ret_e_win[i, 6:9] = get_return(df_rich_win_test, target_e, perc_ls, "e")
+        ret_v_win[i, 6:9] = get_return(df_rich_win_test, target_v, perc_ls, "v")
 
-    return (ret_e_win, ret_v_win), (best_model_e, best_model_v), (best_params_e, best_params_v)
+    return (best_model_e, best_model_v), (best_params_e, best_params_v), (ret_e_win, ret_v_win)

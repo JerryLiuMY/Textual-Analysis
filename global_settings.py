@@ -4,17 +4,15 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# desktop path
+# parent paths
 DESKTOP_PATH = str(Path(os.getcwd()).parent.absolute())
-
-# data path
 DATA_PATH = os.path.join(DESKTOP_PATH, "data")
+OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
+
+# children paths
 CLEAN_PATH = os.path.join(DATA_PATH, "cleaned")
 RICH_PATH = os.path.join(DATA_PATH, "enriched")
 WORD_PATH = os.path.join(DATA_PATH, "word")
-
-# output path
-OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
 LOG_PATH = os.path.join(OUTPUT_PATH, "log")
 
 # stkcd & trddt

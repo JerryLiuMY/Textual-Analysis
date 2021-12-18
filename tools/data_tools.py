@@ -2,11 +2,13 @@ import json
 import os
 from dateutil import tz
 from datetime import datetime, timedelta
-from global_settings import trddt_all, LOG_PATH
+from global_settings import trddt_all
+from global_settings import LOG_PATH
 
 
 def init_data_log():
     """Initialize the log file for step-by-step details for our sample filters."""
+
     data_log = {
         "original": 0,
         "available": 0,
@@ -15,10 +17,9 @@ def init_data_log():
         "match_stkcd": 0
     }
 
-    with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
-        json.dump(data_log, f)
-
     print("data_log.json initialized")
+    with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
+        json.dump(data_log, f, indent=2)
 
 
 def convert_zone(timestamp):

@@ -62,22 +62,91 @@ def save_params(params, model_name, trddt_test, ev):
         json.dump(params, f)
 
 
-def get_return(df_rich, target, perc_ls, ev):
-    """ Get returns from the predicted p-hat values
+def get_rich_ls(df_rich, target, perc_ls):
+    """ Get long/short dataframes
     :param df_rich: enriched dataframe
     :param target: predicted target for portfolio construction
-    :param perc_ls: equal vs. value weighted type
-    :param ev: equal vs. value weighted type
+    :param perc_ls: percentage of L/S portfolio
+    :return df_rich_l: long enriched dataframe
+    :return df_rich_s: short enriched dataframe
     """
 
-    # Calculate equal and value weighted returns
     num_ls = int(len(target) * perc_ls)
     if num_ls == 0:
-        return 0., 0., 0.
+        df_rich_l = pd.DataFrame(columns=df_rich.columns)
+        df_rich_s = pd.DataFrame(columns=df_rich.columns)
+        return df_rich_l, df_rich_s
 
     sorted_idx = np.argsort(target)
     df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
     df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]
+
+    return df_rich_l, df_rich_s
+
+
+def get_stocks(df_rich, target, perc_ls):
+    """ Get L/S stocks from the predicted targets
+    :param df_rich: enriched dataframe
+    :param target: predicted target for portfolio construction
+    :param perc_ls: percentage of L/S portfolio
+    :return stks_l, stks_s: L/S stocks
+    """
+
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+    stks_l = df_rich_l.loc[:, "stock_mention"].to_numpy()
+    stks_s = df_rich_s.loc[:, "stock_mention"].to_numpy()
+
+    return stks_l, stks_s
+
+
+def get_returns(df_rich, target, perc_ls):
+    """ Get L/S returns from the predicted targets
+    :param df_rich: enriched dataframe
+    :param target: predicted target for portfolio construction
+    :param perc_ls: percentage of L/S portfolio
+    :return rets_l, rets_s: L/S returns
+    """
+
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+    rets_l = df_rich_l.loc[:, "ret"].to_numpy()
+    rets_s = df_rich_s.loc[:, "ret"].to_numpy()
+
+    return rets_l, rets_s
+
+
+def get_weights(df_rich, target, perc_ls, ev):
+    """ Get L/S weights from the predicted targets
+    :param df_rich: enriched dataframe
+    :param target: predicted target for portfolio construction
+    :param perc_ls: percentage of L/S portfolio
+    :param ev: equal vs. value weighted type
+    :return wgts_l, wgts_s: L/S weights
+    """
+
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+
+    if ev == "e":
+        wgts_l = (1 / df_rich_l.shape[0]) * np.ones(df_rich_l.shape[0])
+        wgts_s = (1 / df_rich_s.shape[0]) * np.ones(df_rich_s.shape[0])
+    elif ev == "v":
+        wgts_l = (df_rich_l["cap"] / np.sum(df_rich_l["cap"])).to_numpy()
+        wgts_s = (df_rich_s["cap"] / np.sum(df_rich_s["cap"])).to_numpy()
+    else:
+        raise ValueError("Invalid weighting type")
+
+    return wgts_l, wgts_s
+
+
+def get_return(df_rich, target, perc_ls, ev):
+    """ Get return and L/S return from the predicted targets
+    :param df_rich: enriched dataframe
+    :param target: predicted target for portfolio construction
+    :param perc_ls: percentage of L/S portfolio
+    :param ev: equal vs. value weighted type
+    :return ret, ret_l, ret_s: total return and L/S return
+    """
+
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
 
     if ev == "e":
         ret_l = df_rich_l["ret"].mean()

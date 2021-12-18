@@ -89,4 +89,4 @@ def clean_data(data_file, clean_file):
     data_df.to_csv(os.path.join(DATA_PATH, clean_file), index=False)
 
     with open(os.path.join(LOG_PATH, "data_log.json"), "w") as f:
-        json.dump(data_log, f)
+        json.dump(data_log, f, indent=2)
