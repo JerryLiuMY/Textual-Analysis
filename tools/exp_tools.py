@@ -92,7 +92,7 @@ def get_stocks(df_rich, target, perc_ls):
     :return stks_l, stks_s: L/S stocks
     """
 
-    # df_rich.shape[0] == 0 already accounted for
+    # df_rich.shape[0] == 0 automatically accounted for
     df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
     stks_l = df_rich_l.loc[:, "stock_mention"].to_numpy()
     stks_s = df_rich_s.loc[:, "stock_mention"].to_numpy()
@@ -108,7 +108,7 @@ def get_returns(df_rich, target, perc_ls):
     :return rets_l, rets_s: L/S returns
     """
 
-    # df_rich.shape[0] == 0 already accounted for 
+    # df_rich.shape[0] == 0 automatically accounted for
     df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
     rets_l = df_rich_l.loc[:, "ret"].to_numpy()
     rets_s = df_rich_s.loc[:, "ret"].to_numpy()
@@ -126,8 +126,9 @@ def get_weights(df_rich, target, perc_ls, ev):
     """
 
     df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+
     if df_rich_l.shape[0] == df_rich_s.shape[0] == 0:
-        return np.empty(0, dtype=object), np.empty(0, dtype=object)
+        return np.empty(0), np.empty(0)
 
     if ev == "e":
         wgts_l = (1 / df_rich_l.shape[0]) * np.ones(df_rich_l.shape[0])
@@ -151,6 +152,7 @@ def get_return(df_rich, target, perc_ls, ev):
     """
 
     df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+
     if df_rich_l.shape[0] == df_rich_s.shape[0] == 0:
         return 0., 0., 0.
 
@@ -168,13 +170,13 @@ def get_return(df_rich, target, perc_ls, ev):
     return ret, ret_l, ret_s
 
 
-# def get_window(window_iter, trddt_test_Ym):
-#     """ Get window from trddt_test in the format of %Y-%m
-#     :param window_iter: window iterator
-#     :param trddt_test_Ym: trddt_test in the format of %Y-%m
-#     """
-#
-#     for [trddt_train, trddt_valid, trddt_test] in window_iter:
-#         if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
-#             window = [trddt_train, trddt_valid, trddt_test]
-#             return window
+def get_window(window_iter, trddt_test_Ym):
+    """ Get window from trddt_test in the format of %Y-%m
+    :param window_iter: window iterator
+    :param trddt_test_Ym: trddt_test in the format of %Y-%m
+    """
+
+    for [trddt_train, trddt_valid, trddt_test] in window_iter:
+        if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
+            window = [trddt_train, trddt_valid, trddt_test]
+            return window
