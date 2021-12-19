@@ -71,20 +71,20 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         save_params(best_params_e, model_name, trddt_test, "e")
         save_params(best_params_v, model_name, trddt_test, "v")
 
-        # save stocks, weights & returns
+        # get stocks, weights & returns
         ret_e_win_pkl = pd.DataFrame(ret_e_win[:, 0:6], index=trddt_test, columns=columns_e[0:6])
         ret_v_win_pkl = pd.DataFrame(ret_v_win[:, 0:6], index=trddt_test, columns=columns_v[0:6])
         ret_e_pkl = pd.concat([ret_e_pkl, ret_e_win_pkl], axis=0)
         ret_v_pkl = pd.concat([ret_v_pkl, ret_v_win_pkl], axis=0)
 
-        # save return
+        # get return
         ret_e_win_csv = pd.DataFrame(ret_e_win[:, 6:9], index=trddt_test, columns=columns_e[6:9])
         ret_v_win_csv = pd.DataFrame(ret_v_win[:, 6:9], index=trddt_test, columns=columns_v[6:9])
         ret_e_csv = pd.concat([ret_e_csv, ret_e_win_csv], axis=0)
         ret_v_csv = pd.concat([ret_v_csv, ret_v_win_csv], axis=0)
 
     ret_pkl = pd.concat([ret_e_pkl, ret_v_pkl], axis=1)
-    ret_pkl.to_pickle(os.path.join(model_path, "ret_pkl.pkl"))
+    ret_pkl.to_pickle(os.path.join(model_path, "ret_pkl.pkl"), compression=None, protocol=4)
 
     ret_csv = pd.concat([ret_e_csv, ret_v_csv], axis=1)
     ret_csv.to_csv(os.path.join(model_path, "ret_csv.csv"))

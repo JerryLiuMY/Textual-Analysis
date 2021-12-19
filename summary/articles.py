@@ -3,7 +3,6 @@ import numpy as np
 import seaborn as sns
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from global_settings import DATA_PATH
 from global_settings import LOG_PATH
 sns.set()
 

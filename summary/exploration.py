@@ -5,7 +5,7 @@ from glob import glob
 import seaborn as sns
 from scipy.stats import rankdata
 import matplotlib.pyplot as plt
-from global_settings import DATA_PATH
+from global_settings import RICH_PATH
 from global_settings import LOG_PATH
 sns.set()
 
@@ -57,14 +57,14 @@ def plot_zd_rank(rich_files):
         # print(f"涨: {round(z_rank, 4)}, 跌: {round(d_rank, 4)}")
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    ax.hist(z_rank_li, label="zhang", color="red", alpha=0.65, bins=100)
-    ax.hist(d_rank_li, label="die", color="green", alpha=0.65, bins=100)
+    ax.hist(z_rank_li, label="zhang", color="red", alpha=0.65, bins=50)
+    ax.hist(d_rank_li, label="die", color="green", alpha=0.65, bins=50)
     ax.legend()
 
     fig.savefig(os.path.join(LOG_PATH, "zd_rank.pdf"), bbox_inches="tight")
 
 
 if __name__ == "__main__":
-    sub_file_rich_li = glob(os.path.join(DATA_PATH, "enriched", "*.csv"))
+    sub_file_rich_li = glob(os.path.join(RICH_PATH, "*.csv"))
     plot_zd_ret(sub_file_rich_li)
     plot_zd_rank(sub_file_rich_li)
