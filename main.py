@@ -26,9 +26,11 @@ from summary.backtest import backtest
 
 
 def create_dirs(paths):
-    """ Create directories"""
+    """ Create directories
+    :param paths: directories to create
+    """
 
-    # Create directories
+    # create directories
     for path in paths:
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -63,10 +65,12 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
 def run_word_sps():
     """Build word sparse matrix"""
 
+    # define index
     sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
     sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(WORD_PATH, "*.npz"))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_word_file_idx])
 
+    # build word sparse matrix
     num_proc = 12
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
@@ -132,7 +136,10 @@ def build_doc2vec():
 
 
 def run_experiment(model_name, perc_ls):
-    """ Run experiment"""
+    """ Run experiment
+    :param model_name: model name
+    :param perc_ls: percentage of L/S portfolio
+    """
 
     # create path
     model_path = os.path.join(OUTPUT_PATH, model_name)
@@ -155,7 +162,9 @@ def run_experiment(model_name, perc_ls):
 
 
 def run_backtest(model_name):
-    """ Run backtest"""
+    """ Run backtest
+    :param model_name: model name
+    """
 
     # backtest
     backtest(model_name, dalym)

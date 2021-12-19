@@ -1,8 +1,9 @@
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+from global_settings import DATA_PATH
 from global_settings import LOG_PATH
 sns.set()
 
@@ -11,6 +12,7 @@ def plot_year_count(data_df):
     """ Bar plot of the number of articles per year
     :param data_df: cleaned data_df
     """
+
     years = list(data_df["date"].apply(lambda _: int(_[:4])))
     max_year, min_year = max(years), min(years)
     x = np.arange(min_year, max_year + 1)
@@ -32,6 +34,7 @@ def plot_day_count(data_df):
     """ Bar plot of the number of articles per day across the year
     :param data_df: cleaned data_df
     """
+
     days = list(data_df["date"].apply(lambda _: _[5:]))
     x = sorted(set(days))
     height = [days.count(_) for _ in tqdm(x)]
@@ -55,6 +58,7 @@ def plot_hour_count(data_df):
     """Bar plot of the number of articles per hour across the day
     :param data_df: cleaned data_df
     """
+
     time = list(data_df["time"].apply(lambda _: _[:5]))
     x = [str(f"{hour}".zfill(2) + ":" + minute) for hour in range(12) for minute in ["00", "30"]] + ["12:00"]
     bins = [(x[i], x[i + 1]) for i in range(len(x) - 1)]

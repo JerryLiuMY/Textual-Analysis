@@ -86,8 +86,8 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     ret_pkl = pd.concat([ret_e_pkl, ret_v_pkl], axis=1)
     ret_pkl.to_pickle(os.path.join(model_path, "ret_pkl.pkl"))
 
-    ret_df = pd.concat([ret_e_csv, ret_v_csv], axis=1)
-    ret_df.to_csv(os.path.join(model_path, "ret_df.csv"))
+    ret_csv = pd.concat([ret_e_csv, ret_v_csv], axis=1)
+    ret_csv.to_csv(os.path.join(model_path, "ret_csv.csv"))
 
 
 def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls):
