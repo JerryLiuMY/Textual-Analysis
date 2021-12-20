@@ -17,4 +17,4 @@
 
 
 ## SSESTM
-![alt text](./resources/backtest.jpg?raw=true "Title")
+![alt text](./__resources__/backtest.jpg?raw=true "Title")
