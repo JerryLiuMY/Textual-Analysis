@@ -104,12 +104,8 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
     """
 
     [trddt_train, trddt_valid, trddt_test] = window
-    best_cum_e_scl = -np.inf
-    best_cum_v_scl = -np.inf
-    best_params_e = dict()
-    best_params_v = dict()
-    best_model_e = None
-    best_model_v = None
+    best_cum_e_scl, best_params_e, best_model_e = -np.inf, dict(), None
+    best_cum_v_scl, best_params_v, best_model_v = -np.inf, dict(), None
 
     for params in params_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -154,9 +150,10 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
             best_params_v = params
             best_model_v = model
 
-    # building out-of-sample predictions
+    # out-of-sample testing
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
           f"* Building returns {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}...")
+
     ret_e_win = np.empty([len(trddt_test), 9], dtype=object)
     ret_v_win = np.empty([len(trddt_test), 9], dtype=object)
     for i, dt in enumerate(trddt_test):

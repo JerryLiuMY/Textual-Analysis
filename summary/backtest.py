@@ -17,26 +17,26 @@ def backtest(model_name, dalym):
 
     # define model path
     model_path = os.path.join(OUTPUT_PATH, model_name)
-    ret_df = pd.read_csv(os.path.join(model_path, "ret_csv.csv"), index_col=0)
+    ret_csv = pd.read_csv(os.path.join(model_path, "ret_csv.csv"), index_col=0)
 
     # equal weighted returns
-    ret_le = np.array(ret_df["ret_le"])
-    ret_se = -np.array(ret_df["ret_se"])
-    ret_e = np.array(ret_df["ret_e"])
+    ret_le = np.array(ret_csv["ret_le"])
+    ret_se = np.array(ret_csv["ret_se"])
+    ret_e = np.array(ret_csv["ret_e"])
     cum_le = np.log(np.cumprod(ret_le + 1))
     cum_se = np.log(np.cumprod(ret_se + 1))
     cum_e = np.log(np.cumprod(ret_e + 1))
 
     # value weighted returns
-    ret_lv = np.array(ret_df["ret_lv"])
-    ret_sv = -np.array(ret_df["ret_sv"])
-    ret_v = np.array(ret_df["ret_v"])
+    ret_lv = np.array(ret_csv["ret_lv"])
+    ret_sv = np.array(ret_csv["ret_sv"])
+    ret_v = np.array(ret_csv["ret_v"])
     cum_lv = np.log(np.cumprod(ret_lv + 1))
     cum_sv = np.log(np.cumprod(ret_sv + 1))
     cum_v = np.log(np.cumprod(ret_v + 1))
 
     # index returns
-    dalym = dalym.loc[dalym["Trddt"].apply(lambda _: _ in ret_df.index), :]
+    dalym = dalym.loc[dalym["Trddt"].apply(lambda _: _ in ret_csv.index), :]
     mkt_ret = dalym.groupby(by=["Trddt"]).apply(lambda _: np.average(_["Dretmdos"], weights=_["Dnvaltrdtl"], axis=0))
     mkt_cum = np.log(np.cumprod(mkt_ret + 1))
 
@@ -58,7 +58,7 @@ def backtest(model_name, dalym):
         json.dump(summary, f, indent=2)
 
     # plot cumulative return
-    xticks, xlabs = get_xticklabs(ret_df)
+    xticks, xlabs = get_xticklabs(ret_csv)
     fig, ax = plt.subplots(1, 1, figsize=(14, 7))
     ax.set_xticks(xticks)
     ax.set_xticklabels(xlabs)
@@ -91,6 +91,36 @@ def get_sha(ret):
     """
 
     return (np.mean(ret) / np.std(ret)) * np.sqrt(252)
+
+
+def get_tov(ret_pkl, ls, ev):
+    """ get turnover from the return dataframe
+    :param ret_pkl: return pkl
+    :param ls: long/short type
+    :param ev: equal/value weighted type
+    """
+
+    if ev in ["e", "v"]:
+        stks_b = ret_pkl.iloc[0, "".join(["stks_", ls, ev])]
+        stks_a = ret_pkl.iloc[1, "".join(["stks_", ls, ev])]
+        stks = np.unique(np.concatenate([stks_b, stks_a]))
+        idcs_b = np.array([np.where(stks == stk_b)[0][0] for stk_b in stks_b])
+        idcs_a = np.array([np.where(stks == stk_a)[0][0] for stk_a in stks_a])
+
+        wgts_b = np.zeros(len(stks))
+        rets_b = np.zeros(len(stks))
+        wgts_a = np.zeros(len(stks))
+
+        wgts_b[idcs_b] = ret_pkl.iloc[0, "".join(["wgts_", ls, ev])]
+        rets_b[idcs_b] = ret_pkl.iloc[0, "".join(["rets_", ls, ev])] + 1
+        wgts_a[idcs_a] = ret_pkl.iloc[1, "".join(["wgts_", ls, ev])]
+
+        tov = (1/2) * np.sum(np.abs(wgts_b * rets_b - wgts_a))
+
+    else:
+        tov = 0
+
+    return tov
 
 
 def get_xticklabs(ret_df):
