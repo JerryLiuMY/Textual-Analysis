@@ -17,4 +17,4 @@
 
 
 ## SSESTM
-![alt text](https://github.com/xiubooth/Textual-Analysis/blob/main/__resource__/backtest.jpg?raw=true)
+![alt text](./resources/backtest.jpg?raw=true "Title")
