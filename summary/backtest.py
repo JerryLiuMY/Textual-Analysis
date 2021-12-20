@@ -17,7 +17,7 @@ def backtest(model_name, dalym):
 
     # define model path
     model_path = os.path.join(OUTPUT_PATH, model_name)
-    ret_df = pd.read_csv(os.path.join(model_path, "ret_df.csv"), index_col=0)
+    ret_df = pd.read_csv(os.path.join(model_path, "ret_csv.csv"), index_col=0)
 
     # equal weighted returns
     ret_le = np.array(ret_df["ret_le"])

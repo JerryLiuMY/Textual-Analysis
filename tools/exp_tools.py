@@ -71,15 +71,26 @@ def get_rich_ls(df_rich, target, perc_ls):
     :return df_rich_s: short enriched dataframe
     """
 
-    num_ls = int(len(target) * perc_ls)
+    # group df_rich by stock_mention
+    df_rich.loc[:, "target"] = target
+    df_rich_gb = df_rich.groupby("stock_mention")
+    num_ls = int(len(df_rich_gb) * perc_ls)
     if num_ls == 0:
         df_rich_l = pd.DataFrame(columns=df_rich.columns)
         df_rich_s = pd.DataFrame(columns=df_rich.columns)
         return df_rich_l, df_rich_s
 
-    sorted_idx = np.argsort(target)
-    df_rich_l = df_rich.iloc[sorted_idx[-num_ls:], :]
-    df_rich_s = df_rich.iloc[sorted_idx[:num_ls], :]
+    # get L/S keys
+    keys = list(df_rich_gb.groups.keys())
+    sorted_idx = np.argsort(df_rich_gb["target"].mean().to_numpy())
+    keys_l = [keys[i] for i in sorted_idx[-num_ls:]]
+    keys_s = [keys[i] for i in sorted_idx[:num_ls]]
+
+    # get L/S dataframes (first occurrence in each group)
+    df_rich_l = df_rich.loc[df_rich.apply(lambda _: _["stock_mention"] in keys_l, axis=1), :]
+    df_rich_s = df_rich.loc[df_rich.apply(lambda _: _["stock_mention"] in keys_s, axis=1), :]
+    df_rich_l = df_rich_l.groupby("stock_mention").first().reset_index(inplace=False)
+    df_rich_s = df_rich_s.groupby("stock_mention").first().reset_index(inplace=False)
 
     return df_rich_l, df_rich_s
 
