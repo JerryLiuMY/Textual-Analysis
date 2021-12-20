@@ -5,12 +5,6 @@
             alt="python"></a> &nbsp;
 </p>
 
-<style>
-    table {
-        width: 100%;
-    }
-</style>
-
 ## Data Information
 |                                                     |  Remaining Sample Size  |  Observations Removed  |
 |-----------------------------------------------------|:-----------------------:|:----------------------:|
