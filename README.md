@@ -6,7 +6,6 @@
 </p>
 
 ## Data Information
-
 |                                                     |  Remaining Sample Size  |  Observations Removed  |
 |-----------------------------------------------------|:-----------------------:|:----------------------:|
 | Total number of articles                            | 43,132,204              |                        |
@@ -17,4 +16,11 @@
 
 
 ## SSESTM
+
+|                 |  Long  |  Short  |   LS   |  Long  |  Short  |   LS   |
+|-----------------|:------:|:-------:|:------:|:------:|:-------:|:------:|
+| Average return  | 0.264% | 0.159%  | 0.877% | 0.309% | 0.106%  | 0.757% |
+| Sharpe ratio    | 1.72   | 1.26    | 11.01  | 2.12   | 1.06    | 8.68   |
+| Turnover        | 66.6%  | 70.5%   | 68.6%  | 65.9%  | 68.7%   | 67.3%  |
+
 ![alt text](./__resources__/backtest.jpg?raw=true "Title")
