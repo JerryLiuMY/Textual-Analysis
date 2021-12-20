@@ -15,11 +15,11 @@ if __name__ == "__main__":
 #     run_word_sps()
 
 
-if __name__ == "__main__":
-    from main import run_experiment
-    from experiments.params import perc_ls
-    model_name = "ssestm"
-    run_experiment(model_name, perc_ls)
+# if __name__ == "__main__":
+#     from main import run_experiment
+#     from experiments.params import perc_ls
+#     model_name = "ssestm"
+#     run_experiment(model_name, perc_ls)
 
 
 if __name__ == "__main__":

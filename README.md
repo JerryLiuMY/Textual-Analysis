@@ -5,6 +5,8 @@
             alt="python"></a> &nbsp;
 </p>
 
+## Data Information
+
 |                                                     |  Remaining Sample Size  |  Observations Removed  |
 |-----------------------------------------------------|:-----------------------:|:----------------------:|
 | Total number of articles                            | 43,132,204              |                        |
@@ -12,3 +14,7 @@
 | Drop articles with no associated stock              | 33,062,855              | 4,193,355              |
 | Drop articles with more than one stock tagged       | 32,143,209              | 919,646                |
 | Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
+
+
+## SSESTM
+![alt text](http://url/to/img.png)

@@ -18,6 +18,7 @@ def backtest(model_name, dalym):
     # define model path
     model_path = os.path.join(OUTPUT_PATH, model_name)
     ret_csv = pd.read_csv(os.path.join(model_path, "ret_csv.csv"), index_col=0)
+    ret_pkl = pd.read_pickle(os.path.join(model_path, "ret_pkl.pkl"))
 
     # equal weighted returns
     ret_le = np.array(ret_csv["ret_le"])
@@ -46,12 +47,25 @@ def backtest(model_name, dalym):
     sha_le, sha_se, sha_e = map(get_sha, [ret_le, ret_se, ret_e])
     sha_lv, sha_sv, sha_v = map(get_sha, [ret_lv, ret_sv, ret_v])
     ave_idx, sha_idx = get_ave(mkt_cum), get_sha(mkt_ret)
+
+    # compute turnover
+    roll = [[i, i + 1] for i in range(ret_pkl.shape[0] - 1)]
+    tov_le = np.array([get_tov(ret_pkl.iloc[r, :], "l", "e") for r in roll]).mean()
+    tov_se = np.array([get_tov(ret_pkl.iloc[r, :], "s", "e") for r in roll]).mean()
+    tov_lv = np.array([get_tov(ret_pkl.iloc[r, :], "l", "v") for r in roll]).mean()
+    tov_sv = np.array([get_tov(ret_pkl.iloc[r, :], "s", "v") for r in roll]).mean()
+    tov_e = 0.5 * (tov_le + tov_se)
+    tov_v = 0.5 * (tov_lv + tov_sv)
+
+    # summary
     summary = {
         "ave_le": ave_le, "ave_se": ave_se, "ave_e": ave_e,
         "ave_lv": ave_lv, "ave_sv": ave_sv, "ave_v": ave_v,
         "sha_le": sha_le, "sha_se": sha_se, "sha_e": sha_e,
         "sha_lv": sha_lv, "sha_sv": sha_sv, "sha_v": sha_v,
-        "ave_idx": ave_idx, "sha_idx": sha_idx
+        "ave_idx": ave_idx, "sha_idx": sha_idx,
+        "tov_le": tov_le, "tov_se": tov_se, "tov_e": tov_e,
+        "tov_lv": tov_lv, "tov_sv": tov_sv, "tov_v": tov_v
     }
 
     with open(os.path.join(model_path, f"summary.json"), "w") as f:
@@ -100,25 +114,30 @@ def get_tov(ret_pkl, ls, ev):
     :param ev: equal/value weighted type
     """
 
-    if ev in ["e", "v"]:
-        stks_b = ret_pkl.iloc[0, "".join(["stks_", ls, ev])]
-        stks_a = ret_pkl.iloc[1, "".join(["stks_", ls, ev])]
-        stks = np.unique(np.concatenate([stks_b, stks_a]))
-        idcs_b = np.array([np.where(stks == stk_b)[0][0] for stk_b in stks_b])
-        idcs_a = np.array([np.where(stks == stk_a)[0][0] for stk_a in stks_a])
+    if ls not in ["l", "s"]:
+        raise ValueError("Invalid long/short type")
 
-        wgts_b = np.zeros(len(stks))
-        rets_b = np.zeros(len(stks))
-        wgts_a = np.zeros(len(stks))
+    if ev not in ["e", "v"]:
+        raise ValueError("Invalid weighting type")
 
-        wgts_b[idcs_b] = ret_pkl.iloc[0, "".join(["wgts_", ls, ev])]
-        rets_b[idcs_b] = ret_pkl.iloc[0, "".join(["rets_", ls, ev])] + 1
-        wgts_a[idcs_a] = ret_pkl.iloc[1, "".join(["wgts_", ls, ev])]
+    stks_b = ret_pkl.loc[:, "".join(["stks_", ls, ev])].iloc[0]
+    stks_a = ret_pkl.loc[:, "".join(["stks_", ls, ev])].iloc[1]
+    stks = np.unique(np.concatenate([stks_b, stks_a]))
 
-        tov = (1/2) * np.sum(np.abs(wgts_b * rets_b - wgts_a))
+    idcs_b = np.array([np.where(stks == stk_b)[0][0] for stk_b in stks_b])
+    idcs_a = np.array([np.where(stks == stk_a)[0][0] for stk_a in stks_a])
 
-    else:
-        tov = 0
+    wgts_b = np.zeros(len(stks))
+    rets_b = np.zeros(len(stks))
+    wgts_a = np.zeros(len(stks))
+
+    if len(idcs_b) != 0:
+        wgts_b[idcs_b] = ret_pkl.loc[:, "".join(["wgts_", ls, ev])].iloc[0]
+        rets_b[idcs_b] = ret_pkl.loc[:, "".join(["rets_", ls, ev])].iloc[0]
+    if len(idcs_a) != 0:
+        wgts_a[idcs_a] = ret_pkl.loc[:, "".join(["wgts_", ls, ev])].iloc[1]
+
+    tov = 0.5 * np.sum(np.abs(wgts_a - wgts_b * (rets_b + 1)))
 
     return tov
 
