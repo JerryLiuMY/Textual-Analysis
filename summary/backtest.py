@@ -98,7 +98,7 @@ def get_xticklabs(ret_df):
     :param ret_df: return dataframe over the rolling period
     """
 
-    # define tick labels
+    # define xlabs
     lab_beg = datetime.strptime(ret_df.index[0], "%Y-%m-%d")
     lab_end = datetime.strptime(ret_df.index[-1], "%Y-%m-%d")
     lab_cur = lab_beg
@@ -114,9 +114,9 @@ def get_xticklabs(ret_df):
         else:
             break
 
-    # define ticks
-    def lab_to_tick(ticklab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == ticklab))[0][0]
-    xlabs = [ticklab.strftime("%Y-%m-%d") for ticklab in xlabs]
-    xticks = [lab_to_tick(ticklab) for ticklab in xlabs]
+    # define xticks
+    def lab_to_tick(lab): return np.where(pd.Series(ret_df.index).apply(lambda _: _ == lab))[0][0]
+    xlabs = [xlab.strftime("%Y-%m-%d") for xlab in xlabs]
+    xticks = [lab_to_tick(xlab) for xlab in xlabs]
 
     return xticks, xlabs
