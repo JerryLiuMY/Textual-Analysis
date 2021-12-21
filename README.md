@@ -26,4 +26,4 @@
 
 
 ## Caveats
-- The articles whose `returns` or `three-day returns` cannot be constructed are removed from the data during pre-processing (many of which corresponds to delisted stocks). This corresponds to purposely avoiding buying stocks that will be delisted in the future -- the information that we could not know (and should not know) in advance. 
+- The articles whose `returns` or `three-day returns` cannot be constructed are removed from the data during pre-processing (many of which corresponds to *delisted* stocks). This corresponds to purposely avoiding future **delisting** -- the information of which that we could not know (and should not know) in advance. 
