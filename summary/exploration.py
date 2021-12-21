@@ -29,8 +29,8 @@ def plot_zd_ret(rich_files):
         # print(f"涨: {round(z_ret, 4)}, 跌: {round(d_ret, 4)}")
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    ax.hist(z_ret_li, label="zhang", color="red", alpha=0.65, bins=15)
-    ax.hist(d_ret_li, label="die", color="green", alpha=0.65, bins=15)
+    ax.hist(z_ret_li, label="zhang", color="red", alpha=0.65, bins=50)
+    ax.hist(d_ret_li, label="die", color="green", alpha=0.65, bins=50)
     ax.legend()
 
     fig.savefig(os.path.join(LOG_PATH, "zd_ret.pdf"), bbox_inches="tight")

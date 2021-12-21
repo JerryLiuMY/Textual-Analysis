@@ -19,12 +19,3 @@ def ssestm_sentiment(O_hat):
 
     return rank_dict, sentiment, occurrence
 
-
-# sharpe
-# long/short turnover
-# find sentiment charged words
-# 沪深300
-# 停牌 delisting
-
-# BERT and doc2vec parts done
-# news assimilation
