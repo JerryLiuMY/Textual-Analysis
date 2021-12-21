@@ -38,6 +38,5 @@ neg_dict = [_.strip() for _ in xlsx_dict.parse("negative").iloc[:, 0]]
 full_dict = pos_dict + neg_dict
 stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=None).iloc[:, 0])
 
-# 沪深300
+
 # BERT and doc2vec
-# paper analysis

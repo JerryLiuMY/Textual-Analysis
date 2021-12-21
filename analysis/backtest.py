@@ -1,10 +1,10 @@
 import os
 import json
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from global_settings import OUTPUT_PATH
 plt.style.use("ggplot")
 
@@ -57,7 +57,7 @@ def backtest(model_name, dalym):
     tov_e = np.array([get_tov(ret_pkl.iloc[r, :], "", "e") for r in roll]).mean()
     tov_v = np.array([get_tov(ret_pkl.iloc[r, :], "", "v") for r in roll]).mean()
 
-    # summary
+    # exploration
     summary = {
         "ave_le": ave_le, "ave_se": ave_se, "ave_e": ave_e,
         "ave_lv": ave_lv, "ave_sv": ave_sv, "ave_v": ave_v,

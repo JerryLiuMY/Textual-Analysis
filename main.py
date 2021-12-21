@@ -22,7 +22,7 @@ from data_proc.word_sps import build_word_sps
 from experiments.params import window_dict
 from experiments.generators import generate_window
 from experiments.experiment import experiment
-from summary.backtest import backtest
+from analysis.backtest import backtest
 
 
 def create_dirs(paths):
