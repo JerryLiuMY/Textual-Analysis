@@ -39,6 +39,5 @@ full_dict = pos_dict + neg_dict
 stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=None).iloc[:, 0])
 
 # 沪深300
-# 停牌 delisting
 # BERT and doc2vec
 # paper analysis

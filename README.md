@@ -16,7 +16,6 @@
 
 
 ## SSESTM
-
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
 | Average daily return  | 0.264%    | 0.159%     | 0.877%  | 0.309%    | 0.106%     | 0.757%  | -0.001% |
@@ -24,3 +23,7 @@
 | Turnover              | 66.6%     | 70.5%      | 68.6%   | 65.9%     | 68.7%      | 67.3%   | /       |
 
 ![alt text](./__resources__/backtest.jpg?raw=true "Title")
+
+
+## Caveat
+- The articles whose returns or three-day returns cannot be constructed are removed from the data during pre-processing (many of which corresponds to delisted stocks). This corresponds to purposely avoiding buying stocks that will be delisted in the future -- the information that we could not know (and should not know) in advance. 

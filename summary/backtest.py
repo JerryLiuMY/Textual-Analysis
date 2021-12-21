@@ -119,9 +119,6 @@ def get_tov(ret_pkl, ls, ev):
     :param ev: equal/value weighted type
     """
 
-    if ls not in ["l", "s", ""]:
-        raise ValueError("Invalid long/short type")
-
     if ev not in ["e", "v"]:
         raise ValueError("Invalid equal/value weighting type")
 
@@ -177,7 +174,7 @@ def get_tov(ret_pkl, ls, ev):
         tov = 0.5 * np.sum(np.abs(wgts_a - wgts_b * (rets_b + 1)))
 
     else:
-        raise ValueError("Invalid weighting type")
+        raise ValueError("Invalid long/short type")
 
     return tov
 
