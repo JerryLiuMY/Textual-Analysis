@@ -3,10 +3,11 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from global_settings import OUTPUT_PATH
-from experiments.params import params_dict
 from experiments.generators import generate_params
+from params.params import params_model
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
+from models.bert import fit_bert, pre_bert
 from tools.exp_tools import get_textual, get_return
 from tools.exp_tools import get_stocks, get_weights, get_returns
 from tools.exp_tools import save_params, save_model
@@ -41,6 +42,9 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     elif model_name == "doc2vec":
         fit_func = fit_doc2vec
         pre_func = pre_doc2vec
+    elif model_name == "bert":
+        fit_func = fit_bert
+        pre_func = pre_bert
     else:
         raise ValueError("Invalid model name")
 
@@ -59,7 +63,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         df_rich_win = df_rich.loc[window_idx, :].reset_index(inplace=False, drop=True)
         textual_win = get_textual(textual, window_idx)
         window = [trddt_train, trddt_valid, trddt_test]
-        params_iter = generate_params(params_dict, model_name)
+        params_iter = generate_params(params_model, model_name)
         outputs = experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls)
         best_model_e, best_model_v = outputs[0]
         best_params_e, best_params_v = outputs[1]

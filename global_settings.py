@@ -12,7 +12,6 @@ OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
 # children paths
 CLEAN_PATH = os.path.join(DATA_PATH, "cleaned")
 RICH_PATH = os.path.join(DATA_PATH, "enriched")
-WORD_PATH = os.path.join(DATA_PATH, "word")
 LOG_PATH = os.path.join(OUTPUT_PATH, "log")
 
 # stkcd & trddt
@@ -25,8 +24,7 @@ date0_max = "2019-07-30"
 # risklab server
 user = "risklab_user"
 host = "128.135.196.208"
-PASS_PATH = os.path.join(DATA_PATH, "password")
-with open(os.path.join(PASS_PATH, "password.json"), "r") as f:
+with open(os.path.join(DATA_PATH, "password.json"), "r") as f:
     pass_file = json.load(f)
     password = pass_file["password"]
 

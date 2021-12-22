@@ -54,5 +54,6 @@ def pre_ssestm(word_sps, model, params):
     penalty = pen * np.log(W_lin[0, :] * W_lin[1, :]).reshape(1, -1)
     objective = likelihood + penalty
     p_hat = np.take(p_lin, np.argmax(objective, axis=1))
+    sentiment = p_hat
 
-    return p_hat
+    return sentiment
