@@ -1,10 +1,8 @@
-from scipy.sparse import csr_matrix, save_npz
-from global_settings import RICH_PATH, full_dict
-from global_settings import WORD_PATH
+from scipy.sparse import csr_matrix
+from global_settings import full_dict
 import pandas as pd
 from datetime import datetime
 import math
-import os
 
 
 def build_word_sps(sub_file_rich):
@@ -13,7 +11,7 @@ def build_word_sps(sub_file_rich):
     """
 
     # load sub file enriched
-    sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
+    sub_df_rich = pd.read_csv(sub_file_rich)
     sub_df_rich["title"] = sub_df_rich["title"].astype(str)
     sub_df_rich["text"] = sub_df_rich["text"].astype(str)
     def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
@@ -32,6 +30,5 @@ def build_word_sps(sub_file_rich):
         sub_word_df = sub_word_df.append(mini_word_df)
 
     sub_word_sps = csr_matrix(sub_word_df.values)
-    sub_word_file = f"word_{sub_file_rich.split('.')[0].split('_')[1]}.npz"
-    print(f"Saving to {sub_word_file}...")
-    save_npz(os.path.join(WORD_PATH, sub_word_file), sub_word_sps)
+
+    return sub_word_sps
