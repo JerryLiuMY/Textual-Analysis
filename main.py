@@ -18,7 +18,7 @@ from data_prep.data_clean import save_data
 from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
-from data_proc.word_sps import build_word_sps
+from embeddings.word_sps import build_word_sps
 from experiments.params import window_dict
 from experiments.generators import generate_window
 from experiments.experiment import experiment

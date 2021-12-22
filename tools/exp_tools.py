@@ -62,17 +62,17 @@ def save_params(params, model_name, trddt_test, ev):
         json.dump(params, f)
 
 
-def get_rich_ls(df_rich, target, perc_ls):
+def get_rich_ls(df_rich, sentiment, perc_ls):
     """ Get long/short dataframes
     :param df_rich: enriched dataframe
-    :param target: predicted target for portfolio construction
+    :param sentiment: predicted sentiment for portfolio construction
     :param perc_ls: percentage of L/S portfolio
     :return df_rich_l: long enriched dataframe
     :return df_rich_s: short enriched dataframe
     """
 
     # group by stock_mention
-    df_rich.loc[:, "target"] = target
+    df_rich.loc[:, "sentiment"] = sentiment
     df_rich_gb = df_rich.groupby("stock_mention")
 
     # return if no stock to L/S
@@ -84,7 +84,7 @@ def get_rich_ls(df_rich, target, perc_ls):
 
     # get L/S keys
     keys = list(df_rich_gb.groups.keys())
-    sorted_idx = np.argsort(df_rich_gb["target"].mean().to_numpy())
+    sorted_idx = np.argsort(df_rich_gb["sentiment"].mean().to_numpy())
     keys_l = [keys[i] for i in sorted_idx[-num_ls:]]
     keys_s = [keys[i] for i in sorted_idx[:num_ls]]
 
@@ -97,48 +97,48 @@ def get_rich_ls(df_rich, target, perc_ls):
     return df_rich_l, df_rich_s
 
 
-def get_stocks(df_rich, target, perc_ls):
-    """ Get L/S stocks from the predicted targets
+def get_stocks(df_rich, sentiment, perc_ls):
+    """ Get L/S stocks from the predicted sentiments
     :param df_rich: enriched dataframe
-    :param target: predicted target for portfolio construction
+    :param sentiment: predicted sentiment for portfolio construction
     :param perc_ls: percentage of L/S portfolio
     :return stks_l, stks_s: L/S stocks
     """
 
     # df_rich.shape[0] == 0 automatically accounted for
-    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, sentiment, perc_ls)
     stks_l = df_rich_l.loc[:, "stock_mention"].to_numpy()
     stks_s = df_rich_s.loc[:, "stock_mention"].to_numpy()
 
     return stks_l, stks_s
 
 
-def get_returns(df_rich, target, perc_ls):
-    """ Get L/S returns from the predicted targets
+def get_returns(df_rich, sentiment, perc_ls):
+    """ Get L/S returns from the predicted sentiments
     :param df_rich: enriched dataframe
-    :param target: predicted target for portfolio construction
+    :param sentiment: predicted sentiment for portfolio construction
     :param perc_ls: percentage of L/S portfolio
     :return rets_l, rets_s: L/S returns
     """
 
     # df_rich.shape[0] == 0 automatically accounted for
-    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, sentiment, perc_ls)
     rets_l = df_rich_l.loc[:, "ret"].to_numpy()
     rets_s = df_rich_s.loc[:, "ret"].to_numpy()
 
     return rets_l, rets_s
 
 
-def get_weights(df_rich, target, perc_ls, ev):
-    """ Get L/S weights from the predicted targets
+def get_weights(df_rich, sentiment, perc_ls, ev):
+    """ Get L/S weights from the predicted sentiments
     :param df_rich: enriched dataframe
-    :param target: predicted target for portfolio construction
+    :param sentiment: predicted sentiment for portfolio construction
     :param perc_ls: percentage of L/S portfolio
     :param ev: equal vs. value weighted type
     :return wgts_l, wgts_s: L/S weights
     """
 
-    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, sentiment, perc_ls)
 
     if df_rich_l.shape[0] == df_rich_s.shape[0] == 0:
         return np.empty(0), np.empty(0)
@@ -155,16 +155,16 @@ def get_weights(df_rich, target, perc_ls, ev):
     return wgts_l, wgts_s
 
 
-def get_return(df_rich, target, perc_ls, ev):
-    """ Get return and L/S return from the predicted targets
+def get_return(df_rich, sentiment, perc_ls, ev):
+    """ Get return and L/S return from the predicted sentiments
     :param df_rich: enriched dataframe
-    :param target: predicted target for portfolio construction
+    :param sentiment: predicted sentiment for portfolio construction
     :param perc_ls: percentage of L/S portfolio
     :param ev: equal vs. value weighted type
     :return ret, ret_l, ret_s: total return and L/S return
     """
 
-    df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
+    df_rich_l, df_rich_s = get_rich_ls(df_rich, sentiment, perc_ls)
 
     if df_rich_l.shape[0] == df_rich_s.shape[0] == 0:
         return 0., 0., 0.

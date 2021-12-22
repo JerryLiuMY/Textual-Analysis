@@ -15,7 +15,7 @@ from tools.exp_tools import save_params, save_model
 def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     """ train models over a sequence of windows and get cumulative return
     :param df_rich: enriched dataframe
-    :param textual: textual information (e.g. sparse matrix, embedding)
+    :param textual: textual information (e.g. sparse matrix, embeddings)
     :param window_iter: rolling window
     :param model_name: parameters iterator
     :param perc_ls: percentage of long-short portfolio
@@ -93,7 +93,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
 def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls):
     """ train models over a window and get cumulative return
     :param df_rich_win: enriched dataframe within the window 
-    :param textual_win: textual information (e.g. sparse matrix, embedding) within the window
+    :param textual_win: textual information (e.g. sparse matrix, embeddings) within the window
     :param window: [trddt_train, trddt_valid, trddt_test] window
     :param fit_func: parameters iterator
     :param pre_func: parameters iterator
@@ -133,9 +133,9 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
 
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
             textual_win_valid = get_textual(textual_win, valid_idx)
-            target = pre_func(textual_win_valid, model, params)
-            ret_e_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "e")[0]
-            ret_v_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "v")[0]
+            sentiment = pre_func(textual_win_valid, model, params)
+            ret_e_win_valid[i] = get_return(df_rich_win_valid, sentiment, perc_ls, "e")[0]
+            ret_v_win_valid[i] = get_return(df_rich_win_valid, sentiment, perc_ls, "v")[0]
 
         cum_e_valid = np.log(np.cumprod(ret_e_win_valid + 1))
         cum_v_valid = np.log(np.cumprod(ret_v_win_valid + 1))
@@ -165,15 +165,15 @@ def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_
 
         df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
         textual_win_test = get_textual(textual_win, test_idx)
-        target_e = pre_func(textual_win_test, best_model_e, best_params_e)
-        target_v = pre_func(textual_win_test, best_model_v, best_params_v)
-        ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, target_e, perc_ls)
-        ret_v_win[i, 0:2] = get_stocks(df_rich_win_test, target_v, perc_ls)
-        ret_e_win[i, 2:4] = get_returns(df_rich_win_test, target_e, perc_ls)
-        ret_v_win[i, 2:4] = get_returns(df_rich_win_test, target_v, perc_ls)
-        ret_e_win[i, 4:6] = get_weights(df_rich_win_test, target_e, perc_ls, "e")
-        ret_v_win[i, 4:6] = get_weights(df_rich_win_test, target_v, perc_ls, "v")
-        ret_e_win[i, 6:9] = get_return(df_rich_win_test, target_e, perc_ls, "e")
-        ret_v_win[i, 6:9] = get_return(df_rich_win_test, target_v, perc_ls, "v")
+        sentiment_e = pre_func(textual_win_test, best_model_e, best_params_e)
+        sentiment_v = pre_func(textual_win_test, best_model_v, best_params_v)
+        ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, sentiment_e, perc_ls)
+        ret_v_win[i, 0:2] = get_stocks(df_rich_win_test, sentiment_v, perc_ls)
+        ret_e_win[i, 2:4] = get_returns(df_rich_win_test, sentiment_e, perc_ls)
+        ret_v_win[i, 2:4] = get_returns(df_rich_win_test, sentiment_v, perc_ls)
+        ret_e_win[i, 4:6] = get_weights(df_rich_win_test, sentiment_e, perc_ls, "e")
+        ret_v_win[i, 4:6] = get_weights(df_rich_win_test, sentiment_v, perc_ls, "v")
+        ret_e_win[i, 6:9] = get_return(df_rich_win_test, sentiment_e, perc_ls, "e")
+        ret_v_win[i, 6:9] = get_return(df_rich_win_test, sentiment_v, perc_ls, "v")
 
     return (best_model_e, best_model_v), (best_params_e, best_params_v), (ret_e_win, ret_v_win)

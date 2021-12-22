@@ -18,4 +18,3 @@ def ssestm_sentiment(O_hat):
     occurrence = occurrence[idx]
 
     return rank_dict, sentiment, occurrence
-
