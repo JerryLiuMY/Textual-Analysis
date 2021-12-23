@@ -4,9 +4,10 @@ import pandas as pd
 import numpy as np
 import scipy as sp
 import datetime
+import itertools
 from glob import glob
 from multiprocessing.pool import Pool
-from scipy.sparse import load_npz, csr_matrix, save_npz
+from scipy.sparse import load_npz, csr_matrix
 from global_settings import CLEAN_PATH, date0_min, date0_max
 from global_settings import DATA_PATH
 from global_settings import RICH_PATH
@@ -19,21 +20,12 @@ from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
 from textual.word_sps import build_word_sps
+from textual.d2v_emb import build_d2v_emb
+from textual.bert_emb import build_bert_emb
 from experiments.generators import generate_window
 from experiments.experiment import experiment
 from analysis.backtest import backtest
 from params.params import window_dict
-
-
-def create_dirs(paths):
-    """ Create directories
-    :param paths: directories to create
-    """
-
-    # create directories
-    for path in paths:
-        if not os.path.isdir(path):
-            os.mkdir(path)
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -49,11 +41,12 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     clean_data(data_file, clean_file)
     split_data(clean_file, split_num=split_num)
 
-    # enrich data
+    # define index
     sub_file_clean_li = [_.split("/")[-1] for _ in glob(os.path.join(CLEAN_PATH, "*.csv"))]
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
     sub_file_clean_li = sorted([_ for _ in sub_file_clean_li if _.split(".")[0].split("_")[1] not in sub_file_rich_idx])
 
+    # enrich data
     num_proc = 16
     for idx in range(0, len(sub_file_clean_li), num_proc):
         pool = Pool(num_proc)
@@ -63,7 +56,9 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
 
 
 def run_textual(textual_name):
-    """ Build word sparse matrix """
+    """ Build word sparse matrix
+    :param textual_name: textual name
+    """
 
     # create path
     text_path = os.path.join(DATA_PATH, textual_name)
@@ -71,19 +66,23 @@ def run_textual(textual_name):
         os.mkdir(text_path)
 
     # define index
+    ext_li = ["*.npz"]
     sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(text_path, "*.npz"))]
+    sub_text_file_idx = list(set(itertools.chain(*[
+        [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, ext))] for ext in ext_li
+    ])))
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_text_file_idx])
-    sub_file_rich_li = [os.path.join(RICH_PATH, _) for _ in sub_file_rich_li]
 
-    def build_textual(sub_file_rich):
-        if textual_name == "word_sps":
-            sub_word_sps = build_word_sps(sub_file_rich)
-            sub_word_file = f"word_sps_{sub_file_rich.split('.')[0].split('_')[1]}.npz"
-            print(f"Saving to {sub_word_file}...")
-            save_npz(os.path.join(text_path, sub_word_file), sub_word_sps)
+    # build textual
+    if textual_name == "word_sps":
+        build_textual = build_word_sps
+    elif textual_name == "d2v_emb":
+        build_textual = build_d2v_emb
+    elif textual_name == "bert_emb":
+        build_textual = build_bert_emb
+    else:
+        raise ValueError("Invalid textual name")
 
-    # build word sparse matrix
     num_proc = 12
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
@@ -98,17 +97,17 @@ def build_ssestm():
     # define index
     text_path = os.path.join(DATA_PATH, "word_sps")
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_word_file_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(text_path, "*.npz"))]
-    if sorted(sub_file_rich_idx) != sorted(sub_word_file_idx):
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, "*.npz"))]
+    if sorted(sub_file_rich_idx) != sorted(sub_text_file_idx):
         raise ValueError("Mismatch between enriched files and word matrix files")
 
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
-    sub_word_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, "*.npz"))])
+    sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, "*.npz"))])
 
     # get df_rich & word_sps
     df_rich = pd.DataFrame()
     word_sps = csr_matrix(np.empty((0, len(full_dict)), np.int64))
-    for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_word_file_li):
+    for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_text_file_li):
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Combining {sub_file_rich} and {sub_word_file}")
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
@@ -129,7 +128,7 @@ def build_doc2vec():
     def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
     def cut_doc(doc): return [word for word in " ".join(jieba.cut(doc)).split() if word not in stop_list]
 
-    # get df_rich & doc_cut
+    # get df_rich & emb_vec
     df_rich = pd.DataFrame()
     doc_cut = pd.Series()
     for sub_file_rich in sub_file_rich_li:
@@ -155,23 +154,6 @@ def build_bert():
     return None, None
 
 
-def build_experiment(model_name):
-    """ Build df_rich dataframe and textual for experiment
-    :param model_name: model name
-    """
-
-    if model_name == "ssestm":
-        df_rich, textual = build_ssestm()
-    elif model_name == "doc2vec":
-        df_rich, textual = build_doc2vec()
-    elif model_name == "bert":
-        df_rich, textual = build_bert()
-    else:
-        raise ValueError("Invalid model name")
-
-    return df_rich, textual
-
-
 def run_experiment(model_name, perc_ls):
     """ Run experiment
     :param model_name: model name
@@ -183,11 +165,18 @@ def run_experiment(model_name, perc_ls):
     if not os.path.isdir(model_path):
         os.mkdir(model_path)
 
-    # get df_rich, textual & window_iter
-    df_rich, textual = build_experiment(model_name)
-    window_iter = generate_window(window_dict, date0_min, date0_max)
+    # get df_rich & textual
+    if model_name == "ssestm":
+        df_rich, textual = build_ssestm()
+    elif model_name == "doc2vec":
+        df_rich, textual = build_doc2vec()
+    elif model_name == "bert":
+        df_rich, textual = build_bert()
+    else:
+        raise ValueError("Invalid model name")
 
     # perform experiment
+    window_iter = generate_window(window_dict, date0_min, date0_max)
     experiment(df_rich, textual, window_iter, model_name, perc_ls)
 
 

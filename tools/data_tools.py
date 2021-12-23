@@ -27,6 +27,7 @@ def convert_zone(timestamp):
     :param timestamp: Epoch & Unix Timestamp
     :return: China date & time Timestamps
     """
+
     fmt_date = "%Y-%m-%d"
     fmt_time = "%H:%M:%S"
 
@@ -47,6 +48,7 @@ def shift_date(date, shift_day):
     :param shift_day: number of days to lag
     :return: shifted date in the format of "%Y-%m-%d"
     """
+
     date_fmt = "%Y-%m-%d"
     date_dt = datetime.strptime(date, date_fmt)
     shifted_date_dt = date_dt + timedelta(days=shift_day)
@@ -61,6 +63,7 @@ def match_date(date, match_day=0):
     :param match_day: number of days before / after the trading date to match
     :return: matched date in the format of "%Y-%m-%d"
     """
+
     if match_day >= 0:
         matched_date = trddt_all[trddt_all >= date][match_day]
     else:
