@@ -3,21 +3,22 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from global_settings import OUTPUT_PATH
-from experiments.generators import generate_params
-from params.params import params_model
+from params.params import params_model, date0_min, date0_max
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
 from models.bert import fit_bert, pre_bert
 from tools.exp_tools import get_textual, get_return
 from tools.exp_tools import get_stocks, get_weights, get_returns
 from tools.exp_tools import save_params, save_model
+from experiments.generators import generate_window
+from experiments.generators import generate_params
+from params.params import window_dict
 
 
-def experiment(df_rich, textual, window_iter, model_name, perc_ls):
+def experiment(df_rich, textual, model_name, perc_ls):
     """ train models over a sequence of windows and get cumulative return
     :param df_rich: enriched dataframe
     :param textual: textual information (e.g. sparse matrix, embeddings)
-    :param window_iter: rolling window
     :param model_name: parameters iterator
     :param perc_ls: percentage of long-short portfolio
     :return ret_e_win: equal weighted returns (ret, ret_l, ret_s) with shape=[len(trddt), 3]
@@ -35,24 +36,12 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         if not os.path.isdir(model_sub_path):
             os.mkdir(model_sub_path)
 
-    # define functions
-    if model_name == "ssestm":
-        fit_func = fit_ssestm
-        pre_func = pre_ssestm
-    elif model_name == "doc2vec":
-        fit_func = fit_doc2vec
-        pre_func = pre_doc2vec
-    elif model_name == "bert":
-        fit_func = fit_bert
-        pre_func = pre_bert
-    else:
-        raise ValueError("Invalid model name")
-
     # define dataframes
     columns_e = ["stks_le", "stks_se", "rets_le", "rets_se", "wgts_le", "wgts_se", "ret_e", "ret_le", "ret_se"]
     columns_v = ["stks_lv", "stks_sv", "rets_lv", "rets_sv", "wgts_lv", "wgts_sv", "ret_v", "ret_lv", "ret_sv"]
     ret_e_pkl, ret_e_csv = pd.DataFrame(columns=columns_e[0:6]), pd.DataFrame(columns=columns_e[6:9])
     ret_v_pkl, ret_v_csv = pd.DataFrame(columns=columns_v[0:6]), pd.DataFrame(columns=columns_v[6:9])
+    window_iter = generate_window(window_dict, date0_min, date0_max)
 
     for [trddt_train, trddt_valid, trddt_test] in window_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -63,8 +52,7 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
         df_rich_win = df_rich.loc[window_idx, :].reset_index(inplace=False, drop=True)
         textual_win = get_textual(textual, window_idx)
         window = [trddt_train, trddt_valid, trddt_test]
-        params_iter = generate_params(params_model, model_name)
-        outputs = experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls)
+        outputs = experiment_win(df_rich_win, textual_win, window, model_name, perc_ls)
         best_model_e, best_model_v = outputs[0]
         best_params_e, best_params_v = outputs[1]
         ret_e_win, ret_v_win = outputs[2]
@@ -94,20 +82,32 @@ def experiment(df_rich, textual, window_iter, model_name, perc_ls):
     ret_csv.to_csv(os.path.join(model_path, "ret_csv.csv"))
 
 
-def experiment_win(df_rich_win, textual_win, window, fit_func, pre_func, params_iter, perc_ls):
+def experiment_win(df_rich_win, textual_win, window, model_name, perc_ls):
     """ train models over a window and get cumulative return
     :param df_rich_win: enriched dataframe within the window 
     :param textual_win: textual information (e.g. sparse matrix, embeddings) within the window
     :param window: [trddt_train, trddt_valid, trddt_test] window
-    :param fit_func: parameters iterator
-    :param pre_func: parameters iterator
-    :param params_iter: parameters iterator
+    :param model_name: model name
     :param perc_ls: percentage of long-short portfolio
     :return ret_e_win: equal weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
     :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
     """
 
+    # define functions
+    if model_name == "ssestm":
+        fit_func = fit_ssestm
+        pre_func = pre_ssestm
+    elif model_name == "doc2vec":
+        fit_func = fit_doc2vec
+        pre_func = pre_doc2vec
+    elif model_name == "bert":
+        fit_func = fit_bert
+        pre_func = pre_bert
+    else:
+        raise ValueError("Invalid model name")
+
     [trddt_train, trddt_valid, trddt_test] = window
+    params_iter = generate_params(params_model, model_name)
     best_cum_e_scl, best_params_e, best_model_e = -np.inf, dict(), None
     best_cum_v_scl, best_params_v, best_model_v = -np.inf, dict(), None
 

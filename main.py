@@ -8,7 +8,7 @@ import itertools
 from glob import glob
 from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
-from global_settings import CLEAN_PATH, date0_min, date0_max
+from global_settings import CLEAN_PATH
 from global_settings import DATA_PATH
 from global_settings import RICH_PATH
 from global_settings import OUTPUT_PATH
@@ -22,10 +22,8 @@ from data_prep.data_enrich import enrich_data
 from textual.word_sps import build_word_sps
 from textual.d2v_emb import build_d2v_emb
 from textual.bert_emb import build_bert_emb
-from experiments.generators import generate_window
 from experiments.experiment import experiment
-from analysis.backtest import backtest
-from params.params import window_dict
+from experiments.backtest import backtest
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -176,8 +174,7 @@ def run_experiment(model_name, perc_ls):
         raise ValueError("Invalid model name")
 
     # perform experiment
-    window_iter = generate_window(window_dict, date0_min, date0_max)
-    experiment(df_rich, textual, window_iter, model_name, perc_ls)
+    experiment(df_rich, textual, model_name, perc_ls)
 
 
 def run_backtest(model_name):
