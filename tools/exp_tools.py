@@ -183,13 +183,13 @@ def get_return(df_rich, sentiment, perc_ls, ev):
     return ret, ret_l, ret_s
 
 
-def get_window(window_iter, trddt_test_Ym):
-    """ Get window from trddt_test in the format of %Y-%m
-    :param window_iter: window iterator
-    :param trddt_test_Ym: trddt_test in the format of %Y-%m
-    """
-
-    for [trddt_train, trddt_valid, trddt_test] in window_iter:
-        if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
-            window = [trddt_train, trddt_valid, trddt_test]
-            return window
+# def get_window(window_iter, trddt_test_Ym):
+#     """ Get window from trddt_test in the format of %Y-%m
+#     :param window_iter: window iterator
+#     :param trddt_test_Ym: trddt_test in the format of %Y-%m
+#     """
+#
+#     for [trddt_train, trddt_valid, trddt_test] in window_iter:
+#         if datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m") == trddt_test_Ym:
+#             window = [trddt_train, trddt_valid, trddt_test]
+#             return window

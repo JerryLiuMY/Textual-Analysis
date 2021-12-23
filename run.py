@@ -15,17 +15,17 @@
 #     run_data_prep()
 
 
-if __name__ == "__main__":
-    from main import run_textual
-    run_textual("word_sps")
+# if __name__ == "__main__":
+#     from main import run_textual
+#     run_textual("word_sps")
 #     run_textual("d2v_emb")
 #     run_textual("bert_emb")
 
 
-# if __name__ == "__main__":
-#     from main import run_experiment
-#     from main import run_backtest
-#     from params.params import perc_ls
-#     model_name = "ssestm"
-#     run_experiment(model_name, perc_ls)
-#     run_backtest(model_name)
+if __name__ == "__main__":
+    from main import run_experiment
+    from main import run_backtest
+    from params.params import perc_ls
+    model_name = "ssestm"
+    run_experiment(model_name, perc_ls)
+    run_backtest(model_name)
