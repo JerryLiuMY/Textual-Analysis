@@ -2,8 +2,8 @@ import os
 import json
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime
+import matplotlib.pyplot as plt
 from dateutil.relativedelta import relativedelta
 from global_settings import OUTPUT_PATH
 plt.style.use("ggplot")
