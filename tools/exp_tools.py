@@ -1,11 +1,11 @@
-import json
-import os
-import numpy as np
 from global_settings import OUTPUT_PATH
 from datetime import datetime
-import joblib
-import pandas as pd
 from scipy.sparse import issparse
+import numpy as np
+import pandas as pd
+import json
+import os
+import joblib
 
 
 def get_textual(textual, idx):
