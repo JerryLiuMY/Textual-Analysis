@@ -25,6 +25,6 @@ if __name__ == "__main__":
     from main import run_experiment
     from main import run_backtest
     from params.params import perc_ls
-    model_name = "ssestm"
+    model_name = "doc2vec"
     run_experiment(model_name, perc_ls)
     run_backtest(model_name)

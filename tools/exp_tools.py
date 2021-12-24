@@ -16,10 +16,8 @@ def get_textual(textual, idx):
 
     if isinstance(textual, np.ndarray) or issparse(textual):
         return textual[idx]
-    elif isinstance(textual, pd.Series):
+    elif isinstance(textual, pd.Series) or isinstance(textual, pd.DataFrame):
         return textual.loc[idx].reset_index(inplace=False, drop=True)
-    elif isinstance(textual, pd.DataFrame):
-        return textual.loc[idx, :].reset_index(inplace=False, drop=True)
     else:
         raise ValueError("Textual type not recognized")
 
