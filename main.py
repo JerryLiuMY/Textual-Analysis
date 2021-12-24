@@ -1,10 +1,9 @@
 import os
-import jieba
 import pandas as pd
 import numpy as np
 import scipy as sp
+import pickle
 import datetime
-import itertools
 from glob import glob
 from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
@@ -14,14 +13,12 @@ from global_settings import RICH_PATH
 from global_settings import OUTPUT_PATH
 from global_settings import full_dict
 from global_settings import dalym
-from global_settings import stop_list
 from data_prep.data_clean import save_data
 from data_prep.data_clean import clean_data
 from data_prep.data_split import split_data
 from data_prep.data_enrich import enrich_data
 from textual.word_sps import build_word_sps
-from textual.d2v_emb import build_d2v_emb
-from textual.bert_emb import build_bert_emb
+from textual.art_cut import build_art_cut
 from experiments.experiment import experiment
 from experiments.backtest import backtest
 
@@ -63,24 +60,20 @@ def run_textual(textual_name):
     if not os.path.isdir(text_path):
         os.mkdir(text_path)
 
-    # define index
-    ext_li = ["*.npz"]
-    sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = list(set(itertools.chain(*[
-        [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, ext))] for ext in ext_li
-    ])))
-    sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_text_file_idx])
-
-    # build textual
+    # define functions
     if textual_name == "word_sps":
-        build_textual = build_word_sps
-    elif textual_name == "d2v_emb":
-        build_textual = build_d2v_emb
-    elif textual_name == "bert_emb":
-        build_textual = build_bert_emb
+        build_textual, extension = build_word_sps, "*.npz"
+    elif textual_name == "art_cut":
+        build_textual, extension = build_art_cut, "*.pkl"
     else:
         raise ValueError("Invalid textual name")
 
+    # define paths
+    sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, extension))]
+    sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_text_file_idx])
+
+    # build textual
     num_proc = 12
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
@@ -89,27 +82,36 @@ def run_textual(textual_name):
         pool.join()
 
 
-def build_ssestm():
-    """ Build experiment for ssestm """
+def generate_files(textual_name):
+    """ Build iterator for files """
 
-    # define index
-    text_path = os.path.join(DATA_PATH, "word_sps")
+    # define paths
+    text_path = os.path.join(DATA_PATH, textual_name)
+    extension = "*.npz" if textual_name == "word_sps" else "*.pkl"
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, "*.npz"))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, extension))]
     if sorted(sub_file_rich_idx) != sorted(sub_text_file_idx):
         raise ValueError("Mismatch between enriched files and word matrix files")
 
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
-    sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, "*.npz"))])
+    sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, extension))])
+
+    return text_path, zip(sub_file_rich_li, sub_text_file_li)
+
+
+def build_ssestm():
+    """ Build experiment for ssestm """
 
     # get df_rich & word_sps
     df_rich = pd.DataFrame()
     word_sps = csr_matrix(np.empty((0, len(full_dict)), np.int64))
-    for sub_file_rich, sub_word_file in zip(sub_file_rich_li, sub_text_file_li):
+    text_path, files_iter = generate_files("word_sps")
+
+    for sub_file_rich, sub_text_file in files_iter:
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"Combining {sub_file_rich} and {sub_word_file}")
+              f"Combining {sub_file_rich} and {sub_text_file}")
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
-        sub_word_sps = load_npz(os.path.join(text_path, sub_word_file))
+        sub_word_sps = load_npz(os.path.join(text_path, sub_text_file))
         df_rich = df_rich.append(sub_df_rich)
         word_sps = sp.sparse.vstack([word_sps, sub_word_sps], format="csr")
 
@@ -122,28 +124,32 @@ def build_doc2vec():
     """ Build experiment for doc2vec """
 
     # define index
-    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
-    def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
-    def cut_doc(doc): return [word for word in " ".join(jieba.cut(doc)).split() if word not in stop_list]
+    text_path = os.path.join(DATA_PATH, "art_cut")
+    sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, "*.pkl"))]
+    if sorted(sub_file_rich_idx) != sorted(sub_text_file_idx):
+        raise ValueError("Mismatch between enriched files and word matrix files")
 
-    # get df_rich & emb_vec
+    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
+    sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, "*.pkl"))])
+
+    # get df_rich & art_cut
     df_rich = pd.DataFrame()
-    doc_cut = pd.Series()
-    for sub_file_rich in sub_file_rich_li:
+    art_cut = pd.Series(dtype=object)
+    for sub_file_rich, sub_text_file in zip(sub_file_rich_li, sub_text_file_li):
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Working on {sub_file_rich}")
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
-        sub_df_rich["title"] = sub_df_rich["title"].astype(str)
-        sub_df_rich["text"] = sub_df_rich["text"].astype(str)
-        sub_doc_cut = sub_df_rich.apply(join_tt, axis=1).apply(cut_doc)
+        with open(os.path.join(text_path, sub_text_file), "wb") as f:
+            sub_art_cut = pickle.load(f)
         df_rich = df_rich.append(sub_df_rich)
-        doc_cut = pd.concat([doc_cut, sub_doc_cut], axis=0)
+        art_cut = pd.concat([art_cut, sub_art_cut], axis=0)
 
     df_rich.reset_index(inplace=True, drop=True)
-    doc_cut.reset_index(inplace=True, drop=True)
-    doc_cut.name = "doc_cut"
+    art_cut.reset_index(inplace=True, drop=True)
+    art_cut.name = "art_cut"
 
-    return df_rich, doc_cut
+    return df_rich, art_cut
 
 
 def build_bert():

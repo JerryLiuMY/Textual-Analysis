@@ -18,8 +18,7 @@
 # if __name__ == "__main__":
 #     from main import run_textual
 #     run_textual("word_sps")
-#     run_textual("d2v_emb")
-#     run_textual("bert_emb")
+#     run_textual("art_cut")
 
 
 if __name__ == "__main__":

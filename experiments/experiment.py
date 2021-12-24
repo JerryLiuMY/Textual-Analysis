@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from global_settings import OUTPUT_PATH
-from params.params import params_model, date0_min, date0_max
+from params.params import window_dict, params_dict
+from params.params import date0_min, date0_max
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
 from models.bert import fit_bert, pre_bert
@@ -12,7 +13,6 @@ from tools.exp_tools import get_stocks, get_weights, get_returns
 from tools.exp_tools import save_params, save_model
 from experiments.generators import generate_window
 from experiments.generators import generate_params
-from params.params import window_dict
 
 
 def experiment(df_rich, textual, model_name, perc_ls):
@@ -107,7 +107,7 @@ def experiment_win(df_rich_win, textual_win, window, model_name, perc_ls):
         raise ValueError("Invalid model name")
 
     [trddt_train, trddt_valid, trddt_test] = window
-    params_iter = generate_params(params_model, model_name)
+    params_iter = generate_params(params_dict, model_name)
     best_cum_e_scl, best_params_e, best_model_e = -np.inf, dict(), None
     best_cum_v_scl, best_params_v, best_model_v = -np.inf, dict(), None
 
@@ -137,9 +137,9 @@ def experiment_win(df_rich_win, textual_win, window, model_name, perc_ls):
 
             df_rich_win_valid = df_rich_win.loc[valid_idx, :].reset_index(inplace=False, drop=True)
             textual_win_valid = get_textual(textual_win, valid_idx)
-            sentiment = pre_func(textual_win_valid, model, params)
-            ret_e_win_valid[i] = get_return(df_rich_win_valid, sentiment, perc_ls, "e")[0]
-            ret_v_win_valid[i] = get_return(df_rich_win_valid, sentiment, perc_ls, "v")[0]
+            target = pre_func(textual_win_valid, model, params)
+            ret_e_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "e")[0]
+            ret_v_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "v")[0]
 
         cum_e_valid = np.log(np.cumprod(ret_e_win_valid + 1))
         cum_v_valid = np.log(np.cumprod(ret_v_win_valid + 1))
@@ -169,15 +169,15 @@ def experiment_win(df_rich_win, textual_win, window, model_name, perc_ls):
 
         df_rich_win_test = df_rich_win.loc[test_idx, :].reset_index(inplace=False, drop=True)
         textual_win_test = get_textual(textual_win, test_idx)
-        sentiment_e = pre_func(textual_win_test, best_model_e, best_params_e)
-        sentiment_v = pre_func(textual_win_test, best_model_v, best_params_v)
-        ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, sentiment_e, perc_ls)
-        ret_v_win[i, 0:2] = get_stocks(df_rich_win_test, sentiment_v, perc_ls)
-        ret_e_win[i, 2:4] = get_returns(df_rich_win_test, sentiment_e, perc_ls)
-        ret_v_win[i, 2:4] = get_returns(df_rich_win_test, sentiment_v, perc_ls)
-        ret_e_win[i, 4:6] = get_weights(df_rich_win_test, sentiment_e, perc_ls, "e")
-        ret_v_win[i, 4:6] = get_weights(df_rich_win_test, sentiment_v, perc_ls, "v")
-        ret_e_win[i, 6:9] = get_return(df_rich_win_test, sentiment_e, perc_ls, "e")
-        ret_v_win[i, 6:9] = get_return(df_rich_win_test, sentiment_v, perc_ls, "v")
+        target_e = pre_func(textual_win_test, best_model_e, best_params_e)
+        target_v = pre_func(textual_win_test, best_model_v, best_params_v)
+        ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, target_e, perc_ls)
+        ret_v_win[i, 0:2] = get_stocks(df_rich_win_test, target_v, perc_ls)
+        ret_e_win[i, 2:4] = get_returns(df_rich_win_test, target_e, perc_ls)
+        ret_v_win[i, 2:4] = get_returns(df_rich_win_test, target_v, perc_ls)
+        ret_e_win[i, 4:6] = get_weights(df_rich_win_test, target_e, perc_ls, "e")
+        ret_v_win[i, 4:6] = get_weights(df_rich_win_test, target_v, perc_ls, "v")
+        ret_e_win[i, 6:9] = get_return(df_rich_win_test, target_e, perc_ls, "e")
+        ret_v_win[i, 6:9] = get_return(df_rich_win_test, target_v, perc_ls, "v")
 
     return (best_model_e, best_model_v), (best_params_e, best_params_v), (ret_e_win, ret_v_win)
