@@ -1,9 +1,9 @@
 import os
+import pickle
+import datetime
 import pandas as pd
 import numpy as np
 import scipy as sp
-import pickle
-import datetime
 from glob import glob
 from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
@@ -51,7 +51,7 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
 
 
 def run_textual(textual_name):
-    """ Build word sparse matrix
+    """ Build textual data
     :param textual_name: textual name
     """
 
@@ -91,21 +91,22 @@ def generate_files(textual_name):
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
     sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, extension))]
     if sorted(sub_file_rich_idx) != sorted(sub_text_file_idx):
-        raise ValueError("Mismatch between enriched files and word matrix files")
+        raise ValueError("Mismatch between enriched data files and textual files")
 
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
     sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, extension))])
 
-    return text_path, zip(sub_file_rich_li, sub_text_file_li)
+    return zip(sub_file_rich_li, sub_text_file_li)
 
 
-def build_ssestm():
-    """ Build experiment for ssestm """
+def load_word_sps():
+    """ Load word sparse matrix """
 
     # get df_rich & word_sps
+    text_path = os.path.join(DATA_PATH, "word_sps")
+    files_iter = generate_files("word_sps")
     df_rich = pd.DataFrame()
-    word_sps = csr_matrix(np.empty((0, len(full_dict)), np.int64))
-    text_path, files_iter = generate_files("word_sps")
+    word_sps = csr_matrix(np.empty((0, len(full_dict)), dtype=np.int64))
 
     for sub_file_rich, sub_text_file in files_iter:
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -120,42 +121,29 @@ def build_ssestm():
     return df_rich, word_sps
 
 
-def build_doc2vec():
-    """ Build experiment for doc2vec """
-
-    # define index
-    text_path = os.path.join(DATA_PATH, "art_cut")
-    sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, "*.pkl"))]
-    if sorted(sub_file_rich_idx) != sorted(sub_text_file_idx):
-        raise ValueError("Mismatch between enriched files and word matrix files")
-
-    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
-    sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, "*.pkl"))])
+def load_art_cut():
+    """ Load articles cut with jieba """
 
     # get df_rich & art_cut
+    text_path = os.path.join(DATA_PATH, "art_cut")
+    files_iter = generate_files("art_cut")
     df_rich = pd.DataFrame()
     art_cut = pd.Series(dtype=object)
-    for sub_file_rich, sub_text_file in zip(sub_file_rich_li, sub_text_file_li):
+
+    for sub_file_rich, sub_text_file in files_iter:
         print(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"Working on {sub_file_rich}")
+              f"Combining {sub_file_rich} and {sub_text_file}")
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
-        with open(os.path.join(text_path, sub_text_file), "wb") as f:
+        with open(os.path.join(text_path, sub_text_file), "rb") as f:
             sub_art_cut = pickle.load(f)
         df_rich = df_rich.append(sub_df_rich)
         art_cut = pd.concat([art_cut, sub_art_cut], axis=0)
 
+    art_cut.name = "art_cut"
     df_rich.reset_index(inplace=True, drop=True)
     art_cut.reset_index(inplace=True, drop=True)
-    art_cut.name = "art_cut"
 
     return df_rich, art_cut
-
-
-def build_bert():
-    """ Build experiment for bert """
-
-    return None, None
 
 
 def run_experiment(model_name, perc_ls):
@@ -171,22 +159,12 @@ def run_experiment(model_name, perc_ls):
 
     # get df_rich & textual
     if model_name == "ssestm":
-        df_rich, textual = build_ssestm()
-    elif model_name == "doc2vec":
-        df_rich, textual = build_doc2vec()
-    elif model_name == "bert":
-        df_rich, textual = build_bert()
+        df_rich, textual = load_word_sps()
+    elif model_name in ["doc2vec", "bert"]:
+        df_rich, textual = load_art_cut()
     else:
         raise ValueError("Invalid model name")
 
     # perform experiment
     experiment(df_rich, textual, model_name, perc_ls)
-
-
-def run_backtest(model_name):
-    """ Run backtest
-    :param model_name: model name
-    """
-
-    # backtest
     backtest(model_name, dalym)

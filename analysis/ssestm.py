@@ -2,7 +2,7 @@ import numpy as np
 from global_settings import full_dict
 
 
-def ssestm_sentiment(O_hat):
+def analyze_ssestm(O_hat):
     """ parameters
     :param: estimated O_hat
     """

@@ -37,9 +37,9 @@ def save_model(model, model_name, trddt_test, ev):
     if model_name == "ssestm":
         np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}_O_hat.npy"), model)
     elif model_name == "doc2vec":
-        doc2vec, logreg = model[0], model[1]
-        doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}_doc2vec.npy"))
-        joblib.dump(logreg, os.path.join(model_sub_path, f"{trddt_test_Ym}_logreg.joblib"))
+        doc2vec, cls = model
+        doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}_doc2vec.model"))
+        joblib.dump(cls, os.path.join(model_sub_path, f"{trddt_test_Ym}_cls.joblib"))
     else:
         raise ValueError("Invalid model name")
 
