@@ -4,6 +4,7 @@ import datetime
 import pandas as pd
 import numpy as np
 import scipy as sp
+import functools
 from glob import glob
 from multiprocessing.pool import Pool
 from scipy.sparse import load_npz, csr_matrix
@@ -21,6 +22,8 @@ from textual.word_sps import build_word_sps
 from textual.art_cut import build_art_cut
 from experiments.experiment import experiment
 from experiments.backtest import backtest
+from experiments.generators import generate_window
+from params.params import window_dict, date0_min, date0_max
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -42,7 +45,7 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     sub_file_clean_li = sorted([_ for _ in sub_file_clean_li if _.split(".")[0].split("_")[1] not in sub_file_rich_idx])
 
     # enrich data
-    num_proc = 16
+    num_proc = 12
     for idx in range(0, len(sub_file_clean_li), num_proc):
         pool = Pool(num_proc)
         pool.map(enrich_data, sub_file_clean_li[idx: idx + num_proc])
@@ -152,10 +155,24 @@ def run_experiment(model_name, perc_ls):
     :param perc_ls: percentage of L/S portfolio
     """
 
-    # create path
+    # create model directory
     model_path = os.path.join(OUTPUT_PATH, model_name)
     if not os.path.isdir(model_path):
         os.mkdir(model_path)
+
+    # create sub-directories
+    for ev in ["e", "v"]:
+        params_sub_path = os.path.join(model_path, f"params_{ev}")
+        if not os.path.isdir(params_sub_path):
+            os.mkdir(params_sub_path)
+
+        model_sub_path = os.path.join(model_path, f"model_{ev}")
+        if not os.path.isdir(model_sub_path):
+            os.mkdir(model_sub_path)
+
+    return_sub_path = os.path.join(model_path, "return")
+    if not os.path.isdir(return_sub_path):
+        os.mkdir(return_sub_path)
 
     # get df_rich & textual
     if model_name == "ssestm":
@@ -166,5 +183,20 @@ def run_experiment(model_name, perc_ls):
         raise ValueError("Invalid model name")
 
     # perform experiment
-    experiment(df_rich, textual, model_name, perc_ls)
+    num_proc = 12
+    window_li = list(generate_window(window_dict, date0_min, date0_max))
+    for idx in range(0, len(window_li), num_proc):
+        pool = Pool(num_proc)
+        func = functools.partial(experiment, df_rich=df_rich, textual=textual, model_name=model_name, perc_ls=perc_ls)
+        pool.map(func, window_li[idx: idx + num_proc])
+        pool.close()
+        pool.join()
+
+    # combine to get return
+    ret_csv = pd.concat([pd.read_csv(_, index_col=0) for _ in sorted(glob(os.path.join(return_sub_path, "*.csv")))])
+    ret_pkl = pd.concat([pd.read_pickle(_) for _ in sorted(glob(os.path.join(return_sub_path, "*.pkl")))])
+    ret_csv.to_csv(os.path.join(model_path, "ret_csv.csv"))
+    ret_pkl.to_pickle(os.path.join(model_path, "ret_pkl.pkl"))
+
+    # backtest
     backtest(model_name, dalym)

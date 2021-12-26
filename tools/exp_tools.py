@@ -1,5 +1,4 @@
 from global_settings import OUTPUT_PATH
-from datetime import datetime
 from scipy.sparse import issparse
 import numpy as np
 import pandas as pd
@@ -22,42 +21,59 @@ def get_textual(textual, idx):
         raise ValueError("Textual type not recognized")
 
 
-def save_model(model, model_name, trddt_test, ev):
+def save_model(model, model_name, trddt_test_Ym, ev):
     """ Save trained model
     :param model: model to be saved
     :param model_name: model name
-    :param trddt_test: testing trading dates
+    :param trddt_test_Ym: testing trading dates Ym
     :param ev: equal/value weighted type
     """
 
     model_path = os.path.join(OUTPUT_PATH, model_name)
     model_sub_path = os.path.join(model_path, f"model_{ev}")
-    trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
 
     if model_name == "ssestm":
-        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}_O_hat.npy"), model)
+        np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), model)
     elif model_name == "doc2vec":
         doc2vec, cls = model
-        doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}_doc2vec.model"))
-        joblib.dump(cls, os.path.join(model_sub_path, f"{trddt_test_Ym}_cls.joblib"))
+        doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.model"))
+        joblib.dump(cls, os.path.join(model_sub_path, f"{trddt_test_Ym}.joblib"))
     else:
         raise ValueError("Invalid model name")
 
 
-def save_params(params, model_name, trddt_test, ev):
+def save_params(params, model_name, trddt_test_Ym, ev):
     """ Save model parameters
     :param params: parameters to be saved
     :param model_name: model name
-    :param trddt_test: testing trading dates
+    :param trddt_test_Ym: testing trading dates Ym
     :param ev: equal/value weighted type
     """
 
-    params_path = os.path.join(OUTPUT_PATH, model_name)
-    params_sub_path = os.path.join(params_path, f"params_{ev}")
-    trddt_test_Ym = datetime.strptime(trddt_test[0], "%Y-%m-%d").strftime("%Y-%m")
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    params_sub_path = os.path.join(model_path, f"params_{ev}")
 
     with open(os.path.join(params_sub_path, f"{trddt_test_Ym}.json"), "w") as f:
         json.dump(params, f)
+
+
+def save_return(return_df, model_name, trddt_test_Ym, extension):
+    """ Save return dataframe
+    :param return_df: return dataframe
+    :param model_name: model name
+    :param trddt_test_Ym: testing trading dates Ym
+    :param extension: file extension
+    """
+
+    model_path = os.path.join(OUTPUT_PATH, model_name)
+    return_sub_path = os.path.join(model_path, "return")
+
+    if extension == ".pkl":
+        return_df.to_pickle(os.path.join(return_sub_path, f"{trddt_test_Ym}.pkl"), compression=None, protocol=4)
+    elif extension == ".csv":
+        return_df.to_csv(os.path.join(return_sub_path, f"{trddt_test_Ym}.csv"))
+    else:
+        raise ValueError("Invalid extension")
 
 
 def get_rich_ls(df_rich, target, perc_ls):
