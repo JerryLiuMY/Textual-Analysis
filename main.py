@@ -24,6 +24,7 @@ from experiments.experiment import experiment
 from experiments.backtest import backtest
 from experiments.generators import generate_window
 from params.params import window_dict, date0_min, date0_max
+from params.params import perc_ls
 
 
 def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.csv"):
@@ -149,10 +150,9 @@ def load_art_cut():
     return df_rich, art_cut
 
 
-def run_experiment(model_name, perc_ls):
+def run_experiment(model_name):
     """ Run experiment
     :param model_name: model name
-    :param perc_ls: percentage of L/S portfolio
     """
 
     # create model directory
