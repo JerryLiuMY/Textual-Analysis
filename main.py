@@ -83,24 +83,22 @@ def load_art_cut():
     return df_rich, art_cut
 
 
-def generate_inputs(window_li, df_rich, textual):
+def generate_inputs(window, df_rich, textual):
     """ Load articles cut with jieba
-    :param window_li: window list
+    :param window: window list
     :param df_rich: enriched dataframe
     :param textual: textual data
     """
 
     # build inputs
-    df_rich_win_li, textual_win_li = list(), list()
-    for window in window_li:
-        trddt_train, trddt_valid, trddt_test = window
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"Building inputs for {trddt_train[0][:-3]} to {trddt_test[-1][:-3]} "
-              f"({psutil.virtual_memory().percent}% mem used)")
+    trddt_train, trddt_valid, trddt_test = window
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+          f"Building inputs for {trddt_train[0][:-3]} to {trddt_test[-1][:-3]} "
+          f"({psutil.virtual_memory().percent}% mem used)")
 
-        trddt_window = trddt_train + trddt_valid + trddt_test
-        window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_window)
-        df_rich_win_li.append(get_df_rich(df_rich, window_idx))
-        textual_win_li.append(get_textual(textual, window_idx))
+    trddt_window = trddt_train + trddt_valid + trddt_test
+    window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_window)
+    df_rich_win = get_df_rich(df_rich, window_idx)
+    textual_win = get_textual(textual, window_idx)
 
-    return df_rich_win_li, textual_win_li
+    return df_rich_win, textual_win

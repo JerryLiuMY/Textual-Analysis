@@ -1,4 +1,5 @@
 from multiprocessing.pool import Pool
+from multiprocessing import Process
 from data_prep.data_clean import save_data, clean_data
 from data_prep.data_enrich import enrich_data
 from data_prep.data_split import split_data
@@ -93,21 +94,22 @@ def run_experiment(model_name):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 8
-    window_full = list(generate_window(window_dict, date0_min, date0_max))
+    num_proc = 4
+    window_li = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
 
-    for idx in range(0, len(window_full), num_proc):
-        pool = Pool(num_proc)
-        window_li = window_full[idx: idx + num_proc]
-        df_rich_win_li, textual_win_li = generate_inputs(window_li, df_rich, textual)
+    for idx in range(0, len(window_li), num_proc):
+        procs = []
+        for window in window_li[idx: idx + num_proc]:
+            df_rich_win, textual_win = generate_inputs(window, df_rich, textual)
+            proc = Process(target=experiment, args=(window, df_rich_win, textual_win, model_name, perc_ls))
+            procs.append(proc)
 
-        pool.starmap(
-            functools.partial(experiment, model_name=model_name, perc_ls=perc_ls),
-            zip(window_li, df_rich_win_li, textual_win_li)
-        )
-        pool.close()
-        pool.join()
+        for proc in procs:
+            proc.start()
+
+        for proc in procs:
+            proc.join()
 
     # backtest
     backtest(model_name, dalym)
@@ -137,5 +139,4 @@ def run_experiment(model_name):
 
 
 if __name__ == "__main__":
-    model_name = "ssestm"
-    run_experiment(model_name)
+    run_experiment("ssestm")
