@@ -38,7 +38,8 @@ def load_word_sps():
     # get df_rich & word_sps
     text_path = os.path.join(DATA_PATH, "word_sps")
     files_iter = generate_files("word_sps")
-    df_rich = pd.DataFrame()
+    columns = ["date_0", "ret3", "stock_mention", "ret", "cap"]
+    df_rich = pd.DataFrame(columns=columns)
     word_sps = csr_matrix(np.empty((0, len(full_dict)), dtype=np.int64))
 
     for sub_file_rich, sub_text_file in files_iter:
@@ -48,7 +49,7 @@ def load_word_sps():
 
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         sub_word_sps = load_npz(os.path.join(text_path, sub_text_file))
-        df_rich = df_rich.append(sub_df_rich)
+        df_rich = df_rich.append(sub_df_rich.loc[:, columns])
         word_sps = sp.sparse.vstack([word_sps, sub_word_sps], format="csr")
 
     df_rich.reset_index(inplace=True, drop=True)
@@ -62,7 +63,8 @@ def load_art_cut():
     # get df_rich & art_cut
     text_path = os.path.join(DATA_PATH, "art_cut")
     files_iter = generate_files("art_cut")
-    df_rich = pd.DataFrame()
+    columns = ["date_0", "ret3", "stock_mention", "ret", "cap"]
+    df_rich = pd.DataFrame(columns=columns)
     art_cut = pd.Series(dtype=object)
 
     for sub_file_rich, sub_text_file in files_iter:
@@ -73,7 +75,7 @@ def load_art_cut():
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         with open(os.path.join(text_path, sub_text_file), "rb") as f:
             sub_art_cut = pickle.load(f)
-        df_rich = df_rich.append(sub_df_rich)
+        df_rich = df_rich.append(sub_df_rich.loc[:, columns])
         art_cut = pd.concat([art_cut, sub_art_cut], axis=0)
 
     art_cut.name = "art_cut"

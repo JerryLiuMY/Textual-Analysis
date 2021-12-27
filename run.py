@@ -102,7 +102,6 @@ def run_experiment(model_name):
     num_proc = 12
     window_li = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
-    df_rich = df_rich.loc[:, ["date_0", "ret3", "stock_mention", "ret", "cap"]]
 
     for idx in range(0, len(window_li), num_proc):
         procs = []
