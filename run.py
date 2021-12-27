@@ -92,22 +92,18 @@ def run_experiment(model_name):
     if not os.path.isdir(return_sub_path):
         os.mkdir(return_sub_path)
 
-    # get input lists
-    df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
-    window_li = list(generate_window(window_dict, date0_min, date0_max))
-    df_rich_win_li, textual_win_li = generate_inputs(window_li, df_rich, textual)
-
     # perform experiment
     num_proc = 6
-    for idx in range(0, len(window_li), num_proc):
+    window_full = list(generate_window(window_dict, date0_min, date0_max))
+    df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
+
+    for idx in range(0, len(window_full), num_proc):
         pool = Pool(num_proc)
+        window_li = window_full[idx: idx + num_proc]
+        df_rich_win_li, textual_win_li = generate_inputs(window_li, df_rich, textual)
         pool.starmap(
             functools.partial(experiment, model_name=model_name, perc_ls=perc_ls),
-            list(zip(
-                list(window_li)[idx: idx + num_proc],
-                list(df_rich_win_li)[idx: idx + num_proc],
-                list(textual_win_li)[idx: idx + num_proc]
-            ))
+            zip(window_li, df_rich_win_li, textual_win_li)
         )
         pool.close()
         pool.join()

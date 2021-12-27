@@ -67,7 +67,9 @@ def load_art_cut():
 
     for sub_file_rich, sub_text_file in files_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"Combining {sub_file_rich} and {sub_text_file}")
+              f"Combining {sub_file_rich} and {sub_text_file} "
+              f"({psutil.virtual_memory().percent}% mem used)")
+
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         with open(os.path.join(text_path, sub_text_file), "rb") as f:
             sub_art_cut = pickle.load(f)

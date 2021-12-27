@@ -52,7 +52,6 @@ def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
               f"*-* Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}...")
 
         train_idx = df_rich_win["date_0"].apply(lambda _: _ in trddt_train)
-
         df_rich_win_train = get_df_rich(df_rich_win, train_idx)
         textual_win_train = get_textual(textual_win, train_idx)
         model = fit_func(df_rich_win_train, textual_win_train, params)
