@@ -53,7 +53,7 @@ def run_textual(textual_name):
     :param textual_name: textual name
     """
 
-    # create textual directory
+    # create directory
     text_path = os.path.join(DATA_PATH, textual_name)
     if not os.path.isdir(text_path):
         os.mkdir(text_path)
@@ -79,7 +79,7 @@ def run_experiment(model_name):
     :param model_name: model name
     """
 
-    # create model directory
+    # create directory
     model_path = os.path.join(OUTPUT_PATH, model_name)
     if not os.path.isdir(model_path):
         os.mkdir(model_path)
@@ -99,9 +99,10 @@ def run_experiment(model_name):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 8
+    num_proc = 12
     window_li = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
+    df_rich = df_rich.loc[:, ["date_0", "ret3", "stock_mention", "ret", "cap"]]
 
     for idx in range(0, len(window_li), num_proc):
         procs = []
