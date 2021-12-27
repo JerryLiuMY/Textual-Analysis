@@ -8,10 +8,9 @@ from glob import glob
 import pandas as pd
 import numpy as np
 import scipy as sp
+import psutil
 import pickle
 import os
-
-import psutil
 
 
 def generate_files(textual_name):
@@ -45,7 +44,7 @@ def load_word_sps():
     for sub_file_rich, sub_text_file in files_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Combining {sub_file_rich} and {sub_text_file} "
-              f"({psutil.virtual_memory().percent}% memory)")
+              f"({psutil.virtual_memory().percent}% mem used)")
 
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
         sub_word_sps = load_npz(os.path.join(text_path, sub_text_file))
@@ -82,23 +81,24 @@ def load_art_cut():
     return df_rich, art_cut
 
 
-def generate_inputs(window_iter, df_rich, textual):
+def generate_inputs(window_li, df_rich, textual):
     """ Load articles cut with jieba
-    :param window_iter: window iterator
+    :param window_li: window list
     :param df_rich: enriched dataframe
     :param textual: textual data
     """
 
     # build inputs
-    for window in window_iter:
+    df_rich_win_li, textual_win_li = list(), list()
+    for window in window_li:
         trddt_train, trddt_valid, trddt_test = window
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Building inputs for {trddt_train[0][:-3]} to {trddt_test[-1][:-3]} "
-              f"({psutil.virtual_memory().percent}% memory)")
+              f"({psutil.virtual_memory().percent}% mem used)")
 
         trddt_window = trddt_train + trddt_valid + trddt_test
         window_idx = df_rich["date_0"].apply(lambda _: _ in trddt_window)
-        df_rich_win = get_df_rich(df_rich, window_idx)
-        textual_win = get_textual(textual, window_idx)
+        df_rich_win_li.append(get_df_rich(df_rich, window_idx))
+        textual_win_li.append(get_textual(textual, window_idx))
 
-        yield df_rich_win, textual_win
+    return df_rich_win_li, textual_win_li

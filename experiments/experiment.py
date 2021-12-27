@@ -27,7 +27,7 @@ def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
     [trddt_train, trddt_valid, trddt_test] = window
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
           f"Working on {trddt_train[0][:-3]} to {trddt_test[-1][:-3]} "
-          f"({psutil.virtual_memory().percent}% memory)")
+          f"({psutil.virtual_memory().percent}% mem used)")
 
     if model_name == "ssestm":
         fit_func, pre_func = fit_ssestm, pre_ssestm
