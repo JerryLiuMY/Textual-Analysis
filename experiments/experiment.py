@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-from datetime import datetime
 from params.params import params_dict
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
@@ -9,6 +6,9 @@ from tools.exp_tools import get_textual, get_df_rich, get_return
 from tools.exp_tools import get_stocks, get_weights, get_returns
 from tools.exp_tools import save_params, save_model, save_return
 from experiments.generators import generate_params
+from datetime import datetime
+import numpy as np
+import pandas as pd
 import psutil
 
 

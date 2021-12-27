@@ -5,15 +5,15 @@ from data_prep.data_enrich import enrich_data
 from data_prep.data_split import split_data
 from experiments.backtest import backtest
 from experiments.experiment import experiment
-from main import load_word_sps, load_art_cut, generate_inputs
-from global_settings import CLEAN_PATH, RICH_PATH, DATA_PATH, OUTPUT_PATH, dalym
+from main import load_word_sps, load_art_cut, build_inputs
+from global_settings import DATA_PATH, OUTPUT_PATH, dalym
+from global_settings import CLEAN_PATH, RICH_PATH, LOG_PATH
 from experiments.generators import generate_window
 from params.params import window_dict, date0_min, date0_max
 from params.params import perc_ls
 from textual.art_cut import build_art_cut
 from textual.word_sps import build_word_sps
 from glob import glob
-import functools
 import os
 
 
@@ -23,6 +23,11 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     :param data_file: data file
     :param clean_file: cleaned file
     """
+
+    # create directories
+    for path in [CLEAN_PATH, RICH_PATH, LOG_PATH]:
+        if not os.path.isdir(path):
+            os.mkdir(path)
 
     # clean & split data
     save_data(raw_file, data_file)
@@ -94,14 +99,14 @@ def run_experiment(model_name):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 4
+    num_proc = 8
     window_li = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
 
     for idx in range(0, len(window_li), num_proc):
         procs = []
         for window in window_li[idx: idx + num_proc]:
-            df_rich_win, textual_win = generate_inputs(window, df_rich, textual)
+            df_rich_win, textual_win = build_inputs(window, df_rich, textual)
             proc = Process(target=experiment, args=(window, df_rich_win, textual_win, model_name, perc_ls))
             procs.append(proc)
 
@@ -115,28 +120,8 @@ def run_experiment(model_name):
     backtest(model_name, dalym)
 
 
-# if __name__ == "__main__":
-#     import os
-#     from global_settings import CLEAN_PATH
-#     from global_settings import RICH_PATH
-#     from global_settings import LOG_PATH
-#     PATHS = [CLEAN_PATH, RICH_PATH, LOG_PATH]
-#
-#     for path in PATHS:
-#         if not os.path.isdir(path):
-#             os.mkdir(path)
-
-
-# if __name__ == "__main__":
-#     from main import run_data_prep
-#     run_data_prep()
-
-
-# if __name__ == "__main__":
-#     from main import run_textual
-#     run_textual("word_sps")
-#     run_textual("art_cut")
-
-
 if __name__ == "__main__":
+    # run_data_prep()
+    # run_textual("word_sps")
+    # run_textual("art_cut")
     run_experiment("ssestm")

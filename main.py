@@ -83,7 +83,7 @@ def load_art_cut():
     return df_rich, art_cut
 
 
-def generate_inputs(window, df_rich, textual):
+def build_inputs(window, df_rich, textual):
     """ Load articles cut with jieba
     :param window: window list
     :param df_rich: enriched dataframe

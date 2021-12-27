@@ -1,7 +1,7 @@
-import numpy as np
 from sklearn.preprocessing import Normalizer
 from scipy.sparse import csr_matrix
 from scipy.stats import rankdata
+import numpy as np
 
 
 def fit_ssestm(df_rich, word_sps, *args):
