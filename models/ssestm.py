@@ -44,14 +44,14 @@ def pre_ssestm(word_sps, model, params):
     normalizer = Normalizer(norm="l1")
     O_hat = O_hat[~zero_idx, :]
     D_hat = normalizer.fit_transform(word_sps).T
-    D_hat = D_hat[~zero_idx, :].toarray()
+    D_hat = D_hat[~zero_idx, :]
     p_lin = np.linspace(0, 1, 1000)[1:-1]
     W_lin = np.array([p_lin, 1 - p_lin])
 
     # calculate p_hat
-    likelihood = D_hat.T @ np.log(O_hat @ W_lin)
+    likelihood = D_hat.T @ csr_matrix(np.log(O_hat @ W_lin))
     penalty = pen * np.log(W_lin[0, :] * W_lin[1, :]).reshape(1, -1)
-    objective = likelihood + penalty
+    objective = likelihood.toarray() + penalty
     p_hat = np.take(p_lin, np.argmax(objective, axis=1))
 
     return p_hat

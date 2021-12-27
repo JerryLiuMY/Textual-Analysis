@@ -4,8 +4,8 @@ from data_prep.data_enrich import enrich_data
 from data_prep.data_split import split_data
 from experiments.backtest import backtest
 from experiments.experiment import experiment
-from global_settings import CLEAN_PATH, RICH_PATH, DATA_PATH, OUTPUT_PATH, dalym
 from main import load_word_sps, load_art_cut, generate_inputs
+from global_settings import CLEAN_PATH, RICH_PATH, DATA_PATH, OUTPUT_PATH, dalym
 from experiments.generators import generate_window
 from params.params import window_dict, date0_min, date0_max
 from params.params import perc_ls
@@ -93,7 +93,7 @@ def run_experiment(model_name):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 6
+    num_proc = 8
     window_full = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
 
@@ -101,6 +101,7 @@ def run_experiment(model_name):
         pool = Pool(num_proc)
         window_li = window_full[idx: idx + num_proc]
         df_rich_win_li, textual_win_li = generate_inputs(window_li, df_rich, textual)
+
         pool.starmap(
             functools.partial(experiment, model_name=model_name, perc_ls=perc_ls),
             zip(window_li, df_rich_win_li, textual_win_li)
