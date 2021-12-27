@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import pandas as pd
+from glob import glob
 from datetime import datetime
 import matplotlib.pyplot as plt
 from dateutil.relativedelta import relativedelta
@@ -17,8 +18,9 @@ def backtest(model_name, dalym):
 
     # define model path
     model_path = os.path.join(OUTPUT_PATH, model_name)
-    ret_csv = pd.read_csv(os.path.join(model_path, "ret_csv.csv"), index_col=0)
-    ret_pkl = pd.read_pickle(os.path.join(model_path, "ret_pkl.pkl"))
+    return_sub_path = os.path.join(model_path, "return")
+    ret_csv = pd.concat([pd.read_csv(_, index_col=0) for _ in sorted(glob(os.path.join(return_sub_path, "*.csv")))])
+    ret_pkl = pd.concat([pd.read_pickle(_) for _ in sorted(glob(os.path.join(return_sub_path, "*.pkl")))])
 
     # equal weighted returns
     ret_le = np.array(ret_csv["ret_le"])

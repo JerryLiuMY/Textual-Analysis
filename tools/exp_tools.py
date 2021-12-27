@@ -7,6 +7,15 @@ import os
 import joblib
 
 
+def get_df_rich(df_rich, idx):
+    """ Get enriched dataframe from boolean array
+    :param df_rich: enriched dataframe
+    :param idx: boolean array of index
+    """
+
+    return df_rich.loc[idx, :].reset_index(inplace=False, drop=True)
+
+
 def get_textual(textual, idx):
     """ Get textual data from boolean array
     :param textual: textual data
