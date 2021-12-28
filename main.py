@@ -86,7 +86,7 @@ def load_art_cut():
 
 
 def build_inputs(window, df_rich, textual):
-    """ Load articles cut with jieba
+    """ Load inputs for an experiment window
     :param window: window list
     :param df_rich: enriched dataframe
     :param textual: textual data

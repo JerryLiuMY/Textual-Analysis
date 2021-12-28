@@ -99,7 +99,7 @@ def run_experiment(model_name):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 12
+    num_proc = 13
     window_li = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
 
@@ -124,4 +124,4 @@ if __name__ == "__main__":
     # run_data_prep()
     # run_textual("word_sps")
     # run_textual("art_cut")
-    run_experiment("ssestm")
+    run_experiment("doc2vec")

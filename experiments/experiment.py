@@ -13,7 +13,7 @@ import psutil
 
 
 def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
-    """ train models over a window and get cumulative return
+    """ Train models over a window and get returns
     :param window: [trddt_train, trddt_valid, trddt_test] window
     :param df_rich_win: enriched dataframe within the window 
     :param textual_win: textual information (e.g. sparse matrix, embeddings) within the window
