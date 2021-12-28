@@ -9,7 +9,7 @@ def fit_classifier(emb_vec, target, params):
     """
 
     # train classifier
-    cls = LogisticRegression(n_jobs=8)
+    cls = LogisticRegression(n_jobs=4)
     cls.fit(emb_vec, target)
 
     return cls

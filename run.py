@@ -99,10 +99,10 @@ def run_experiment(model_name):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 13
     window_li = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
 
+    num_proc = 13
     for idx in range(0, len(window_li), num_proc):
         procs = []
         for window in window_li[idx: idx + num_proc]:

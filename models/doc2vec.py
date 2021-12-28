@@ -26,7 +26,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False)
 
     # train doc2vec
-    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=10, workers=8)
+    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=4)
     doc2vec.build_vocab(art_tag)
     doc2vec.train(art_tag, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs)
 
