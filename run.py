@@ -14,6 +14,7 @@ from params.params import perc_ls
 from textual.art_cut import build_art_cut
 from textual.word_sps import build_word_sps
 from glob import glob
+import numpy as np
 import os
 
 
@@ -74,10 +75,12 @@ def run_textual(textual_name):
         pool.join()
 
 
-def run_experiment(model_name, if_subset):
+def run_experiment(model_name, idx_from, idx_to, if_subset):
     """ Run experiment
     :param model_name: model name
-    :param if_subset: whether to use a subset of data
+    :param idx_from: start of the index of the full window list
+    :param idx_to: end of the index of the full window list
+    :param if_subset: whether to use subset of data
     """
 
     # create directory
@@ -100,22 +103,20 @@ def run_experiment(model_name, if_subset):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    window_li = list(generate_window(window_dict, date0_min, date0_max))
+    window_full = list(generate_window(window_dict, date0_min, date0_max))
     df_rich, textual = load_word_sps(if_subset) if model_name == "ssestm" else load_art_cut(if_subset)
 
-    num_proc = 13
-    for idx in range(0, len(window_li), num_proc):
-        procs = []
-        for window in window_li[idx: idx + num_proc]:
-            df_rich_win, textual_win = build_inputs(window, df_rich, textual)
-            proc = Process(target=experiment, args=(window, df_rich_win, textual_win, model_name, perc_ls))
-            procs.append(proc)
+    procs = []
+    for window in window_full[idx_from: idx_to]:
+        df_rich_win, textual_win = build_inputs(window, df_rich, textual)
+        proc = Process(target=experiment, args=(window, df_rich_win, textual_win, model_name, perc_ls))
+        procs.append(proc)
 
-        for proc in procs:
-            proc.start()
+    for proc in procs:
+        proc.start()
 
-        for proc in procs:
-            proc.join()
+    for proc in procs:
+        proc.join()
 
     # backtest
     backtest(model_name, dalym)
@@ -125,4 +126,14 @@ if __name__ == "__main__":
     # run_data_prep()
     # run_textual("word_sps")
     # run_textual("art_cut")
-    run_experiment("ssestm", if_subset=True)
+    pass
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Run experiment")
+    parser.add_argument("-f", "--idx_from", type=int, help="Testing initial year")
+    parser.add_argument("-t", "--idx_to", type=int, help="Testing final year")
+    args = parser.parse_args()
+
+    run_experiment("ssestm", idx_from=args.idx_from, idx_to=args.idx_to, if_subset=True)

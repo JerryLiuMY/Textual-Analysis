@@ -16,7 +16,7 @@ import os
 def generate_files(textual_name, if_subset):
     """ Build iterator for files
     :param textual_name: name of textual model
-    :param if_subset: whether to use a subset of data
+    :param if_subset: whether to use subset of data
     """
 
     # define paths
@@ -43,7 +43,7 @@ def generate_files(textual_name, if_subset):
 
 def load_word_sps(if_subset):
     """ Load word sparse matrix
-    :param if_subset: whether to use a subset of data
+    :param if_subset: whether to use subset of data
     """
 
     # get df_rich & word_sps
@@ -70,7 +70,7 @@ def load_word_sps(if_subset):
 
 def load_art_cut(if_subset):
     """ Load articles cut with jieba
-    :param if_subset: whether to use a subset of data
+    :param if_subset: whether to use subset of data
     """
 
     # get df_rich & art_cut
