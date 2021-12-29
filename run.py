@@ -14,7 +14,6 @@ from params.params import perc_ls
 from textual.art_cut import build_art_cut
 from textual.word_sps import build_word_sps
 from glob import glob
-import numpy as np
 import os
 
 
