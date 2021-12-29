@@ -117,6 +117,12 @@ def run_experiment(model_name, idx_from, idx_to, if_subset):
     for proc in procs:
         proc.join()
 
+
+def run_backtest(model_name):
+    """ Run backtest
+    :param model_name: model name
+    """
+
     # backtest
     backtest(model_name, dalym)
 
@@ -130,9 +136,13 @@ if __name__ == "__main__":
 
 if __name__ == "__main__":
     import argparse
+    model_name = "doc2vec"
     parser = argparse.ArgumentParser(description="Run experiment")
-    parser.add_argument("-f", "--idx_from", type=int, help="Testing initial year")
-    parser.add_argument("-t", "--idx_to", type=int, help="Testing final year")
+    parser.add_argument("-f", "--idx_from", type=int, help="Testing window initial year")
+    parser.add_argument("-t", "--idx_to", type=int, help="Testing window final year")
     args = parser.parse_args()
+    run_experiment(model_name, idx_from=args.idx_from, idx_to=args.idx_to, if_subset=True)
 
-    run_experiment("ssestm", idx_from=args.idx_from, idx_to=args.idx_to, if_subset=True)
+if __name__ == "__main__":
+    model_name = "doc2vec"
+    backtest(model_name, dalym)
