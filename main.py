@@ -13,9 +13,10 @@ import pickle
 import os
 
 
-def generate_files(textual_name):
+def generate_files(textual_name, if_subset):
     """ Build iterator for files
     :param textual_name: name of textual model
+    :param if_subset: whether to use a subset of data
     """
 
     # define paths
@@ -29,15 +30,25 @@ def generate_files(textual_name):
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
     sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, extension))])
 
+    if if_subset:
+        np.random.seed(8)
+        num_files = len(sub_file_rich_idx)
+        sub_size = int(num_files * 0.15)
+        idx = sorted(np.random.choice(num_files, sub_size, replace=False))
+        sub_file_rich_li = [sub_file_rich_li[_] for _ in idx]
+        sub_text_file_li = [sub_text_file_li[_] for _ in idx]
+
     return zip(sub_file_rich_li, sub_text_file_li)
 
 
-def load_word_sps():
-    """ Load word sparse matrix """
+def load_word_sps(if_subset):
+    """ Load word sparse matrix
+    :param if_subset: whether to use a subset of data
+    """
 
     # get df_rich & word_sps
     text_path = os.path.join(DATA_PATH, "word_sps")
-    files_iter = generate_files("word_sps")
+    files_iter = generate_files("word_sps", if_subset)
     columns = ["date_0", "ret3", "stock_mention", "ret", "cap"]
     df_rich = pd.DataFrame(columns=columns)
     word_sps = csr_matrix(np.empty((0, len(full_dict)), dtype=np.int64))
@@ -57,12 +68,14 @@ def load_word_sps():
     return df_rich, word_sps
 
 
-def load_art_cut():
-    """ Load articles cut with jieba """
+def load_art_cut(if_subset):
+    """ Load articles cut with jieba
+    :param if_subset: whether to use a subset of data
+    """
 
     # get df_rich & art_cut
     text_path = os.path.join(DATA_PATH, "art_cut")
-    files_iter = generate_files("art_cut")
+    files_iter = generate_files("art_cut", if_subset)
     columns = ["date_0", "ret3", "stock_mention", "ret", "cap"]
     df_rich = pd.DataFrame(columns=columns)
     art_cut = pd.Series(dtype=object)

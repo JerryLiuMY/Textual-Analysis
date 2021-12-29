@@ -74,9 +74,10 @@ def run_textual(textual_name):
         pool.join()
 
 
-def run_experiment(model_name):
+def run_experiment(model_name, if_subset):
     """ Run experiment
     :param model_name: model name
+    :param if_subset: whether to use a subset of data
     """
 
     # create directory
@@ -100,7 +101,7 @@ def run_experiment(model_name):
 
     # perform experiment
     window_li = list(generate_window(window_dict, date0_min, date0_max))
-    df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
+    df_rich, textual = load_word_sps(if_subset) if model_name == "ssestm" else load_art_cut(if_subset)
 
     num_proc = 13
     for idx in range(0, len(window_li), num_proc):
@@ -124,4 +125,4 @@ if __name__ == "__main__":
     # run_data_prep()
     # run_textual("word_sps")
     # run_textual("art_cut")
-    run_experiment("doc2vec")
+    run_experiment("ssestm", if_subset=True)

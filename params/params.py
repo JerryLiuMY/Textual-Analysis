@@ -1,6 +1,6 @@
 date0_min = "2015-01-07"
 date0_max = "2019-07-30"
-perc_ls = 0.05
+perc_ls = 0.02
 
 window_dict = {
     "train_win": 12,
