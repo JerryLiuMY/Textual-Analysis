@@ -1,5 +1,8 @@
+from sklearn.linear_model import LogisticRegression
+from tensorflow.keras.models import Sequential
 from global_settings import OUTPUT_PATH
 from scipy.sparse import issparse
+import pickle
 import numpy as np
 import pandas as pd
 import json
@@ -43,9 +46,15 @@ def save_model(model, model_name, trddt_test_Ym, ev):
     if model_name == "ssestm":
         np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), model)
     elif model_name == "doc2vec":
-        doc2vec, enc, cls = model
+        doc2vec, cls = model
         doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.model"))
-        cls.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.h5"))
+        if isinstance(cls, LogisticRegression):
+            with open(os.path.join(model_sub_path, f"{trddt_test_Ym}.pkl"), "wb") as f:
+                pickle.dump(cls, f)
+        elif isinstance(cls, Sequential):
+            cls.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.h5"))
+        else:
+            raise ValueError("Invalid classifier type")
     else:
         raise ValueError("Invalid model name")
 

@@ -40,8 +40,8 @@ def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
 
     # run experiments
     params_iter = generate_params(params_dict, model_name)
-    best_cum_e_scl, best_params_e, best_model_e = -np.inf, dict(), None
-    best_cum_v_scl, best_params_v, best_model_v = -np.inf, dict(), None
+    best_cum_e_scl, best_params_e, best_model_e = -np.inf, dict(), tuple()
+    best_cum_v_scl, best_params_v, best_model_v = -np.inf, dict(), tuple()
 
     for params in params_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "

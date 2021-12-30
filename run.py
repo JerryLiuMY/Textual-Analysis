@@ -105,7 +105,7 @@ def run_experiment(model_name, idx_from, idx_to, sub_perc):
     df_rich, textual = load_word_sps(sub_perc) if model_name == "ssestm" else load_art_cut(sub_perc)
     window_li = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
 
-    num_proc = 8
+    num_proc = 1
     for idx in range(0, len(window_li), num_proc):
 
         windows, procs = window_li[idx: idx + num_proc], []
@@ -119,6 +119,7 @@ def run_experiment(model_name, idx_from, idx_to, sub_perc):
 
         for proc in procs:
             proc.join()
+            proc.close()
 
 
 def run_backtest(model_name):
