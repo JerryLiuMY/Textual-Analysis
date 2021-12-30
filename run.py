@@ -74,12 +74,12 @@ def run_textual(textual_name):
         pool.join()
 
 
-def run_experiment(model_name, idx_from, idx_to, if_subset):
+def run_experiment(model_name, idx_from, idx_to, sub_perc):
     """ Run experiment
     :param model_name: model name
     :param idx_from: start of the index of the full window list
     :param idx_to: end of the index of the full window list
-    :param if_subset: whether to use subset of data
+    :param sub_perc: percentage of subset of data
     """
 
     # create directory
@@ -102,13 +102,13 @@ def run_experiment(model_name, idx_from, idx_to, if_subset):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    df_rich, textual = load_word_sps(if_subset) if model_name == "ssestm" else load_art_cut(if_subset)
+    df_rich, textual = load_word_sps(sub_perc) if model_name == "ssestm" else load_art_cut(sub_perc)
     window_li = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
 
     num_proc = 8
     for idx in range(0, len(window_li), num_proc):
-        windows, procs = window_li[idx: idx + num_proc], []
 
+        windows, procs = window_li[idx: idx + num_proc], []
         for window in windows:
             df_rich_win, textual_win = build_inputs(window, df_rich, textual)
             proc = Process(target=experiment, args=(window, df_rich_win, textual_win, model_name, perc_ls))
@@ -140,10 +140,10 @@ if __name__ == "__main__":
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Run experiment")
-    parser.add_argument("-f", "--idx_from", type=int, help="Initial year of testing window")
-    parser.add_argument("-t", "--idx_to", type=int, help="Final year of testing window")
+    parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
+    parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
     args = parser.parse_args()
-    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, if_subset=True)
+    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=0.05)
 
 
 # if __name__ == "__main__":

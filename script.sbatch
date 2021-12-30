@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=script
-#SBATCH --partition=broadwl
+#SBATCH --partition=broadwl-lc
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=14
 #SBATCH --mem-per-cpu=4G

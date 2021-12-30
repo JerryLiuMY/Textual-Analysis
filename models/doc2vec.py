@@ -2,6 +2,7 @@ from gensim.models import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from models.classifier import fit_classifier
 from scipy.stats import rankdata
+import tensorflow as tf
 import pandas as pd
 import numpy as np
 
@@ -32,9 +33,9 @@ def fit_doc2vec(df_rich, art_cut, params):
 
     # train classifier
     emb_vec = np.vstack(art_tag.apply(lambda _: doc2vec.infer_vector(_.words)).to_numpy())
-    cls = fit_classifier(emb_vec, target, params)
+    enc, cls = fit_classifier(emb_vec, target, params)
 
-    return doc2vec, cls
+    return doc2vec, enc, cls
 
 
 def pre_doc2vec(art_cut, model, *args):
@@ -45,8 +46,9 @@ def pre_doc2vec(art_cut, model, *args):
     """
 
     # calculate target
-    doc2vec, cls = model
+    doc2vec, enc, cls = model
     emb_vec = np.vstack(art_cut.apply(lambda _: doc2vec.infer_vector(_)).to_numpy())
-    target = cls.predict(emb_vec)
+    target_enc = tf.one_hot(tf.argmax(cls.predict(emb_vec), dimension=1), depth=len(enc.categories_[0]))
+    target = enc.inverse_transform(target_enc)
 
     return target

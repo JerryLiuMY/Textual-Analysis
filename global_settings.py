@@ -34,3 +34,6 @@ stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=No
 
 
 # BERT and doc2vec
+# sbatch script.sbatch
+# squeue --user=mingyuliu
+# scancel

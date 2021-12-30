@@ -46,8 +46,7 @@ def save_model(model, model_name, trddt_test_Ym, ev):
     elif model_name == "doc2vec":
         doc2vec, cls = model
         doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.model"))
-        with open(os.path.join(model_sub_path, f"{trddt_test_Ym}.pkl"), "wb") as f:
-            pickle.dump(cls, f)
+        cls.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.h5"))
     else:
         raise ValueError("Invalid model name")
 
