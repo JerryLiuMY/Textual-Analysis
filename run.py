@@ -144,7 +144,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
     args = parser.parse_args()
-    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=0.1)
+    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=1)
 
 
 # if __name__ == "__main__":
