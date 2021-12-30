@@ -17,7 +17,7 @@ def fit_classifier(emb_vec, target, params):
     cls_type = params["cls_type"]
 
     if cls_type == "lr":
-        cls = LogisticRegression(multi_class="ovr", n_jobs=4)
+        cls = LogisticRegression(multi_class="ovr", n_jobs=1)
         cls.fit(emb_vec, target)
     elif cls_type == "mlp":
         num_bins, hidden = params["num_bins"], params["hidden"]
