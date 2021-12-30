@@ -1,6 +1,6 @@
 from gensim.models import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
-from models.classifier import fit_classifier
+from models.classifier import fit_classifier, pre_classifier
 from scipy.stats import rankdata
 import pandas as pd
 import numpy as np
@@ -48,14 +48,6 @@ def pre_doc2vec(art_cut, model, params):
     # calculate target
     doc2vec, cls = model
     emb_vec = np.vstack(art_cut.apply(lambda _: doc2vec.infer_vector(_)).to_numpy())
-
-    cls_type = params["cls_type"]
-
-    if cls_type == "lr":
-        target = cls.predict(emb_vec)
-    elif cls_type == "mlp":
-        target = np.argmax(cls.predict(emb_vec), axis=1)
-    else:
-        raise ValueError("Invalid classifier type")
+    target = pre_classifier(emb_vec, cls, params)
 
     return target

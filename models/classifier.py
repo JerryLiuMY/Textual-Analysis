@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import L2
 from tensorflow.keras.utils import to_categorical
+import numpy as np
 
 
 def fit_classifier(emb_vec, target, params):
@@ -33,3 +34,22 @@ def fit_classifier(emb_vec, target, params):
         raise ValueError("Invalid classifier type")
 
     return cls
+
+
+def pre_classifier(emb_vec, cls, params):
+    """ make prediction with classifier given emb_vec
+    :param emb_vec: embedding vector
+    :param cls: trained classifier
+    :param params: parameters for the classifier
+    """
+
+    cls_type = params["cls_type"]
+
+    if cls_type == "lr":
+        target = cls.predict(emb_vec)
+    elif cls_type == "mlp":
+        target = np.argmax(cls.predict(emb_vec), axis=1)
+    else:
+        raise ValueError("Invalid classifier type")
+
+    return target
