@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import json
 import os
-import pickle
 
 
 def get_df_rich(df_rich, idx):
@@ -44,7 +43,7 @@ def save_model(model, model_name, trddt_test_Ym, ev):
     if model_name == "ssestm":
         np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), model)
     elif model_name == "doc2vec":
-        doc2vec, cls = model
+        doc2vec, enc, cls = model
         doc2vec.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.model"))
         cls.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.h5"))
     else:

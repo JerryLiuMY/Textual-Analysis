@@ -2,7 +2,7 @@ from gensim.models import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from models.classifier import fit_classifier
 from scipy.stats import rankdata
-import tensorflow as tf
+from tensorflow.keras.utils import to_categorical
 import pandas as pd
 import numpy as np
 
@@ -46,9 +46,14 @@ def pre_doc2vec(art_cut, model, *args):
     """
 
     # calculate target
+    # doc2vec, cls = model
+    # emb_vec = np.vstack(art_cut.apply(lambda _: doc2vec.infer_vector(_)).to_numpy())
+    # target = cls.predict(emb_vec)
+
+    # calculate target
     doc2vec, enc, cls = model
     emb_vec = np.vstack(art_cut.apply(lambda _: doc2vec.infer_vector(_)).to_numpy())
-    target_enc = tf.one_hot(tf.argmax(cls.predict(emb_vec), dimension=1), depth=len(enc.categories_[0]))
+    target_enc = to_categorical(np.argmax(cls.predict(emb_vec), axis=1), num_classes=len(enc.categories_[0]))
     target = enc.inverse_transform(target_enc)
 
     return target
