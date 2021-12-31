@@ -102,7 +102,7 @@ def run_experiment(model_name, idx_from, idx_to, sub_perc):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 5
+    num_proc = 10
     df_rich, textual = load_word_sps(sub_perc) if model_name == "ssestm" else load_art_cut(sub_perc)
     window_li = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
 
@@ -141,11 +141,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run experiment")
     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
-    parser.add_argument("--sub_perc", type=float, help="Percentage of files in the subset")
+    parser.add_argument("-p", "--sub_perc", nargs="?", const=1, default=1, type=float)
     args = parser.parse_args()
-    sub_perc = 1 if args.sub_perc is None else args.sub_perc
 
-    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=sub_perc)
+    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=args.sub_perc)
 
 
 # if __name__ == "__main__":

@@ -38,7 +38,4 @@ stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=No
 # squeue --user=mingyuliu
 # scancel
 
-# python3 run.py -f 0 -t 10
-# python3 run.py -f 10 -t 20
-# python3 run.py -f 20 -t 30
-# python3 run.py -f 30 -t 37
+# python3 run.py -f 0 -t 37 -p 0.1
