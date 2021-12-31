@@ -140,8 +140,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run experiment")
     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
+    parser.add_argument("--sub_perc", type=float, help="Percentage of files in the subset")
     args = parser.parse_args()
-    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=1)
+    sub_perc = 1 if args.sub_perc is None else args.sub_perc
+
+    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=sub_perc)
 
 
 # if __name__ == "__main__":
