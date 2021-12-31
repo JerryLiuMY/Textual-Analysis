@@ -20,7 +20,7 @@ trddt_all = np.array(sorted(set(dalym["Trddt"])))
 # risklab server
 user = "risklab_user"
 host = "128.135.196.208"
-with open(os.path.join(DATA_PATH, "password.json"), "r") as f:
+with open("password.json", "r") as f:
     pass_file = json.load(f)
     password = pass_file["password"]
 
@@ -34,8 +34,7 @@ stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=No
 
 
 # BERT and doc2vec
-# sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=8 --mem-per-cpu=4000 --time=36:00:00
-# squeue --user=mingyuliu
-# scancel
+# optimize memory usage -- gensium fit generator & infer sparse matrix
 
+# sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=8 --mem-per-cpu=4000 --time=36:00:00
 # python3 run.py -f 0 -t 37 -p 0.1
