@@ -102,21 +102,22 @@ def run_experiment(model_name, idx_from, idx_to, sub_perc):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    assert (idx_to - idx_from) <= 8, "Too many processes!"
+    num_proc = 5
     df_rich, textual = load_word_sps(sub_perc) if model_name == "ssestm" else load_art_cut(sub_perc)
-    windows = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
+    window_li = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
 
-    procs = []
-    for window in windows:
-        df_rich_win, textual_win = build_inputs(window, df_rich, textual)
-        proc = Process(target=experiment, args=(window, df_rich_win, textual_win, model_name, perc_ls))
-        procs.append(proc)
+    for idx in range(0, len(window_li), num_proc):
+        windows, procs = window_li[idx: idx + num_proc], []
+        for window in windows:
+            df_rich_win, textual_win = build_inputs(window, df_rich, textual)
+            proc = Process(target=experiment, args=(window, df_rich_win, textual_win, model_name, perc_ls))
+            procs.append(proc)
 
-    for proc in procs:
-        proc.start()
+        for proc in procs:
+            proc.start()
 
-    for proc in procs:
-        proc.join()
+        for proc in procs:
+            proc.join()
 
 
 def run_backtest(model_name):
