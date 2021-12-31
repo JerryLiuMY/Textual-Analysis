@@ -34,12 +34,15 @@ stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=No
 
 
 # BERT and doc2vec
-# sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=14 --mem-per-cpu=4000 --time=36:00:00
+# sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=12 --mem-per-cpu=4000 --time=36:00:00
 # squeue --user=mingyuliu
 # scancel
 
-# python3 run.py -f 0 -t 8
-# python3 run.py -f 8 -t 16
-# python3 run.py -f 16 -t 24
-# python3 run.py -f 24 -t 32
-# python3 run.py -f 32 -t 37
+# python3 run.py -f 0 -t 5
+# python3 run.py -f 5 -t 10
+# python3 run.py -f 10 -t 15
+# python3 run.py -f 15 -t 20
+# python3 run.py -f 20 -t 25
+# python3 run.py -f 25 -t 30
+# python3 run.py -f 30 -t 35
+# python3 run.py -f 35 -t 37
