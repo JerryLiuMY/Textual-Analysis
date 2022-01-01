@@ -1,6 +1,5 @@
 from scipy.stats import rankdata
 import matplotlib.pyplot as plt
-from global_settings import RICH_PATH
 from global_settings import LOG_PATH
 import numpy as np
 import pandas as pd
@@ -79,15 +78,15 @@ def plot_hour_count(data_df):
     fig.savefig(os.path.join(LOG_PATH, "hourly_count.pdf"), bbox_inches="tight")
 
 
-def plot_zd_ret(rich_files):
+def plot_zd_ret(sub_file_rich_li):
     """ plot the average returns of stocks with "涨" and "跌" inside the enriched files
-    :param rich_files: list of enriched files
+    :param sub_file_rich_li: list of enriched files
     """
 
-    z_ret_li = np.zeros(len(rich_files))
-    d_ret_li = np.zeros(len(rich_files))
+    z_ret_li = np.zeros(len(sub_file_rich_li))
+    d_ret_li = np.zeros(len(sub_file_rich_li))
 
-    for i, file in enumerate(rich_files):
+    for i, file in enumerate(sub_file_rich_li):
         df_rich = pd.read_csv(file)
         # average return of stocks with "涨" in the text
         z_ret = df_rich["ret3"].values[df_rich["text"].apply(lambda _: "涨" in _)].mean()
@@ -105,15 +104,15 @@ def plot_zd_ret(rich_files):
     fig.savefig(os.path.join(LOG_PATH, "zd_ret.pdf"), bbox_inches="tight")
 
 
-def plot_zd_rank(rich_files):
+def plot_zd_rank(sub_file_rich_li):
     """ plot the ranks of average returns of stocks with "涨" and "跌" inside the enriched files
-    :param rich_files: list of enriched files
+    :param sub_file_rich_li: list of enriched files
     """
 
-    z_rank_li = np.zeros(len(rich_files))
-    d_rank_li = np.zeros(len(rich_files))
+    z_rank_li = np.zeros(len(sub_file_rich_li))
+    d_rank_li = np.zeros(len(sub_file_rich_li))
 
-    for i, file in enumerate(rich_files):
+    for i, file in enumerate(sub_file_rich_li):
         df_rich = pd.read_csv(file)
         n = df_rich["ret3"].shape[0]
         p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
@@ -131,10 +130,3 @@ def plot_zd_rank(rich_files):
     ax.legend()
 
     fig.savefig(os.path.join(LOG_PATH, "zd_rank.pdf"), bbox_inches="tight")
-
-
-if __name__ == "__main__":
-    from glob import glob
-    sub_file_rich_li = glob(os.path.join(RICH_PATH, "*.csv"))
-    plot_zd_ret(sub_file_rich_li)
-    plot_zd_rank(sub_file_rich_li)

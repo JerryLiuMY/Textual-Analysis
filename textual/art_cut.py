@@ -44,7 +44,7 @@ def build_art_cut(sub_file_rich):
         mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if w not in stop_list])
         sub_art_cut = pd.concat([sub_art_cut, mini_art_cut], axis=0)
 
-    sub_text_file = f"{textual_name}_{sub_file_rich.split('.')[0].split('_')[1]}.pkl"
+    sub_text_file = f"{sub_file_rich.split('.')[0]}.pkl"
     print(f"Saving to {sub_text_file}...")
     with open(os.path.join(text_path, sub_text_file), "wb") as f:
         pickle.dump(sub_art_cut, f)

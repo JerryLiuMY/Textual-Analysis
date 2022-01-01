@@ -1,18 +1,19 @@
-from multiprocessing.pool import Pool
-from multiprocessing import Process
+from main import load_word_sps, load_art_cut, build_inputs
 from data_prep.data_clean import save_data, clean_data
 from data_prep.data_enrich import enrich_data
 from data_prep.data_split import split_data
 from experiments.backtest import backtest
 from experiments.experiment import experiment
-from main import load_word_sps, load_art_cut, build_inputs
 from global_settings import DATA_PATH, OUTPUT_PATH, dalym
 from global_settings import CLEAN_PATH, RICH_PATH, LOG_PATH
+from global_settings import date0_min, date0_max
 from experiments.generators import generate_window
-from params.params import window_dict, date0_min, date0_max
+from params.params import window_dict
 from params.params import perc_ls
 from textual.art_cut import build_art_cut
 from textual.word_sps import build_word_sps
+from multiprocessing.pool import Pool
+from multiprocessing import Process
 from glob import glob
 import os
 
@@ -32,12 +33,12 @@ def run_data_prep(raw_file="raw.csv", data_file="data.csv", clean_file="cleaned.
     # clean & split data
     save_data(raw_file, data_file)
     clean_data(data_file, clean_file)
-    split_data(clean_file, split_num=750)
+    split_data(clean_file)
 
     # define directories
     sub_file_clean_li = [_.split("/")[-1] for _ in glob(os.path.join(CLEAN_PATH, "*.csv"))]
-    sub_file_rich_idx = [_.split("/")[-1].split(".")[0].split("_")[1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_file_clean_li = sorted([_ for _ in sub_file_clean_li if _.split(".")[0].split("_")[1] not in sub_file_rich_idx])
+    sub_file_rich_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
+    sub_file_clean_li = sorted([_ for _ in sub_file_clean_li if _.split(".")[0] not in sub_file_rich_idx])
 
     # enrich data
     num_proc = 12
@@ -61,8 +62,8 @@ def run_textual(textual_name):
     # define directories
     extension = "*.npz" if textual_name == "word_sps" else "*.pkl"
     sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0].split("_")[2] for _ in glob(os.path.join(text_path, extension))]
-    sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0].split("_")[1] not in sub_text_file_idx])
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, extension))]
+    sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0] not in sub_text_file_idx])
 
     # build textual
     num_proc = 12
@@ -129,22 +130,22 @@ def run_backtest(model_name):
     backtest(model_name, dalym)
 
 
-# if __name__ == "__main__":
-#     run_data_prep()
-#     run_textual("word_sps")
-#     run_textual("art_cut")
-#     pass
-
-
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Run experiment")
-    parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
-    parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
-    parser.add_argument("-p", "--sub_perc", nargs="?", const=1, default=1, type=float)
-    args = parser.parse_args()
+    run_data_prep()
+    # run_textual("word_sps")
+    # run_textual("art_cut")
+    pass
 
-    run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=args.sub_perc)
+
+# if __name__ == "__main__":
+#     import argparse
+#     parser = argparse.ArgumentParser(description="Run experiment")
+#     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
+#     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
+#     parser.add_argument("-p", "--sub_perc", nargs="?", const=1, default=1, type=float)
+#     args = parser.parse_args()
+#
+#     run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=args.sub_perc)
 
 
 # if __name__ == "__main__":

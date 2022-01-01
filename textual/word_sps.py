@@ -4,6 +4,7 @@ from tools.text_tools import join_tt
 from datetime import datetime
 import pandas as pd
 import numpy as np
+import scipy as sp
 import math
 import os
 
@@ -22,7 +23,7 @@ def build_word_sps(sub_file_rich):
 
     # build word matrix
     mini_size = 100
-    sub_word_mtx = np.empty([0, len(full_dict)])
+    sub_word_sps = csr_matrix(np.empty((0, len(full_dict)), dtype=np.int64))
 
     for idx, iloc in enumerate(range(0, sub_df_rich.shape[0], mini_size)):
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -30,9 +31,9 @@ def build_word_sps(sub_file_rich):
 
         mini_df_rich = sub_df_rich.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
         mini_word_mtx = mini_df_rich.apply(join_tt, axis=1).apply(lambda _: [_.count(word) for word in full_dict])
-        sub_word_mtx = np.vstack([sub_word_mtx, np.array(mini_word_mtx.tolist())])
+        mini_word_sps = csr_matrix(np.array(mini_word_mtx.tolist()))
+        sub_word_sps = sp.sparse.vstack([sub_word_sps, mini_word_sps], format="csr")
 
-    sub_word_sps = csr_matrix(sub_word_mtx)
-    sub_text_file = f"{textual_name}_{sub_file_rich.split('.')[0].split('_')[1]}.npz"
+    sub_text_file = f"{sub_file_rich.split('.')[0]}.npz"
     print(f"Saving to {sub_text_file}...")
     save_npz(os.path.join(text_path, sub_text_file), sub_word_sps)

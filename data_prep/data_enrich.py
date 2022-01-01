@@ -1,4 +1,3 @@
-from tools.data_tools import shift_date, match_date
 from tools.query import query_dalyr
 from global_settings import CLEAN_PATH, RICH_PATH
 from global_settings import user, host, password
@@ -16,17 +15,6 @@ def enrich_data(sub_file_clean):
 
     # load sub file
     sub_df_clean = pd.read_csv(os.path.join(CLEAN_PATH, sub_file_clean))
-
-    # create auxiliary columns
-    cls_time = "15:00:00"
-    sub_df_clean["shift"] = sub_df_clean["time"].apply(lambda _: _[:2] >= cls_time).astype(int)
-    sub_df_clean["stkcd"] = sub_df_clean["stock_mention"].apply(lambda _: _[2:])
-    sub_df_clean["date_t"] = sub_df_clean.apply(lambda _: shift_date(_["date"], _["shift"]), axis=1)
-
-    # match to the trading date t, t-2, t+1
-    sub_df_clean["date_0"] = sub_df_clean["date_t"].apply(lambda _: match_date(_, match_day=0))
-    sub_df_clean["date_p1"] = sub_df_clean["date_t"].apply(lambda _: match_date(_, match_day=1))
-    sub_df_clean["date_m2"] = sub_df_clean["date_t"].apply(lambda _: match_date(_, match_day=-2))
 
     # fetch type, cls, cap, ret, ret3
     mini_size = 100
@@ -55,10 +43,14 @@ def enrich_data(sub_file_clean):
 
     csmar.close()
 
-    sub_df_rich.drop(columns=["shift", "stkcd", "date_t", "date_p1", "date_m2"], inplace=True)
-    sub_df_rich.dropna(subset=["type", "cls", "cap", "ret", "ret3"], axis=0, inplace=True)
+    try:
+        sub_df_rich.drop(columns=["shift", "stkcd", "date_t", "date_p1", "date_m2"], inplace=True)
+        sub_df_rich.dropna(subset=["type", "cls", "cap", "ret", "ret3"], axis=0, inplace=True)
+    except KeyError:
+        pass
     sub_df_rich.reset_index(inplace=True, drop=True)
 
-    sub_file_rich = f"enriched_{sub_file_clean.split('.')[0].split('_')[1]}.csv"
-    print(f"Saving to {sub_file_rich}...")
+    sub_file_rich = f"{sub_file_clean.split('.')[0]}.csv"
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+          f"Saving to {sub_file_rich}...")
     sub_df_rich.to_csv(os.path.join(RICH_PATH, sub_file_rich), index=False)
