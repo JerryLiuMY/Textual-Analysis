@@ -10,8 +10,8 @@ from global_settings import date0_min, date0_max
 from experiments.generators import generate_window
 from params.params import window_dict
 from params.params import perc_ls
-from textual.art_cut import build_art_cut
-from textual.word_sps import build_word_sps
+from textuals.art_cut import build_art_cut
+from textuals.word_sps import build_word_sps
 from multiprocessing.pool import Pool
 from multiprocessing import Process
 from glob import glob

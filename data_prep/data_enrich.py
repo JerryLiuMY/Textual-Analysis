@@ -15,6 +15,7 @@ def enrich_data(sub_file_clean):
 
     # load sub file
     sub_df_clean = pd.read_csv(os.path.join(CLEAN_PATH, sub_file_clean))
+    sub_df_clean["stkcd"] = sub_df_clean["stock_mention"].apply(lambda _: _[2:])
 
     # fetch type, cls, cap, ret, ret3
     mini_size = 100
@@ -43,11 +44,8 @@ def enrich_data(sub_file_clean):
 
     csmar.close()
 
-    try:
-        sub_df_rich.drop(columns=["shift", "stkcd", "date_t", "date_p1", "date_m2"], inplace=True)
-        sub_df_rich.dropna(subset=["type", "cls", "cap", "ret", "ret3"], axis=0, inplace=True)
-    except KeyError:
-        pass
+    sub_df_rich.drop(columns=["shift", "stkcd", "date_t", "date_p1", "date_m2"], inplace=True)
+    sub_df_rich.dropna(subset=["type", "cls", "cap", "ret", "ret3"], axis=0, inplace=True)
     sub_df_rich.reset_index(inplace=True, drop=True)
 
     sub_file_rich = f"{sub_file_clean.split('.')[0]}.csv"

@@ -21,7 +21,6 @@ def split_data(clean_file):
           f"Creating date_t information...")
     cls_time = "15:00:00"
     clean_df["shift"] = clean_df["time"].apply(lambda _: _[:2] >= cls_time).astype(int)
-    clean_df["stkcd"] = clean_df["stock_mention"].apply(lambda _: _[2:])
     clean_df["date_t"] = clean_df.apply(lambda _: shift_date(_["date"], _["shift"]), axis=1)
 
     # match to the trading date t, t-2, t+1
