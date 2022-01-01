@@ -122,8 +122,10 @@ def get_rich_ls(df_rich, target, perc_ls):
     # get L/S dataframes (first occurrence in each group)
     df_rich_l = df_rich.loc[df_rich.apply(lambda _: _["stock_mention"] in keys_l, axis=1), :]
     df_rich_s = df_rich.loc[df_rich.apply(lambda _: _["stock_mention"] in keys_s, axis=1), :]
-    df_rich_l = df_rich_l.groupby("stock_mention").first().reset_index(inplace=False).loc[:, df_rich.columns]
-    df_rich_s = df_rich_s.groupby("stock_mention").first().reset_index(inplace=False).loc[:, df_rich.columns]
+    df_rich_l = df_rich_l.groupby("stock_mention").first().reset_index(inplace=False, drop=False)
+    df_rich_s = df_rich_s.groupby("stock_mention").first().reset_index(inplace=False, drop=False)
+    df_rich_l = df_rich_l.loc[:, df_rich.columns]
+    df_rich_s = df_rich_s.loc[:, df_rich.columns]
 
     return df_rich_l, df_rich_s
 

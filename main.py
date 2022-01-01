@@ -13,10 +13,9 @@ import pickle
 import os
 
 
-def generate_files(textual_name, sub_perc):
+def generate_files(textual_name):
     """ Build iterator for files
     :param textual_name: name of textual model
-    :param sub_perc: percentage of subset of data
     """
 
     # define paths
@@ -30,25 +29,15 @@ def generate_files(textual_name, sub_perc):
     sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
     sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, extension))])
 
-    if sub_perc != 1:
-        np.random.seed(8)
-        num_files = len(sub_file_rich_idx)
-        sub_size = int(num_files * sub_perc)
-        idx = sorted(np.random.choice(num_files, sub_size, replace=False))
-        sub_file_rich_li = [sub_file_rich_li[_] for _ in idx]
-        sub_text_file_li = [sub_text_file_li[_] for _ in idx]
-
     return zip(sub_file_rich_li, sub_text_file_li)
 
 
-def load_word_sps(sub_perc):
-    """ Load word sparse matrix
-    :param sub_perc: percentage of subset of data
-    """
+def load_word_sps():
+    """ Load word sparse matrix """
 
     # get df_rich & word_sps
     text_path = os.path.join(DATA_PATH, "word_sps")
-    files_iter = generate_files("word_sps", sub_perc)
+    files_iter = generate_files("word_sps")
     columns = ["date_0", "ret3", "stock_mention", "ret", "cap"]
     df_rich = pd.DataFrame(columns=columns)
     word_sps = csr_matrix(np.empty((0, len(full_dict)), dtype=np.int64))
@@ -68,17 +57,15 @@ def load_word_sps(sub_perc):
     return df_rich, word_sps
 
 
-def load_art_cut(sub_perc):
-    """ Load articles cut with jieba
-    :param sub_perc: whether to use subset of data
-    """
+def load_art_cut():
+    """ Load articles cut with jieba """
 
     # get df_rich & art_cut
     text_path = os.path.join(DATA_PATH, "art_cut")
-    files_iter = generate_files("art_cut", sub_perc)
+    files_iter = generate_files("art_cut")
     columns = ["date_0", "ret3", "stock_mention", "ret", "cap"]
     df_rich = pd.DataFrame(columns=columns)
-    art_cut = pd.Series(dtype=object)
+    art_cut = pd.Series(name="art_cut", dtype=object)
 
     for sub_file_rich, sub_text_file in files_iter:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -89,9 +76,8 @@ def load_art_cut(sub_perc):
         with open(os.path.join(text_path, sub_text_file), "rb") as f:
             sub_art_cut = pickle.load(f)
         df_rich = df_rich.append(sub_df_rich.loc[:, columns])
-        art_cut = pd.concat([art_cut, sub_art_cut], axis=0)
+        art_cut = art_cut.append(sub_art_cut)
 
-    art_cut.name = "art_cut"
     df_rich.reset_index(inplace=True, drop=True)
     art_cut.reset_index(inplace=True, drop=True)
 

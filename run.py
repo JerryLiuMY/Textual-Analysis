@@ -75,12 +75,11 @@ def run_textual(textual_name):
         pool.join()
 
 
-def run_experiment(model_name, idx_from, idx_to, sub_perc):
+def run_experiment(model_name, idx_from, idx_to):
     """ Run experiment
     :param model_name: model name
     :param idx_from: start of the index of the full window list
     :param idx_to: end of the index of the full window list
-    :param sub_perc: percentage of subset of data
     """
 
     # create directory
@@ -104,7 +103,7 @@ def run_experiment(model_name, idx_from, idx_to, sub_perc):
 
     # perform experiment
     num_proc = 10
-    df_rich, textual = load_word_sps(sub_perc) if model_name == "ssestm" else load_art_cut(sub_perc)
+    df_rich, textual = load_word_sps() if model_name == "ssestm" else load_art_cut()
     window_li = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
 
     for idx in range(0, len(window_li), num_proc):
@@ -131,10 +130,9 @@ def run_backtest(model_name):
 
 
 if __name__ == "__main__":
-    run_data_prep()
-    # run_textual("word_sps")
+    # run_data_prep()
+    run_textual("word_sps")
     # run_textual("art_cut")
-    pass
 
 
 # if __name__ == "__main__":
@@ -142,10 +140,9 @@ if __name__ == "__main__":
 #     parser = argparse.ArgumentParser(description="Run experiment")
 #     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
 #     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
-#     parser.add_argument("-p", "--sub_perc", nargs="?", const=1, default=1, type=float)
 #     args = parser.parse_args()
 #
-#     run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to, sub_perc=args.sub_perc)
+#     run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to)
 
 
 # if __name__ == "__main__":

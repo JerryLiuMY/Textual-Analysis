@@ -39,4 +39,4 @@ stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=No
 # optimize memory usage -- gensium fit generator & infer sparse matrix
 
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=8 --mem-per-cpu=4000 --time=36:00:00
-# python3 run.py -f 0 -t 37 -p 0.1
+# python3 run.py -f 0 -t 37

@@ -40,10 +40,12 @@ def build_art_cut(sub_file_rich):
 
         mini_df_rich = sub_df_rich.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
         mini_art_cut = mini_df_rich.apply(join_tt, axis=1).apply(cut_art)
-        mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if len(re.findall(r'[\u4e00-\u9fff]+', w)) != 0])
+        mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if len(re.findall(r"[\u4e00-\u9fff]+", w)) != 0])
         mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if w not in stop_list])
-        sub_art_cut = pd.concat([sub_art_cut, mini_art_cut], axis=0)
+        sub_art_cut = sub_art_cut.append(mini_art_cut)
 
+    sub_art_cut.name = "art_cut"
+    sub_art_cut.reset_index(inplace=True, drop=True)
     sub_text_file = f"{sub_file_rich.split('.')[0]}.pkl"
     print(f"Saving to {sub_text_file}...")
     with open(os.path.join(text_path, sub_text_file), "wb") as f:
