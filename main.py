@@ -136,11 +136,12 @@ def run_backtest(model_name):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Run experiment")
+    parser.add_argument("-m", "--model_name", type=str, help="Model name")
     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
     args = parser.parse_args()
 
-    run_experiment("ssestm", idx_from=args.idx_from, idx_to=args.idx_to)
+    run_experiment(model_name=args.model_name, idx_from=args.idx_from, idx_to=args.idx_to)
 
 
 # if __name__ == "__main__":

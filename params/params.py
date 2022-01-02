@@ -7,9 +7,9 @@ window_dict = {
 }
 
 proc_dict = {
-    "ssestm": 10,
-    "doc2vec": 10,
-    "bert": 10,
+    "ssestm": 13,
+    "doc2vec": 8,
+    "bert": 8,
 }
 
 params_dict = {
