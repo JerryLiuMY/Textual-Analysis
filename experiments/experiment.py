@@ -1,22 +1,21 @@
 from params.params import params_dict
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
-from models.bert import fit_bert, pre_bert
-from tools.exp_tools import get_textual, get_df_rich, get_return
-from tools.exp_tools import get_stocks, get_weights, get_returns
+from tools.exp_tools import get_return, get_stocks
+from tools.exp_tools import get_weights, get_returns
 from tools.exp_tools import save_params, save_model, save_return
+from models.bert import fit_bert, pre_bert
 from experiments.generators import generate_params
+from experiments.loaders import load_word_sps, load_art_cut
 from datetime import datetime
 import numpy as np
 import pandas as pd
 import psutil
 
 
-def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
+def experiment(window, model_name, perc_ls):
     """ Train models over a window and get returns
     :param window: [trddt_train, trddt_valid, trddt_test] window
-    :param df_rich_win: enriched dataframe within the window 
-    :param textual_win: textual information (e.g. sparse matrix, embeddings) within the window
     :param model_name: model name
     :param perc_ls: percentage of long-short portfolio
     :return ret_e_win: equal weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
@@ -30,11 +29,11 @@ def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
           f"({psutil.virtual_memory().percent}% mem used)")
 
     if model_name == "ssestm":
-        fit_func, pre_func = fit_ssestm, pre_ssestm
+        load_input, fit_func, pre_func = load_word_sps, fit_ssestm, pre_ssestm
     elif model_name == "doc2vec":
-        fit_func, pre_func = fit_doc2vec, pre_doc2vec
+        load_input, fit_func, pre_func = load_art_cut, fit_doc2vec, pre_doc2vec
     elif model_name == "bert":
-        fit_func, pre_func = fit_bert, pre_bert
+        load_input, fit_func, pre_func = load_art_cut, fit_bert, pre_bert
     else:
         raise ValueError("Invalid model name")
 
@@ -51,9 +50,7 @@ def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"*-* Training {trddt_train[0][:-3]} to {trddt_train[-1][:-3]}...")
 
-        train_idx = df_rich_win["date_0"].apply(lambda _: _ in trddt_train)
-        df_rich_win_train = get_df_rich(df_rich_win, train_idx)
-        textual_win_train = get_textual(textual_win, train_idx)
+        df_rich_win_train, textual_win_train = load_input(trddt_train)
         model = fit_func(df_rich_win_train, textual_win_train, params)
 
         # validation
@@ -63,13 +60,7 @@ def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
         ret_e_win_valid = np.empty(len(trddt_valid))
         ret_v_win_valid = np.empty(len(trddt_valid))
         for i, dt in enumerate(trddt_valid):
-            valid_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
-            if sum(valid_idx) == 0:
-                ret_e_win_valid[i], ret_v_win_valid[i] = 0., 0.
-                continue
-
-            df_rich_win_valid = get_df_rich(df_rich_win, valid_idx)
-            textual_win_valid = get_textual(textual_win, valid_idx)
+            df_rich_win_valid, textual_win_valid = load_input([dt])
             target = pre_func(textual_win_valid, model, params)
             ret_e_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "e")[0]
             ret_v_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "v")[0]
@@ -94,14 +85,7 @@ def experiment(window, df_rich_win, textual_win, model_name, perc_ls):
     ret_e_win = np.empty([len(trddt_test), 9], dtype=object)
     ret_v_win = np.empty([len(trddt_test), 9], dtype=object)
     for i, dt in enumerate(trddt_test):
-        test_idx = df_rich_win["date_0"].apply(lambda _: _ == dt)
-        if sum(test_idx) == 0:
-            ret_e_win[i, 0:6], ret_e_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
-            ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
-            continue
-
-        df_rich_win_test = get_df_rich(df_rich_win, test_idx)
-        textual_win_test = get_textual(textual_win, test_idx)
+        df_rich_win_test, textual_win_test = load_input([dt])
         target_e = pre_func(textual_win_test, best_model_e, best_params_e)
         target_v = pre_func(textual_win_test, best_model_v, best_params_v)
         ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, target_e, perc_ls)

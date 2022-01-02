@@ -2,12 +2,12 @@ from scipy.sparse import csr_matrix, load_npz
 from experiments.generators import generate_files
 from global_settings import DATA_PATH, RICH_PATH, full_dict
 from datetime import datetime
-import os
 import pickle
 import numpy as np
 import pandas as pd
 import psutil
 import scipy as sp
+import os
 
 
 def load_word_sps(trddt):
@@ -64,19 +64,3 @@ def load_art_cut(trddt):
     art_cut.reset_index(inplace=True, drop=True)
 
     return df_rich, art_cut
-
-
-def load_input(trddt, textual_name):
-    """ Load inputs
-    :param trddt: list of trddt dates
-    :param textual_name: textual name
-    """
-
-    if textual_name == "word_sps":
-        df_rich, textual = load_word_sps(trddt)
-    elif textual_name == "art_cut":
-        df_rich, textual = load_art_cut(trddt)
-    else:
-        raise ValueError("Invalid textual name")
-
-    return df_rich, textual
