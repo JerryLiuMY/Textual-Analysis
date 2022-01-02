@@ -22,13 +22,13 @@ def load_textual(trddt, textual_name):
     if textual_name == "word_sps":
         load_func = load_npz
         textual = csr_matrix(np.empty((0, len(full_dict)), dtype=np.int64))
-        def append_func(_): return sp.sparse.vstack(_, format="csr")
-        def reset_func(_): return _
+        def append_func(foo): return sp.sparse.vstack(foo, format="csr")
+        def reset_func(bar): return bar
     elif textual_name == "art_cut":
         load_func = pd.read_pickle
         textual = pd.Series(name="art_cut", dtype=object)
-        def append_func(_): return pd.concat(_, axis=0)
-        def reset_func(_): return _.reset_index(inplace=False, drop=True)
+        def append_func(foo): return pd.concat(foo, axis=0)
+        def reset_func(bar): return bar.reset_index(inplace=False, drop=True)
     else:
         raise ValueError("Invalid textual name")
 

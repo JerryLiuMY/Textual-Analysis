@@ -173,7 +173,6 @@ def get_return(df_rich, target, perc_ls, ev):
     """
 
     df_rich_l, df_rich_s = get_rich_ls(df_rich, target, perc_ls)
-
     if df_rich_l.shape[0] == df_rich_s.shape[0] == 0:
         return 0., 0., 0.
 

@@ -144,6 +144,10 @@ if __name__ == "__main__":
     run_experiment(model_name=args.model_name, idx_from=args.idx_from, idx_to=args.idx_to)
 
 
-# if __name__ == "__main__":
-#     model_name = "doc2vec"
-#     run_backtest(model_name)
+if __name__ == "__main__":
+    model_name = "ssestm"
+    run_backtest(model_name)
+
+
+# sync all data & folder
+# optimize doc2vec memory usage

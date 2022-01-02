@@ -62,6 +62,11 @@ def experiment(window, model_name, perc_ls):
         ret_v_win_valid = np.empty(len(trddt_valid))
         for i, dt in enumerate(trddt_valid):
             df_rich_win_valid, textual_win_valid = load_input([dt])
+            if df_rich_win_valid.shape[0] == 0 & textual_win_valid.shape[0] == 0:
+                ret_e_win_valid[i] = 0.
+                ret_v_win_valid[i] = 0.
+                continue
+
             target = pre_func(textual_win_valid, model, params)
             ret_e_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "e")[0]
             ret_v_win_valid[i] = get_return(df_rich_win_valid, target, perc_ls, "v")[0]
@@ -87,6 +92,11 @@ def experiment(window, model_name, perc_ls):
     ret_v_win = np.empty([len(trddt_test), 9], dtype=object)
     for i, dt in enumerate(trddt_test):
         df_rich_win_test, textual_win_test = load_input([dt])
+        if df_rich_win_test.shape[0] & textual_win_test.shape[0] == 0:
+            ret_e_win[i, 0:6], ret_e_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
+            ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
+            continue
+
         target_e = pre_func(textual_win_test, best_model_e, best_params_e)
         target_v = pre_func(textual_win_test, best_model_v, best_params_v)
         ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, target_e, perc_ls)
