@@ -6,7 +6,8 @@ from tools.exp_tools import get_weights, get_returns
 from tools.exp_tools import save_params, save_model, save_return
 from models.bert import fit_bert, pre_bert
 from experiments.generators import generate_params
-from experiments.loaders import load_word_sps, load_art_cut
+from experiments.loaders import load_textual
+from functools import partial
 from datetime import datetime
 import numpy as np
 import pandas as pd
@@ -29,11 +30,11 @@ def experiment(window, model_name, perc_ls):
           f"({psutil.virtual_memory().percent}% mem used)")
 
     if model_name == "ssestm":
-        load_input, fit_func, pre_func = load_word_sps, fit_ssestm, pre_ssestm
+        load_input, fit_func, pre_func = partial(load_textual, textual_name="word_sps"), fit_ssestm, pre_ssestm
     elif model_name == "doc2vec":
-        load_input, fit_func, pre_func = load_art_cut, fit_doc2vec, pre_doc2vec
+        load_input, fit_func, pre_func = partial(load_textual, textual_name="art_cut"), fit_doc2vec, pre_doc2vec
     elif model_name == "bert":
-        load_input, fit_func, pre_func = load_art_cut, fit_bert, pre_bert
+        load_input, fit_func, pre_func = partial(load_textual, textual_name="art_cut"), fit_bert, pre_bert
     else:
         raise ValueError("Invalid model name")
 

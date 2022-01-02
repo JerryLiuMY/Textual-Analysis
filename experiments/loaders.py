@@ -2,7 +2,6 @@ from scipy.sparse import csr_matrix, load_npz
 from experiments.generators import generate_files
 from global_settings import DATA_PATH, RICH_PATH, full_dict
 from datetime import datetime
-import pickle
 import numpy as np
 import pandas as pd
 import psutil
@@ -10,7 +9,7 @@ import scipy as sp
 import os
 
 
-def load_word_sps(trddt, textual_name):
+def load_textual(trddt, textual_name):
     """ Load word sparse matrix
     :param trddt: list of trddt dates
     :param textual_name: textual name
