@@ -12,14 +12,17 @@ def generate_files(trddt, textual_name):
 
     # define paths
     text_path = os.path.join(DATA_PATH, textual_name)
-    extension = "*.npz" if textual_name == "word_sps" else "*.pkl"
-    sub_file_rich_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(RICH_PATH, "*.csv")) if _ in trddt]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, extension)) if _ in trddt]
+    extension = "npz" if textual_name == "word_sps" else "pkl"
+    sub_file_rich_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, "*." + extension))]
+    sub_file_rich_idx = [_ for _ in sub_file_rich_idx if _ in trddt]
+    sub_text_file_idx = [_ for _ in sub_text_file_idx if _ in trddt]
+
     if sorted(sub_file_rich_idx) != sorted(sub_text_file_idx):
         raise ValueError("Mismatch between enriched data files and textual files")
 
-    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
-    sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, extension))])
+    sub_file_rich_li = sorted([f"{_}.csv" for _ in sub_file_rich_idx])
+    sub_text_file_li = sorted([f"{_}.{extension}" for _ in sub_text_file_idx])
 
     return zip(sub_file_rich_li, sub_text_file_li)
 

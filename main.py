@@ -60,9 +60,9 @@ def run_textual(textual_name):
         os.mkdir(text_path)
 
     # define directories
-    extension = "*.npz" if textual_name == "word_sps" else "*.pkl"
+    extension = "npz" if textual_name == "word_sps" else "pkl"
     sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, extension))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, "*." + extension))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0] not in sub_text_file_idx])
 
     # build textual
