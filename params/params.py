@@ -1,9 +1,15 @@
-perc_ls = 0.02
+perc_ls = 0.05
 
 window_dict = {
     "train_win": 12,
     "valid_win": 12 + 6,
     "test_win": 12 + 6 + 1
+}
+
+proc_dict = {
+    "ssestm": 10,
+    "doc2vec": 10,
+    "bert": 10,
 }
 
 params_dict = {

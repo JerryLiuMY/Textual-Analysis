@@ -9,6 +9,7 @@ from global_settings import date0_min, date0_max
 from experiments.generators import generate_window
 from params.params import window_dict
 from params.params import perc_ls
+from params.params import proc_dict
 from textuals.art_cut import build_art_cut
 from textuals.word_sps import build_word_sps
 from multiprocessing.pool import Pool
@@ -101,8 +102,8 @@ def run_experiment(model_name, idx_from, idx_to):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    num_proc = 10
     window_li = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
+    num_proc = proc_dict[model_name]
 
     for idx in range(0, len(window_li), num_proc):
         windows, procs = window_li[idx: idx + num_proc], []
@@ -126,20 +127,20 @@ def run_backtest(model_name):
     backtest(model_name, dalym)
 
 
-if __name__ == "__main__":
-    # run_data_prep()
-    run_textual("word_sps")
-    run_textual("art_cut")
-
-
 # if __name__ == "__main__":
-#     import argparse
-#     parser = argparse.ArgumentParser(description="Run experiment")
-#     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
-#     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
-#     args = parser.parse_args()
-#
-#     run_experiment("doc2vec", idx_from=args.idx_from, idx_to=args.idx_to)
+#     run_data_prep()
+#     run_textual("word_sps")
+#     run_textual("art_cut")
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Run experiment")
+    parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
+    parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
+    args = parser.parse_args()
+
+    run_experiment("ssestm", idx_from=args.idx_from, idx_to=args.idx_to)
 
 
 # if __name__ == "__main__":
