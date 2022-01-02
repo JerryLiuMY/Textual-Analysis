@@ -19,7 +19,7 @@ def enrich_data(sub_file_clean):
 
     # fetch type, cls, cap, ret, ret3
     mini_size = 100
-    sub_df_rich = pd.DataFrame()
+    sub_df_rich = pd.DataFrame(columns=list(sub_df_clean.columns) + ["type", "cls", "cap", "ret"] + ["ret3"])
 
     csmar = mysql.connector.connect(user=user, password=password, host=host, database="CSMAR")
     for idx, iloc in enumerate(range(0, sub_df_clean.shape[0], mini_size)):

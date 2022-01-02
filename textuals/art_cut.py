@@ -14,7 +14,6 @@ import re
 def build_art_cut(sub_file_rich):
     """ compute textual for doc2vec
     :param sub_file_rich: enriched sub file
-    :return: estimated O_hat
     """
 
     # load sub_df_rich
@@ -32,7 +31,7 @@ def build_art_cut(sub_file_rich):
 
     # cut article
     mini_size = 100
-    sub_art_cut = pd.Series(dtype=object)
+    sub_art_cut = pd.Series(name="art_cut", dtype=object)
 
     for idx, iloc in enumerate(range(0, sub_df_rich.shape[0], mini_size)):
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
@@ -42,9 +41,9 @@ def build_art_cut(sub_file_rich):
         mini_art_cut = mini_df_rich.apply(join_tt, axis=1).apply(cut_art)
         mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if len(re.findall(r"[\u4e00-\u9fff]+", w)) != 0])
         mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if w not in stop_list])
+        mini_art_cut.name = "art_cut"
         sub_art_cut = sub_art_cut.append(mini_art_cut)
 
-    sub_art_cut.name = "art_cut"
     sub_art_cut.reset_index(inplace=True, drop=True)
     sub_text_file = f"{sub_file_rich.split('.')[0]}.pkl"
     print(f"Saving to {sub_text_file}...")
