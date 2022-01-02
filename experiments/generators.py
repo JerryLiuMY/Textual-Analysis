@@ -1,5 +1,27 @@
-from global_settings import trddt_all
+from global_settings import trddt_all, DATA_PATH, RICH_PATH
+from glob import glob
 import itertools
+import os
+
+
+def generate_files(trddt, textual_name):
+    """ Build iterator for files
+    :param trddt: list of trddt dates
+    :param textual_name: name of textual model
+    """
+
+    # define paths
+    text_path = os.path.join(DATA_PATH, textual_name)
+    extension = "*.npz" if textual_name == "word_sps" else "*.pkl"
+    sub_file_rich_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(RICH_PATH, "*.csv")) if _ in trddt]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, extension)) if _ in trddt]
+    if sorted(sub_file_rich_idx) != sorted(sub_text_file_idx):
+        raise ValueError("Mismatch between enriched data files and textual files")
+
+    sub_file_rich_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))])
+    sub_text_file_li = sorted([_.split("/")[-1] for _ in glob(os.path.join(text_path, extension))])
+
+    return zip(sub_file_rich_li, sub_text_file_li)
 
 
 def generate_window(window_dict, date0_min, date0_max):

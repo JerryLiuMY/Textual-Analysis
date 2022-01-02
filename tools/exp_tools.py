@@ -1,35 +1,11 @@
 from sklearn.linear_model import LogisticRegression
 from tensorflow.keras.models import Sequential
 from global_settings import OUTPUT_PATH
-from scipy.sparse import issparse
 import pickle
 import numpy as np
 import pandas as pd
 import json
 import os
-
-
-def get_df_rich(df_rich, idx):
-    """ Get enriched dataframe from boolean array
-    :param df_rich: enriched dataframe
-    :param idx: boolean array of index
-    """
-
-    return df_rich.loc[idx, :].reset_index(inplace=False, drop=True)
-
-
-def get_textual(textual, idx):
-    """ Get textual data from boolean array
-    :param textual: textual data
-    :param idx: boolean array of index
-    """
-
-    if isinstance(textual, np.ndarray) or issparse(textual):
-        return textual[idx]
-    elif isinstance(textual, pd.Series) or isinstance(textual, pd.DataFrame):
-        return textual.loc[idx].reset_index(inplace=False, drop=True)
-    else:
-        raise ValueError("Textual type not recognized")
 
 
 def save_model(model, model_name, trddt_test_Ym, ev):
