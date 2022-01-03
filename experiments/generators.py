@@ -1,4 +1,5 @@
-from global_settings import trddt_all, DATA_PATH, RICH_PATH
+from global_settings import DATA_PATH, RICH_PATH
+from global_settings import trddt_all
 from glob import glob
 import itertools
 import os
@@ -11,10 +12,10 @@ def generate_files(trddt, textual_name):
     """
 
     # define paths
-    text_path = os.path.join(DATA_PATH, textual_name)
+    textual_path = os.path.join(DATA_PATH, textual_name)
     extension = "npz" if textual_name == "word_sps" else "pkl"
     sub_file_rich_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, "*." + extension))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(textual_path, "*." + extension))]
     sub_file_rich_idx = sorted([_ for _ in sub_file_rich_idx if _ in trddt])
     sub_text_file_idx = sorted([_ for _ in sub_text_file_idx if _ in trddt])
 

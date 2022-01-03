@@ -6,7 +6,8 @@ from tools.exp_tools import get_weights, get_returns
 from tools.exp_tools import save_params, save_model, save_return
 from models.bert import fit_bert, pre_bert
 from experiments.generators import generate_params
-from experiments.loaders import load_textual
+from experiments.loader import input_loader
+from itertools import tee
 from functools import partial
 from datetime import datetime
 import numpy as np
@@ -30,11 +31,11 @@ def experiment(window, model_name, perc_ls):
           f"({psutil.virtual_memory().percent}% mem used)")
 
     if model_name == "ssestm":
-        load_input, fit_func, pre_func = partial(load_textual, textual_name="word_sps"), fit_ssestm, pre_ssestm
+        load_input, fit_func, pre_func = partial(input_loader, textual_name="word_sps"), fit_ssestm, pre_ssestm
     elif model_name == "doc2vec":
-        load_input, fit_func, pre_func = partial(load_textual, textual_name="art_cut"), fit_doc2vec, pre_doc2vec
+        load_input, fit_func, pre_func = partial(input_loader, textual_name="art_cut"), fit_doc2vec, pre_doc2vec
     elif model_name == "bert":
-        load_input, fit_func, pre_func = partial(load_textual, textual_name="art_cut"), fit_bert, pre_bert
+        load_input, fit_func, pre_func = partial(input_loader, textual_name="art_cut"), fit_bert, pre_bert
     else:
         raise ValueError("Invalid model name")
 
@@ -62,7 +63,7 @@ def experiment(window, model_name, perc_ls):
         ret_v_win_valid = np.empty(len(trddt_valid))
         for i, dt in enumerate(trddt_valid):
             df_rich_win_valid, textual_win_valid = load_input([dt])
-            if df_rich_win_valid.shape[0] == 0 & textual_win_valid.shape[0] == 0:
+            if df_rich_win_valid.shape[0] == 0:
                 ret_e_win_valid[i] = 0.
                 ret_v_win_valid[i] = 0.
                 continue
@@ -92,13 +93,14 @@ def experiment(window, model_name, perc_ls):
     ret_v_win = np.empty([len(trddt_test), 9], dtype=object)
     for i, dt in enumerate(trddt_test):
         df_rich_win_test, textual_win_test = load_input([dt])
-        if df_rich_win_test.shape[0] & textual_win_test.shape[0] == 0:
+        if df_rich_win_test.shape[0] == 0:
             ret_e_win[i, 0:6], ret_e_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
             ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
             continue
 
-        target_e = pre_func(textual_win_test, best_model_e, best_params_e)
-        target_v = pre_func(textual_win_test, best_model_v, best_params_v)
+        textual_win_test_e, textual_win_test_v = tee(textual_win_test)
+        target_e = pre_func(textual_win_test_e, best_model_e, best_params_e)
+        target_v = pre_func(textual_win_test_v, best_model_v, best_params_v)
         ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, target_e, perc_ls)
         ret_v_win[i, 0:2] = get_stocks(df_rich_win_test, target_v, perc_ls)
         ret_e_win[i, 2:4] = get_returns(df_rich_win_test, target_e, perc_ls)

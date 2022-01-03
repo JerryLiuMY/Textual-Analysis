@@ -55,14 +55,14 @@ def run_textual(textual_name):
     """
 
     # create directory
-    text_path = os.path.join(DATA_PATH, textual_name)
-    if not os.path.isdir(text_path):
-        os.mkdir(text_path)
+    textual_path = os.path.join(DATA_PATH, textual_name)
+    if not os.path.isdir(textual_path):
+        os.mkdir(textual_path)
 
     # define directories
     extension = "npz" if textual_name == "word_sps" else "pkl"
     sub_file_rich_li = [_.split("/")[-1] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(text_path, "*." + extension))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(textual_path, "*." + extension))]
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0] not in sub_text_file_idx])
 
     # build textual
@@ -149,5 +149,4 @@ if __name__ == "__main__":
     run_backtest(model_name)
 
 
-# sync all data & folder
 # optimize doc2vec memory usage

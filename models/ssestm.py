@@ -2,6 +2,7 @@ from sklearn.preprocessing import Normalizer
 from scipy.sparse import csr_matrix
 from scipy.stats import rankdata
 import numpy as np
+import scipy as sp
 
 
 def fit_ssestm(df_rich, word_sps, *args):
@@ -12,8 +13,8 @@ def fit_ssestm(df_rich, word_sps, *args):
     """
 
     # get D_hat and W_hat
-    n = df_rich.shape[0]
-    normalizer = Normalizer(norm="l1")
+    n, normalizer = df_rich.shape[0], Normalizer(norm="l1")
+    word_sps = sp.sparse.vstack(word_sps, format="csr")
     D_hat = normalizer.fit_transform(word_sps).T
     p_hat = (rankdata(df_rich["ret3"].values) - 1).reshape(1, -1) / n
 
@@ -40,6 +41,7 @@ def pre_ssestm(word_sps, model, params):
     O_hat = model
 
     # get D_hat and W_lin
+    word_sps = sp.sparse.vstack(word_sps, format="csr")
     zero_idx = (np.sum(O_hat, axis=1) == 0.0)
     normalizer = Normalizer(norm="l1")
     O_hat = O_hat[~zero_idx, :]

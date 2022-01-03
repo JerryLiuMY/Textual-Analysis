@@ -18,7 +18,7 @@ def build_art_cut(sub_file_rich):
 
     # load sub_df_rich
     textual_name = "art_cut"
-    text_path = os.path.join(DATA_PATH, textual_name)
+    textual_path = os.path.join(DATA_PATH, textual_name)
     sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
     sub_df_rich["title"] = sub_df_rich["title"].astype(str)
     sub_df_rich["text"] = sub_df_rich["text"].astype(str)
@@ -47,5 +47,5 @@ def build_art_cut(sub_file_rich):
     sub_art_cut.reset_index(inplace=True, drop=True)
     sub_text_file = f"{sub_file_rich.split('.')[0]}.pkl"
     print(f"Saving to {sub_text_file}...")
-    with open(os.path.join(text_path, sub_text_file), "wb") as f:
+    with open(os.path.join(textual_path, sub_text_file), "wb") as f:
         pickle.dump(sub_art_cut, f)

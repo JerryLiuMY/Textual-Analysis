@@ -16,7 +16,7 @@ def build_word_sps(sub_file_rich):
 
     # load sub_df_rich
     textual_name = "word_sps"
-    text_path = os.path.join(DATA_PATH, textual_name)
+    textual_path = os.path.join(DATA_PATH, textual_name)
     sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
     sub_df_rich["title"] = sub_df_rich["title"].astype(str)
     sub_df_rich["text"] = sub_df_rich["text"].astype(str)
@@ -36,4 +36,4 @@ def build_word_sps(sub_file_rich):
 
     sub_text_file = f"{sub_file_rich.split('.')[0]}.npz"
     print(f"Saving to {sub_text_file}...")
-    save_npz(os.path.join(text_path, sub_text_file), sub_word_sps)
+    save_npz(os.path.join(textual_path, sub_text_file), sub_word_sps)
