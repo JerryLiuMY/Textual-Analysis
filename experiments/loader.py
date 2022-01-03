@@ -41,6 +41,7 @@ def generate_textual(textual_name, sub_text_file_li):
     :param sub_text_file_li: list of textual files
     """
 
+    # build textual
     textual_path = os.path.join(DATA_PATH, textual_name)
     textual_loader = load_npz if textual_name == "word_sps" else pd.read_pickle
 
