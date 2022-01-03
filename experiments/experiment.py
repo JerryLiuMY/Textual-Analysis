@@ -98,7 +98,7 @@ def experiment(window, model_name, perc_ls):
             ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
             continue
 
-        textual_win_test_e, textual_win_test_v = tee(textual_win_test)
+        textual_win_test_e, textual_win_test_v = tee(textual_win_test, 2)
         target_e = pre_func(textual_win_test_e, best_model_e, best_params_e)
         target_v = pre_func(textual_win_test_v, best_model_v, best_params_v)
         ret_e_win[i, 0:2] = get_stocks(df_rich_win_test, target_e, perc_ls)

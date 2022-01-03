@@ -8,7 +8,7 @@ import scipy as sp
 def fit_ssestm(df_rich, word_sps, *args):
     """ train ssestm model to get the estimated O_hat
     :param df_rich: enriched dataframe
-    :param word_sps: sparse word count matrix
+    :param word_sps: iterable of sparse word count matrix
     :return: estimated O_hat
     """
 
@@ -30,7 +30,7 @@ def fit_ssestm(df_rich, word_sps, *args):
 
 def pre_ssestm(word_sps, model, params):
     """ predict p_hat based on the word_matrix and the estimated O_hat
-    :param word_sps: word_matrix
+    :param word_sps: iterable of sparse word count matrix
     :param model: fitted model
     :param params: parameters for ssestm
     :return: p_hat values for the samples in the word_matrix
