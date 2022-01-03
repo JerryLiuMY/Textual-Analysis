@@ -23,17 +23,17 @@ def fit_doc2vec(df_rich, art_cut, params):
     # get inputs
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
+    art_tag_iter = generate_art_tag(art_cut, target)
+    art_tag_build, art_tag_train, art_tag_infer = tee(art_tag_iter, 3)
 
     # train doc2vec
     doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=4)
-    art_tag_iter = generate_art_tag(art_cut, target)
-    art_tag_build, art_tag_train = tee(art_tag_iter, 2)
     doc2vec.build_vocab(art_tag_build)
     doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs)
 
     # train classifier
     emb_vec = np.empty((0, doc2vec.vector_size), dtype=np.float64)
-    for sub_art_tag in generate_art_tag(art_cut, target):
+    for sub_art_tag in art_tag_infer:
         sub_emb_vec = np.vstack(sub_art_tag.apply(lambda _: doc2vec.infer_vector(_.words)).to_numpy())
         emb_vec = np.vstack([emb_vec, sub_emb_vec])
     cls = fit_classifier(emb_vec, target, params)
