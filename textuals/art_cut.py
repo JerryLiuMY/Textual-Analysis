@@ -1,7 +1,6 @@
 from global_settings import RICH_PATH, DATA_PATH
 from global_settings import stop_list
 from global_settings import full_dict
-from tools.text_tools import join_tt
 from datetime import datetime
 import pandas as pd
 import pickle
@@ -27,6 +26,7 @@ def build_art_cut(sub_file_rich):
     for word in full_dict:
         jieba.add_word(word)
 
+    def join_tt(df): df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
     def cut_art(art): return [_ for _ in " ".join(jieba.cut(art, cut_all=False, HMM=True)).split()]
 
     # cut article
