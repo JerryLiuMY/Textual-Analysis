@@ -70,8 +70,8 @@ def generate_art_tag(art_cut, tag):
 
     idx = 0
     for sub_art_cut in art_cut:
-        sub_target = tag[idx: idx + sub_art_cut.shape[0]]
-        sub_art_tag_df = pd.concat([sub_art_cut, pd.Series(sub_target, name="tag")], axis=1)
+        sub_tag = tag[idx: idx + sub_art_cut.shape[0]]
+        sub_art_tag_df = pd.concat([sub_art_cut, pd.Series(sub_tag, name="tag")], axis=1)
         sub_art_tag = sub_art_tag_df.apply(lambda _: TaggedDocument(words=_["art_cut"], tags=[_["tag"]]), axis=1)
         idx = idx + sub_art_cut.shape[0]
         for line_art_tag in sub_art_tag:
