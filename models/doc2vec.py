@@ -2,6 +2,7 @@ from gensim.models.doc2vec import TaggedDocument
 from models.classifier import fit_classifier, pre_classifier
 from gensim.models import Doc2Vec
 from scipy.stats import rankdata
+from datetime import datetime
 from itertools import tee
 import pandas as pd
 import numpy as np
@@ -28,7 +29,9 @@ def fit_doc2vec(df_rich, art_cut, params):
 
     # train doc2vec
     doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=4)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
     doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs)
 
     # train classifier
