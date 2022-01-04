@@ -5,29 +5,6 @@ import itertools
 import os
 
 
-def generate_files(trddt, textual_name):
-    """ Build iterator for files
-    :param trddt: list of trddt dates
-    :param textual_name: name of textual model
-    """
-
-    # define paths
-    textual_path = os.path.join(DATA_PATH, textual_name)
-    extension = "npz" if textual_name == "word_sps" else "pkl"
-    sub_file_rich_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
-    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(textual_path, "*." + extension))]
-    sub_file_rich_idx = sorted([_ for _ in sub_file_rich_idx if _ in trddt])
-    sub_text_file_idx = sorted([_ for _ in sub_text_file_idx if _ in trddt])
-
-    if sub_file_rich_idx != sub_text_file_idx:
-        raise ValueError("Mismatch between enriched data files and textual files")
-
-    sub_file_rich_li = [f"{_}.csv" for _ in sub_file_rich_idx]
-    sub_text_file_li = [f"{_}.{extension}" for _ in sub_text_file_idx]
-
-    return zip(sub_file_rich_li, sub_text_file_li)
-
-
 def generate_window(window_dict, date0_min, date0_max):
     """ generate rolling windows for a set of experiments
     :param window_dict: dictionary of window related parameters
@@ -54,6 +31,29 @@ def generate_window(window_dict, date0_min, date0_max):
         trddt_test = flatten(trddt_test_chunck)
 
         yield [trddt_train, trddt_valid, trddt_test]
+
+
+def generate_files(trddt, textual_name):
+    """ Build iterator for files
+    :param trddt: list of trddt dates
+    :param textual_name: name of textual model
+    """
+
+    # define paths
+    textual_path = os.path.join(DATA_PATH, textual_name)
+    extension = "npz" if textual_name == "word_sps" else "pkl"
+    sub_file_rich_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(RICH_PATH, "*.csv"))]
+    sub_text_file_idx = [_.split("/")[-1].split(".")[0] for _ in glob(os.path.join(textual_path, "*." + extension))]
+    sub_file_rich_idx = sorted([_ for _ in sub_file_rich_idx if _ in trddt])
+    sub_text_file_idx = sorted([_ for _ in sub_text_file_idx if _ in trddt])
+
+    if sub_file_rich_idx != sub_text_file_idx:
+        raise ValueError("Mismatch between enriched data files and textual files")
+
+    sub_file_rich_li = [f"{_}.csv" for _ in sub_file_rich_idx]
+    sub_text_file_li = [f"{_}.{extension}" for _ in sub_text_file_idx]
+
+    return zip(sub_file_rich_li, sub_text_file_li)
 
 
 def generate_params(params_dict, model_name):

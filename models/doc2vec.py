@@ -25,11 +25,11 @@ def fit_doc2vec(df_rich, art_cut, params):
     # get inputs
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
-    art_tag_iter = generate_art_tag(art_cut, target)
+    art_tag_iter = generate_art_tag(art_cut, list(df_rich.index))
     art_tag_build, art_tag_train, art_tag_infer = tee(art_tag_iter, 3)
 
     # train doc2vec
-    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=2, callbacks=[Loss()])
+    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=4, callbacks=[Loss()])
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
@@ -62,15 +62,15 @@ def pre_doc2vec(art_cut, model, params):
     return target
 
 
-def generate_art_tag(art_cut, target):
+def generate_art_tag(art_cut, tag):
     """ generate article and tag
     :param art_cut: iterable of articles cut with jieba
-    :param target: target
+    :param tag: article tag
     """
 
     idx = 0
     for sub_art_cut in art_cut:
-        sub_target = target[idx: idx + sub_art_cut.shape[0]]
+        sub_target = tag[idx: idx + sub_art_cut.shape[0]]
         sub_art_tag_df = pd.concat([sub_art_cut, pd.Series(sub_target, name="tag")], axis=1)
         sub_art_tag = sub_art_tag_df.apply(lambda _: TaggedDocument(words=_["art_cut"], tags=[_["tag"]]), axis=1)
         idx = idx + sub_art_cut.shape[0]
