@@ -33,9 +33,9 @@ def fit_doc2vec(df_rich, art_cut, params):
 
     # train classifier
     emb_vec = np.empty((0, doc2vec.vector_size), dtype=np.float64)
-    for sub_art_tag in art_tag_infer:
-        sub_emb_vec = np.vstack(sub_art_tag.apply(lambda _: doc2vec.infer_vector(_.words)).to_numpy())
-        emb_vec = np.vstack([emb_vec, sub_emb_vec])
+    for line_art_tag in art_tag_infer:
+        line_emb_vec = doc2vec.infer_vector(line_art_tag.words)
+        emb_vec = np.vstack([emb_vec, line_emb_vec])
     cls = fit_classifier(emb_vec, target, params)
 
     return doc2vec, cls
@@ -51,7 +51,7 @@ def pre_doc2vec(art_cut, model, params):
 
     # calculate target
     doc2vec, cls = model
-    art_cut = pd.concat(art_cut, axis=0)
+    art_cut = pd.concat(art_cut, axis=0).reset_index(inplace=False, drop=True)
     emb_vec = np.vstack(art_cut.apply(lambda _: doc2vec.infer_vector(_)).to_numpy())
     target = pre_classifier(emb_vec, cls, params)
 
@@ -70,6 +70,5 @@ def generate_art_tag(art_cut, target):
         sub_art_tag_df = pd.concat([sub_art_cut, pd.Series(sub_target, name="tag")], axis=1)
         sub_art_tag = sub_art_tag_df.apply(lambda _: TaggedDocument(words=_["art_cut"], tags=[_["tag"]]), axis=1)
         idx = idx + sub_art_cut.shape[0]
-
         for line_art_tag in sub_art_tag:
             yield line_art_tag
