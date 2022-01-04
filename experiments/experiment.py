@@ -15,13 +15,12 @@ import pandas as pd
 import psutil
 
 
-def experiment(window, model_name, perc_ls):
+def experiment(window, model_name, perc_ls, subset):
     """ Train models over a window and get returns
     :param window: [trddt_train, trddt_valid, trddt_test] window
     :param model_name: model name
     :param perc_ls: percentage of long-short portfolio
-    :return ret_e_win: equal weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
-    :return ret_v_win: value weighted returns (ret, ret_l, ret_s) with shape=[len(trddt_win_test), 3]
+    :param subset: whether to use a subset of sample
     """
 
     # define functions
@@ -31,11 +30,14 @@ def experiment(window, model_name, perc_ls):
           f"({psutil.virtual_memory().percent}% mem used)")
 
     if model_name == "ssestm":
-        load_input, fit_func, pre_func = partial(input_loader, textual_name="word_sps"), fit_ssestm, pre_ssestm
+        load_input = partial(input_loader, textual_name="word_sps", subset=subset)
+        fit_func, pre_func = fit_ssestm, pre_ssestm
     elif model_name == "doc2vec":
-        load_input, fit_func, pre_func = partial(input_loader, textual_name="art_cut"), fit_doc2vec, pre_doc2vec
+        load_input = partial(input_loader, textual_name="art_cut", subset=subset)
+        fit_func, pre_func = fit_doc2vec, pre_doc2vec
     elif model_name == "bert":
-        load_input, fit_func, pre_func = partial(input_loader, textual_name="art_cut"), fit_bert, pre_bert
+        load_input = partial(input_loader, textual_name="art_cut", subset=subset)
+        fit_func, pre_func = fit_bert, pre_bert
     else:
         raise ValueError("Invalid model name")
 

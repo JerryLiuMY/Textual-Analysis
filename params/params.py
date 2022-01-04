@@ -1,4 +1,5 @@
 perc_ls = 0.05
+subset_size = 0.1
 
 window_dict = {
     "train_win": 12,

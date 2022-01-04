@@ -75,11 +75,12 @@ def run_textual(textual_name):
         pool.join()
 
 
-def run_experiment(model_name, idx_from, idx_to):
+def run_experiment(model_name, idx_from, idx_to, subset):
     """ Run experiment
     :param model_name: model name
     :param idx_from: start of the index of the full window list
     :param idx_to: end of the index of the full window list
+    :param subset: whether to use a subset of data
     """
 
     # create directory
@@ -108,7 +109,7 @@ def run_experiment(model_name, idx_from, idx_to):
     for idx in range(0, len(window_li), num_proc):
         windows, procs = window_li[idx: idx + num_proc], []
         for window in windows:
-            proc = Process(target=experiment, args=(window, model_name, perc_ls))
+            proc = Process(target=experiment, args=(window, model_name, perc_ls, subset))
             procs.append(proc)
 
         for proc in procs:
@@ -139,14 +140,15 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--model_name", type=str, help="Model name")
     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
+    parser.add_argument("-s", "--subset", type=bool, help="Whether to use subset of data")
     args = parser.parse_args()
 
-    run_experiment(model_name=args.model_name, idx_from=args.idx_from, idx_to=args.idx_to)
+    run_experiment(model_name=args.model_name, idx_from=args.idx_from, idx_to=args.idx_to, subset=args.subset)
 
 
-if __name__ == "__main__":
-    model_name = "ssestm"
-    run_backtest(model_name)
+# if __name__ == "__main__":
+#     model_name = "ssestm"
+#     run_backtest(model_name)
 
 
 # optimize doc2vec memory usage
