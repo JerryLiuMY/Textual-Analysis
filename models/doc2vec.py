@@ -1,5 +1,6 @@
 from gensim.models.doc2vec import TaggedDocument
 from models.classifier import fit_classifier, pre_classifier
+from gensim.models.callbacks import CallbackAny2Vec
 from gensim.models import Doc2Vec
 from scipy.stats import rankdata
 from datetime import datetime
@@ -28,7 +29,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     art_tag_build, art_tag_train, art_tag_infer = tee(art_tag_iter, 3)
 
     # train doc2vec
-    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=4)
+    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=2, callbacks=[Loss()])
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
@@ -75,3 +76,16 @@ def generate_art_tag(art_cut, target):
         idx = idx + sub_art_cut.shape[0]
         for line_art_tag in sub_art_tag:
             yield line_art_tag
+
+
+class Loss(CallbackAny2Vec):
+    """ Callback to print loss after each epoch. """
+
+    def __init__(self):
+        self.epoch = 0
+
+    def on_epoch_end(self, model):
+        epoch_loss = model.get_latest_training_loss()
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
+              f"Loss after epoch {self.epoch}: {epoch_loss}")
+        self.epoch += 1
