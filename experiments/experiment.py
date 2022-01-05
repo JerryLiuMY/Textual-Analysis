@@ -20,7 +20,7 @@ def experiment(window, model_name, perc_ls, subset):
     :param window: [trddt_train, trddt_valid, trddt_test] window
     :param model_name: model name
     :param perc_ls: percentage of long-short portfolio
-    :param subset: whether to use a subset of sample
+    :param subset: whether to use a subset of data
     """
 
     # define functions

@@ -14,7 +14,7 @@ def input_loader(trddt, textual_name, subset):
     """ Load input for experiment
     :param trddt: list of trddt dates
     :param textual_name: textual name
-    :param subset: whether to use subset of sample
+    :param subset: whether to use a subset of data
     """
 
     # get df_rich & word_sps

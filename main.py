@@ -140,15 +140,12 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--model_name", type=str, help="Model name")
     parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
     parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
-    parser.add_argument("-s", "--subset", nargs="?", const=True, default=False, help="Whether to use subset of data")
+    parser.add_argument("-s", "--subset", nargs="?", const=True, default=False, help="Use subset of data")
     args = parser.parse_args()
 
     run_experiment(model_name=args.model_name, idx_from=args.idx_from, idx_to=args.idx_to, subset=args.subset)
 
 
 # if __name__ == "__main__":
-#     model_name = "ssestm"
+#     model_name = "doc2vec"
 #     run_backtest(model_name)
-
-
-# optimize doc2vec memory usage
