@@ -7,6 +7,7 @@ from datetime import datetime
 from itertools import tee
 import pandas as pd
 import numpy as np
+import logging
 
 
 def fit_doc2vec(df_rich, art_cut, params):
@@ -29,17 +30,21 @@ def fit_doc2vec(df_rich, art_cut, params):
     art_tag_build, art_tag_train, art_tag_infer = tee(art_tag_iter, 3)
 
     # train doc2vec
-    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=4, callbacks=[Loss()])
+    logging.basicConfig(format="%(asctime)s : %(levelname)s : %(message)s", level=logging.INFO)
+    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=8)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
-    doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs)
+    doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs, callbacks=[Loss()])
 
-    # train classifier
+    # performing inference
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Performing inference...")
     emb_vec = np.empty((0, doc2vec.vector_size), dtype=np.float64)
     for line_art_tag in art_tag_infer:
         line_emb_vec = doc2vec.infer_vector(line_art_tag.words)
         emb_vec = np.vstack([emb_vec, line_emb_vec])
+
+    # train classifier
     cls = fit_classifier(emb_vec, target, params)
 
     return doc2vec, cls

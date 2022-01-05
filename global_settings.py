@@ -35,7 +35,7 @@ full_dict = pos_dict + neg_dict
 stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=None).iloc[:, 0])
 
 
-# BERT and doc2vec
+# BERT
 
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=8 --mem-per-cpu=4000 --time=36:00:00
 # python3 main.py -m doc2vec -f 0 -t 5
