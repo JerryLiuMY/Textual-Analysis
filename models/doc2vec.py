@@ -1,10 +1,9 @@
-from gensim.models.doc2vec import TaggedDocument
 from models.classifier import fit_classifier, pre_classifier
-from gensim.models.callbacks import CallbackAny2Vec
+from gensim.models.doc2vec import TaggedDocument
+from tools.exp_tools import IterableWrapper
 from gensim.models import Doc2Vec
 from scipy.stats import rankdata
 from datetime import datetime
-from itertools import tee
 import pandas as pd
 import numpy as np
 import logging
@@ -24,14 +23,15 @@ def fit_doc2vec(df_rich, art_cut, params):
     epochs, num_bins = params["epochs"], params["num_bins"]
 
     # get inputs
+    tag = list(df_rich.index)
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
-    art_tag_iter = generate_art_tag(art_cut, list(df_rich.index))
-    art_tag_build, art_tag_train = tee(art_tag_iter, 2)
+    art_tag_build = generate_art_tag(art_cut, tag)
+    art_tag_train = IterableWrapper(generate_art_tag, art_cut=art_cut, tag=tag)
 
     # train doc2vec
     logging.basicConfig(format="%(asctime)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
-    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=8)
+    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=10, sample=1e-05, workers=8)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
@@ -39,7 +39,7 @@ def fit_doc2vec(df_rich, art_cut, params):
 
     # train classifier
     logging.basicConfig()
-    emb_vec = doc2vec.dv[list(df_rich.index)]
+    emb_vec = doc2vec.dv[tag]
     cls = fit_classifier(emb_vec, target, params)
 
     return doc2vec, cls
@@ -77,4 +77,3 @@ def generate_art_tag(art_cut, tag):
 
         for line_art_tag in sub_art_tag:
             yield line_art_tag
-

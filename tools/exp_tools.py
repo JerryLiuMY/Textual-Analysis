@@ -8,6 +8,25 @@ import json
 import os
 
 
+class IterableWrapper:
+    """ Wrap generator to be reusable """
+
+    def __init__(self, func, *args, **kwargs):
+        self.func, self.args, self.kwargs = func, args, kwargs
+        self.generator = self.func(*self.args, **self.kwargs)
+
+    def __iter__(self):
+        self.generator = self.func(*self.args, **self.kwargs)
+        return self
+
+    def __next__(self):
+        item = next(self.generator)
+        if item is not None:
+            return item
+        else:
+            raise StopIteration
+
+
 def save_model(model, model_name, trddt_test_Ym, ev):
     """ Save trained model
     :param model: model to be saved

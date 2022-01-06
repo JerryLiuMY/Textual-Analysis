@@ -36,7 +36,6 @@ stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=No
 
 
 # BERT
-# solve issue of iterator
 
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=8 --mem-per-cpu=4000 --time=36:00:00
 # python3 main.py -m doc2vec -f 0 -t 5
