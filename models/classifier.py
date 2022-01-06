@@ -20,7 +20,7 @@ def fit_classifier(emb_vec, target, params):
     if cls_type == "lr":
         cls_name = "Sklearn LR"
         cls = LogisticRegression(multi_class="ovr", n_jobs=1)
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {cls_name} Performing classification...")
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {cls_name} Fitting classifier...")
         cls.fit(emb_vec, target)
     elif cls_type == "mlp":
         cls_name = "Keras DNN"
@@ -32,7 +32,7 @@ def fit_classifier(emb_vec, target, params):
         cls.add(Dense(hidden, kernel_regularizer=L2(l2=1e-2), activation="relu"))
         cls.add(Dense(num_bins, activation="softmax"))
         cls.compile(optimizer=Adam(), loss=CategoricalCrossentropy(), metrics=["accuracy"])
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {cls_name} Performing classification...")
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {cls_name} Fitting classifier...")
         cls.fit(emb_vec, to_categorical(target, num_classes=num_bins), epochs=100, batch_size=512, verbose=2)
     else:
         raise ValueError("Invalid classifier type")

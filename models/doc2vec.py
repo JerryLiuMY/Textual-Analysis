@@ -30,7 +30,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     art_tag_build, art_tag_train = tee(art_tag_iter, 2)
 
     # train doc2vec
-    logging.basicConfig(format="%(asctime)s : %(levelname)s : %(message)s", level=logging.INFO)
+    logging.basicConfig(format="%(asctime)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
     doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=5, workers=8)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
