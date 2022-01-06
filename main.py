@@ -75,11 +75,9 @@ def run_textual(textual_name):
         pool.join()
 
 
-def run_experiment(model_name, idx_from, idx_to, subset):
+def run_experiment(model_name, subset):
     """ Run experiment
     :param model_name: model name
-    :param idx_from: start of the index of the full window list
-    :param idx_to: end of the index of the full window list
     :param subset: whether to use a subset of data
     """
 
@@ -103,7 +101,7 @@ def run_experiment(model_name, idx_from, idx_to, subset):
         os.mkdir(return_sub_path)
 
     # perform experiment
-    window_li = list(generate_window(window_dict, date0_min, date0_max))[idx_from: idx_to]
+    window_li = list(generate_window(window_dict, date0_min, date0_max))
     num_proc = proc_dict[model_name]
 
     for idx in range(0, len(window_li), num_proc):
@@ -138,12 +136,10 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Run experiment")
     parser.add_argument("-m", "--model_name", type=str, help="Model name")
-    parser.add_argument("-f", "--idx_from", type=int, help="Initial index of testing window")
-    parser.add_argument("-t", "--idx_to", type=int, help="Last index of testing window")
     parser.add_argument("-s", "--subset", nargs="?", const=True, default=False, help="Use subset of data")
     args = parser.parse_args()
 
-    run_experiment(model_name=args.model_name, idx_from=args.idx_from, idx_to=args.idx_to, subset=args.subset)
+    run_experiment(model_name=args.model_name, subset=args.subset)
 
 
 # if __name__ == "__main__":

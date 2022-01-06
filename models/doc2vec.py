@@ -31,7 +31,7 @@ def fit_doc2vec(df_rich, art_cut, params):
 
     # train doc2vec
     logging.basicConfig(format="%(asctime)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
-    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=10, sample=1e-05, workers=6)
+    doc2vec = Doc2Vec(window=window, vector_size=vec_size, epochs=epochs, min_count=10, sample=1e-05, workers=4)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
@@ -39,7 +39,7 @@ def fit_doc2vec(df_rich, art_cut, params):
 
     # train classifier
     logging.getLogger().setLevel(logging.DEBUG)
-    emb_vec = doc2vec.dv[tag]
+    emb_vec = np.vstack([doc2vec.dv[[_]] for _ in tag])
     cls = fit_classifier(emb_vec, target, params)
 
     return doc2vec, cls
@@ -77,4 +77,5 @@ def generate_art_tag(art_cut, tag):
         idx = idx + sub_art_cut.shape[0]
 
         for line_art_tag in sub_art_tag:
+            print(line_art_tag)
             yield line_art_tag

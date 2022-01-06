@@ -8,13 +8,14 @@ window_dict = {
 }
 
 proc_dict = {
-    "ssestm": 10,
-    "doc2vec": 8,
+    "ssestm": 37,
+    "doc2vec": 1,
     "bert": 5,
 }
 
 params_dict = {
     "ssestm": {"pen": [0.0]},
-    "doc2vec": {"window": [10], "vec_size": [15], "epochs": [10], "num_bins": [20], "cls_type": ["lr"], "hidden": [60]},
+    "doc2vec": {"window": [10], "vec_size": [20], "epochs": [20], "num_bins": [20], "cls_type": ["lr"]},
     "bert": {},
+    "dnn": {"hidden": [60]},
 }
