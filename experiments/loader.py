@@ -1,6 +1,6 @@
 from experiments.generators import generate_files
 from global_settings import DATA_PATH, RICH_PATH
-from tools.exp_tools import IterableWrapper
+from tools.exp_tools import iterable_wrapper
 from params.params import subset_size
 from scipy.sparse import load_npz
 from scipy.sparse import issparse
@@ -45,16 +45,12 @@ def input_loader(trddt, textual_name, subset):
         df_rich = df_rich.append(sub_df_rich)
 
     df_rich.reset_index(inplace=True, drop=True)
-    textual = IterableWrapper(
-        generate_textual,
-        textual_name=textual_name,
-        sub_text_file_li=sub_text_file_li,
-        sub_sampler_li=sub_sampler_li
-    )
+    textual = generate_textual(textual_name, sub_text_file_li, sub_sampler_li)
 
     return df_rich, textual
 
 
+@iterable_wrapper
 def generate_textual(textual_name, sub_text_file_li, sub_sampler_li):
     """ Generate textual data
     :param textual_name: textual name

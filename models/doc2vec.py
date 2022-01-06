@@ -1,6 +1,6 @@
 from models.classifier import fit_classifier, pre_classifier
 from gensim.models.doc2vec import TaggedDocument
-from tools.exp_tools import IterableWrapper
+from tools.exp_tools import iterable_wrapper
 from gensim.models import Doc2Vec
 from scipy.stats import rankdata
 from datetime import datetime
@@ -27,7 +27,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
     art_tag_build = generate_art_tag(art_cut, tag)
-    art_tag_train = IterableWrapper(generate_art_tag, art_cut=art_cut, tag=tag)
+    art_tag_train = generate_art_tag(art_cut, tag)
 
     # train doc2vec
     logging.basicConfig(format="%(asctime)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
@@ -62,6 +62,7 @@ def pre_doc2vec(art_cut, model, params):
     return target
 
 
+@iterable_wrapper
 def generate_art_tag(art_cut, tag):
     """ generate article and tag
     :param art_cut: iterable of articles cut with jieba

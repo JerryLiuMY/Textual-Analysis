@@ -8,6 +8,12 @@ import json
 import os
 
 
+def iterable_wrapper(func):
+    def inner_func(*args, **kwargs):
+        return IterableWrapper(func, *args, **kwargs)
+    return inner_func
+
+
 class IterableWrapper:
     """ Wrap generator to be reusable """
 
