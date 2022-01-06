@@ -19,7 +19,7 @@ def fit_classifier(emb_vec, target, params):
     cls_type = params["cls_type"]
     if cls_type == "lr":
         cls_name = "Sklearn LR"
-        cls = LogisticRegression(multi_class="ovr", n_jobs=1)
+        cls = LogisticRegression(multi_class="ovr", n_jobs=1, verbose=1)
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {cls_name} Performing classification...")
         cls.fit(emb_vec, target)
     elif cls_type == "mlp":

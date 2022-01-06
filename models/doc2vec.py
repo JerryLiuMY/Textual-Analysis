@@ -27,7 +27,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
     art_tag_iter = generate_art_tag(art_cut, list(df_rich.index))
-    art_tag_build, art_tag_train, art_tag_infer = tee(art_tag_iter, 3)
+    art_tag_build, art_tag_train = tee(art_tag_iter, 2)
 
     # train doc2vec
     logging.basicConfig(format="%(asctime)s : %(levelname)s : %(message)s", level=logging.INFO)
@@ -37,14 +37,9 @@ def fit_doc2vec(df_rich, art_cut, params):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
     doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs, callbacks=[Loss()])
 
-    # performing inference
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Performing inference...")
-    emb_vec = np.empty((0, doc2vec.vector_size), dtype=np.float64)
-    for line_art_tag in art_tag_infer:
-        line_emb_vec = doc2vec.infer_vector(line_art_tag.words)
-        emb_vec = np.vstack([emb_vec, line_emb_vec])
-
     # train classifier
+    logging.basicConfig()
+    emb_vec = doc2vec.dv[list(df_rich.index)]
     cls = fit_classifier(emb_vec, target, params)
 
     return doc2vec, cls
