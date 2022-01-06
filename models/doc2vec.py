@@ -38,7 +38,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs)
 
     # train classifier
-    logging.basicConfig()
+    logging.getLogger().setLevel(logging.DEBUG)
     emb_vec = doc2vec.dv[tag]
     cls = fit_classifier(emb_vec, target, params)
 
