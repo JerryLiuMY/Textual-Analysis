@@ -9,14 +9,14 @@ import os
 
 
 def iterable_wrapper(func):
-    def inner_func(*args, **kwargs):
+    """ Wrap generator to be reusable """
+    def inner(*args, **kwargs):
         return IterableWrapper(func, *args, **kwargs)
-    return inner_func
+    return inner
 
 
 class IterableWrapper:
     """ Wrap generator to be reusable """
-
     def __init__(self, func, *args, **kwargs):
         self.func, self.args, self.kwargs = func, args, kwargs
         self.generator = self.func(*self.args, **self.kwargs)
