@@ -35,7 +35,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Building vocabulary...")
     doc2vec.build_vocab(art_tag_build)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Gensim Doc2Vec Training on corpora...")
-    doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs, callbacks=[Loss()])
+    doc2vec.train(art_tag_train, total_examples=doc2vec.corpus_count, epochs=doc2vec.epochs)
 
     # train classifier
     logging.basicConfig()
@@ -78,15 +78,3 @@ def generate_art_tag(art_cut, tag):
         for line_art_tag in sub_art_tag:
             yield line_art_tag
 
-
-class Loss(CallbackAny2Vec):
-    """ Callback to print loss after each epoch. """
-
-    def __init__(self):
-        self.epoch = 0
-
-    def on_epoch_end(self, model):
-        epoch_loss = model.get_latest_training_loss()
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-              f"Loss after epoch {self.epoch}: {epoch_loss}")
-        self.epoch += 1
