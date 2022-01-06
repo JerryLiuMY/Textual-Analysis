@@ -12,7 +12,6 @@ from functools import partial
 from datetime import datetime
 import numpy as np
 import pandas as pd
-import psutil
 
 
 def experiment(window, model_name, perc_ls, subset):
@@ -26,8 +25,7 @@ def experiment(window, model_name, perc_ls, subset):
     # define functions
     [trddt_train, trddt_valid, trddt_test] = window
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
-          f"Working on {trddt_train[0][:-3]} to {trddt_test[-1][:-3]} "
-          f"({psutil.virtual_memory().percent}% mem used)")
+          f"Working on {trddt_train[0][:-3]} to {trddt_test[-1][:-3]}")
 
     if model_name == "ssestm":
         load_input = partial(input_loader, textual_name="word_sps", subset=subset)

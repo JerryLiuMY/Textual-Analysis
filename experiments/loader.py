@@ -31,7 +31,7 @@ def input_loader(trddt, textual_name, subset):
     for sub_file_rich in sub_file_rich_li:
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"Combining {sub_file_rich} "
-              f"({psutil.virtual_memory().percent}% mem used)")
+              f"({psutil.virtual_memory().percent}% mem {psutil.cpu_percent()}% cpu used)")
 
         sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich), low_memory=False)
         sub_df_rich = sub_df_rich.loc[:, columns]
@@ -66,7 +66,7 @@ def generate_textual(textual_name, sub_text_file_li, sub_sampler_li):
     for idx, sub_text_file in enumerate(sub_text_file_li):
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
               f"{doing} {sub_text_file} "
-              f"({psutil.virtual_memory().percent}% mem used)")
+              f"({psutil.virtual_memory().percent}% mem {psutil.cpu_percent()}% cpu used)")
 
         sub_textual = textual_loader(os.path.join(textual_path, sub_text_file))
 
