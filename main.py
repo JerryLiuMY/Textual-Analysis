@@ -140,12 +140,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_experiment(model_name=args.model_name, subset=args.subset)
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Run backtest")
-    parser.add_argument("-m", "--model_name", type=str, help="Model name")
-    args = parser.parse_args()
-
     run_backtest(model_name=args.model_name)
