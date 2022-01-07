@@ -77,5 +77,4 @@ def generate_art_tag(art_cut, tag):
         idx = idx + sub_art_cut.shape[0]
 
         for line_art_tag in sub_art_tag:
-            print(line_art_tag)
             yield line_art_tag
