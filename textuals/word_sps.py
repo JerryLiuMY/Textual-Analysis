@@ -19,7 +19,7 @@ def build_word_sps(sub_file_rich):
     sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
     sub_df_rich["title"] = sub_df_rich["title"].astype(str)
     sub_df_rich["text"] = sub_df_rich["text"].astype(str)
-    def join_tt(df): df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
+    def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
 
     # build word matrix
     mini_size = 100
