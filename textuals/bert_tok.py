@@ -1,8 +1,6 @@
 from global_settings import RICH_PATH, DATA_PATH
-import official.nlp.bert.tokenization
 from global_settings import stop_list
 from datetime import datetime
-from official.nlp import bert
 import jieba
 import pandas as pd
 import pickle
@@ -22,18 +20,17 @@ def build_bert_tok(sub_file_rich):
     sub_df_rich = pd.read_csv(os.path.join(RICH_PATH, sub_file_rich))
     sub_df_rich["title"] = sub_df_rich["title"].astype(str)
     sub_df_rich["text"] = sub_df_rich["text"].astype(str)
-    tokenizer = bert.tokenization.FullTokenizer(vocab_file=os.path.join(textual_path, "pre-trained", "vocab.txt"))
     def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
 
     def tokenize(art):
         ids = []
-        for line in re.findall(u"[^。！？!?]+[。！？!?]?", art, flags=re.U):
+        for sent in re.findall(u"[^。！？!?]+[。！？!?]?", art, flags=re.U):
             sep_str = ["，", "。", "！", "？", "!", "?"]
-            line = [_ for _ in " ".join(jieba.cut(line, cut_all=False, HMM=True)).split()]
-            line = [_ for _ in line if _ not in [s for s in stop_list if s not in sep_str]]
-            line = [_ for _ in line if (len(re.findall(r"[\u4e00-\u9fff]+", _)) != 0 or (_ in sep_str))]
-            line = tokenizer.tokenize("".join([_ for _ in line])) + ["[SEP]"]
-            ids.append(tokenizer.convert_tokens_to_ids(line))
+            sent = [_ for _ in " ".join(jieba.cut(sent, cut_all=False, HMM=True)).split()]
+            sent = [_ for _ in sent if _ not in [s for s in stop_list if s not in sep_str]]
+            sent = [_ for _ in sent if (len(re.findall(r"[\u4e00-\u9fff]+", _)) != 0 or (_ in sep_str))]
+            sent = tokenizer.tokenize("".join([_ for _ in sent])) + ["[SEP]"]
+            ids.append(tokenizer.convert_tokens_to_ids(sent))
         ids = [_ for sub_ids in ids for _ in sub_ids]
 
         return ids

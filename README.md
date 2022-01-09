@@ -27,6 +27,7 @@ List of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/param
 
 
 ## Doc2Vec
+
 ![alt text](./__resources__/backtest_doc2vec.jpg?raw=true "Title")
 
 ## Caveats

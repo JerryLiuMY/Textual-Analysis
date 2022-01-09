@@ -1,25 +1,12 @@
-import os
-import json
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
-import tensorflow_hub as hub
-import tensorflow_datasets as tfds
-from global_settings import DATA_PATH
-from official.modeling import tf_utils
-from official import nlp
-from official.nlp import bert
+from transformers import TFAutoModelForSequenceClassification
+from tensorflow.keras.losses import CategoricalCrossentropy
+from tools.exp_tools import iterable_wrapper
+from global_settings import tokenizer
 import official.nlp.optimization
-import official.nlp.bert.bert_models
-import official.nlp.bert.configs
-import official.nlp.bert.run_classifier
-import official.nlp.bert.tokenization
-import official.nlp.data.classifier_data_lib
-import official.nlp.modeling.losses
-import official.nlp.modeling.models
-import official.nlp.modeling.networks
 from scipy.stats import rankdata
-tfds.disable_progress_bar()
+from official import nlp
+import tensorflow as tf
+import numpy as np
 
 
 def fit_bert(df_rich, bert_tok, params):
@@ -28,41 +15,22 @@ def fit_bert(df_rich, bert_tok, params):
 
     # recover parameters
     n = df_rich.shape[0]
-    window, vec_size = params["window"], params["vec_size"]
+    input_len, batch_size = params["input_len"], params["batch_size"]
     epochs, num_bins = params["epochs"], params["num_bins"]
-    textual_name = "bert_tok"
-    textual_path = os.path.join(DATA_PATH, textual_name)
+    steps_per_epoch = int(n / batch_size)
+    train_steps = steps_per_epoch * epochs
+    warmup_steps = int(train_steps * 0.1)
 
+    # get inputs
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
+    bert_tok_train = generate_art_tag(bert_tok, input_len)
 
-    # build model & restore weights
-    bert_config_file = os.path.join(textual_path, "pre-trained", "bert_config.json")
-    config_dict = json.loads(tf.io.gfile.GFile(bert_config_file).read())
-    bert_config = bert.configs.BertConfig.from_dict(config_dict)
-    bert_classifier, bert_encoder = bert.bert_models.classifier_model(bert_config, num_labels=num_bins)
-    checkpoint = tf.train.Checkpoint(encoder=bert_encoder)
-    checkpoint.read(os.path.join(textual_path, "pre-trained", "bert_model.ckpt")).assert_consumed()
-
-    # setup optimizer
-    batch_size = 32
-    train_data_size = len(glue_train_labels)
-    steps_per_epoch = int(train_data_size / batch_size)
-    num_train_steps = steps_per_epoch * epochs
-    warmup_steps = int(num_train_steps * 0.1)
-    optimizer = nlp.optimization.create_optimizer(2e-5, num_train_steps=num_train_steps, num_warmup_steps=warmup_steps)
-
-    # train the model
-    metrics = [tf.keras.metrics.SparseCategoricalAccuracy("accuracy", dtype=tf.float32)]
-    loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-    bert_classifier.compile(optimizer=optimizer, loss=loss, metrics=metrics)
-
-    bert_classifier.fit(
-        glue_train, glue_train_labels,
-        validation_data=(glue_validation, glue_validation_labels),
-        batch_size=batch_size,
-        epochs=epochs
-    )
+    # retrain model
+    model = TFAutoModelForSequenceClassification.from_pretrained("bert-base-chinese", num_labels=num_bins)
+    optimizer = nlp.optimization.create_optimizer(2e-5, num_train_steps=train_steps, num_warmup_steps=warmup_steps)
+    model.compile(optimizer=optimizer, loss=CategoricalCrossentropy(), metrics=["accuracy"])
+    model.fit(bert_tok_train, target=target, batch_size=batch_size, epochs=epochs)
 
     return model
 
@@ -74,3 +42,27 @@ def pre_bert(doc_cut, model, *args):
     sentiment = None
 
     return sentiment
+
+
+@iterable_wrapper
+def generate_art_tag(bert_tok, input_len):
+    """ generate article and tag
+    :param bert_tok: iterable of tokenized text
+    :param input_len: length of bert input
+    """
+
+    for sub_bert_tok in bert_tok:
+        for line_bert_tok in sub_bert_tok:
+            for idx in range(0, len(line_bert_tok), input_len - 1):
+                input_word_ids = [tokenizer.convert_tokens_to_ids(["[CLS]"])] + line_bert_tok[idx: idx + input_len - 1]
+                input_word_ids = tf.ragged.constant(input_word_ids)
+                input_mask = tf.ones_like(input_word_ids)
+                input_type_ids = tf.zeros_like(input_word_ids)
+
+                input_dict = {
+                    "input_word_ids": input_word_ids.to_tensor(),
+                    "input_mask": input_mask.to_tensor(),
+                    "input_type_ids": input_type_ids.to_tensor()
+                }
+
+                yield input_dict

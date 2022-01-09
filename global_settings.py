@@ -3,6 +3,8 @@ import json
 import numpy as np
 import pandas as pd
 from pathlib import Path
+import official.nlp.bert.tokenization
+from official.nlp import bert
 
 # directories
 DESKTOP_PATH = str(Path(os.getcwd()).parent.absolute())
@@ -26,16 +28,18 @@ with open("password.json", "r") as f:
     pass_file = json.load(f)
     password = pass_file["password"]
 
-# dictionary
+# dictionary & tokenizer
 # https://github.com/MengLingchao/Chinese_financial_sentiment_dictionary
 xlsx_dict = pd.ExcelFile(os.path.join(DATA_PATH, "Chinese_Dict.xlsx"))
 pos_dict = [_.strip() for _ in xlsx_dict.parse("positive").iloc[:, 0]]
 neg_dict = [_.strip() for _ in xlsx_dict.parse("negative").iloc[:, 0]]
 full_dict = pos_dict + neg_dict
 stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=None).iloc[:, 0])
-
+tokenizer = bert.tokenization.FullTokenizer(vocab_file=os.path.join(DATA_PATH, "vocab.txt"))
 
 # BERT
+# pre-trained doc2vec
+# other methods
 
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=28 --mem=56G --time=36:00:00
 # python3 main.py -m doc2vec

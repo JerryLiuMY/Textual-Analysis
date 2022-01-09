@@ -1,6 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 from tensorflow.keras.models import Sequential
 from global_settings import OUTPUT_PATH
+from transformers import AutoModelForSequenceClassification
 import pickle
 import numpy as np
 import pandas as pd
@@ -56,6 +57,8 @@ def save_model(model, model_name, trddt_test_Ym, ev):
             cls.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.h5"))
         else:
             raise ValueError("Invalid classifier type")
+    elif model_name == "bert":
+        model.save_pretrained(os.path.join(model_sub_path, f"{trddt_test_Ym}.model"))
     else:
         raise ValueError("Invalid model name")
 

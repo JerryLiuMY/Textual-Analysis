@@ -18,7 +18,7 @@ def input_loader(trddt, textual_name, subset):
     :param subset: whether to use a subset of data
     """
 
-    # get df_rich & word_sps
+    # get df_rich & textual
     sub_file_li = list(generate_files(trddt, textual_name))
     sub_file_rich_li = [_[0] for _ in sub_file_li]
     sub_text_file_li = [_[1] for _ in sub_file_li]
@@ -61,7 +61,14 @@ def generate_textual(textual_name, sub_text_file_li, sub_sampler_li):
 
     # build textual
     textual_path = os.path.join(DATA_PATH, textual_name)
-    textual_loader = load_npz if textual_name == "word_sps" else pd.read_pickle
+    if textual_name == "word_sps":
+        textual_loader = load_npz
+    elif textual_name == "art_cut":
+        textual_loader = pd.read_pickle
+    elif textual_name == "bert_tok":
+        textual_loader = pd.read_pickle
+    else:
+        raise ValueError("Invalid textual name")
 
     doing = "Loading" if len(sub_text_file_li) == 1 else "Iterating"
     for idx, sub_text_file in enumerate(sub_text_file_li):

@@ -34,7 +34,7 @@ def experiment(window, model_name, perc_ls, subset):
         load_input = partial(input_loader, textual_name="art_cut", subset=subset)
         fit_func, pre_func = fit_doc2vec, pre_doc2vec
     elif model_name == "bert":
-        load_input = partial(input_loader, textual_name="art_cut", subset=subset)
+        load_input = partial(input_loader, textual_name="bert_tok", subset=subset)
         fit_func, pre_func = fit_bert, pre_bert
     else:
         raise ValueError("Invalid model name")
