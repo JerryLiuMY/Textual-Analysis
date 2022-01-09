@@ -38,7 +38,7 @@ def build_bert_tok(sub_file_rich):
 
         return ids
 
-    # build word matrix
+    # build bert tokenizer
     mini_size = 100
     sub_bert_tok = pd.Series(name="bert_tok", dtype=object)
 

@@ -10,8 +10,9 @@ from experiments.generators import generate_window
 from params.params import window_dict
 from params.params import perc_ls
 from params.params import proc_dict
-from textuals.art_cut import build_art_cut
 from textuals.word_sps import build_word_sps
+from textuals.art_cut import build_art_cut
+from textuals.bert_tok import build_bert_tok
 from multiprocessing.pool import Pool
 from multiprocessing import Process
 from glob import glob
@@ -66,8 +67,16 @@ def run_textual(textual_name):
     sub_file_rich_li = sorted([_ for _ in sub_file_rich_li if _.split(".")[0] not in sub_text_file_idx])
 
     # build textual
+    if textual_name == "word_sps":
+        build_textual = build_word_sps
+    elif textual_name == "art_cut":
+        build_textual = build_art_cut
+    elif textual_name == "bert_tok":
+        build_textual = build_bert_tok
+    else:
+        raise ValueError("Invalid textual name")
+
     num_proc = 18
-    build_textual = build_word_sps if textual_name == "word_sps" else build_art_cut
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
         pool.map(build_textual, sub_file_rich_li[idx: idx + num_proc])
