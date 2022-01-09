@@ -27,6 +27,11 @@ List of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/param
 
 
 ## Doc2Vec
+|                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
+|-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
+| Average daily return  | 0.059%    | 0.234%     | 0.492%  | -0.044%   | 0.268%     | 0.170%  | -0.001% |
+| Sharpe ratio          | 0.63      | 1.52       | 6.92    | -0.60     | 1.80       | 3.09    | 0.07    |
+| Turnover              | 86.4%     | 91.5%      | 89.0%   | 90.4%     | 92.4%      | 91.4%   | /       |
 
 ![alt text](./__resources__/backtest_doc2vec.jpg?raw=true "Title")
 
