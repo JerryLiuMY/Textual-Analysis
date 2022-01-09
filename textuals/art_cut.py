@@ -22,7 +22,12 @@ def build_art_cut(sub_file_rich):
     sub_df_rich["title"] = sub_df_rich["title"].astype(str)
     sub_df_rich["text"] = sub_df_rich["text"].astype(str)
     def join_tt(df): return df["text"] if df["title"] == "nan" else " ".join([df["title"], df["text"]])
-    def cut_art(art): return [_ for _ in " ".join(jieba.cut(art, cut_all=False, HMM=True)).split()]
+
+    def cut_art(art):
+        art_cut = [_ for _ in " ".join(jieba.cut(art, cut_all=False, HMM=True)).split()]
+        art_cut = [_ for _ in art_cut if len(re.findall(r"[\u4e00-\u9fff]+", _)) != 0]
+        art_cut = [_ for _ in art_cut if _ not in stop_list]
+        return art_cut
 
     for word in full_dict:
         jieba.add_word(word)
@@ -37,8 +42,6 @@ def build_art_cut(sub_file_rich):
 
         mini_df_rich = sub_df_rich.iloc[iloc: iloc + mini_size, :].reset_index(inplace=False, drop=True)
         mini_art_cut = mini_df_rich.apply(join_tt, axis=1).apply(cut_art)
-        mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if len(re.findall(r"[\u4e00-\u9fff]+", w)) != 0])
-        mini_art_cut = mini_art_cut.apply(lambda _: [w for w in _ if w not in stop_list])
         mini_art_cut.name = "art_cut"
         sub_art_cut = sub_art_cut.append(mini_art_cut)
 
