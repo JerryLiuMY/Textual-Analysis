@@ -14,7 +14,7 @@
 | Drop articles with more than one stock tagged       | 32,143,209              | 919,646                |
 | Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
 
-Dictionaries of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
+Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
 
 ## SSESTM
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
@@ -37,6 +37,6 @@ Dictionaries of parameters: https://github.com/xiubooth/Textual-Analysis/blob/ma
 
 ## Caveats
 - The articles whose `returns` or `three-day returns` cannot be obtained are removed from the data during pre-processing (many of which corresponds to *delisted* stocks). This corresponds to purposefully avoiding future **delisting** -- the information that we could not know in advance.
-- It is not feasible to direct short stocks on the Chinese market. We can short on ETFs instead. 
-- Look at performance of the strategies on the CSI 300 constituent stocks.
-- A strategy that simply counts the occurrence of `涨/跌` (which have the highest occurrence and the most positive/negative sentiments) could be used as a benchmark for the remaining models.
+- It is not feasible to directly short stocks on the Chinese market. We can short on ETFs instead. 
+- Look at the performance of the strategies on the CSI 300 constituent stocks.
+- A strategy that counts the occurrence of `涨` and `跌` (which have the highest occurrence and the most positive/negative sentiments) could be used as a benchmark for the remaining models.
