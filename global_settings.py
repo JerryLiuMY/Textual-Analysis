@@ -41,5 +41,6 @@ tokenizer = bert.tokenization.FullTokenizer(vocab_file=os.path.join(DATA_PATH, "
 # pre-trained doc2vec
 # other methods
 
+# sinteractive --partition=gpu2 --nodes=1 --ntasks-per-node=28 --mem=56G --gres=gpu:1 --time=36:00:00
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=28 --mem=56G --time=36:00:00
 # python3 main.py -m doc2vec

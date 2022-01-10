@@ -71,7 +71,7 @@ def generate_batch(bert_tok, target, params):
         if idx % batch_size == 0 and idx // batch_size != 0:
             yield batch_dict, batch_target
 
-        if idx % batch_size == 0:
+        if idx % batch_size == 0 and idx // batch_size != 0:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Training on the {idx // batch_size}th batch...")
             batch_dict, batch_target = init_batch(params["input_len"])
 
