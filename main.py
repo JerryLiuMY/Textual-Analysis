@@ -135,17 +135,17 @@ def run_backtest(model_name):
     backtest(model_name, dalym)
 
 
-# if __name__ == "__main__":
-#     run_data_prep()
-#     run_textual("bert_tok")
-
-
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Run experiment")
-    parser.add_argument("-m", "--model_name", type=str, help="Model name")
-    parser.add_argument("-s", "--subset", nargs="?", default=False, const=True, help="Use subset of data")
-    args = parser.parse_args()
+    # run_data_prep()
+    run_textual("bert_tok")
 
-    run_experiment(model_name=args.model_name, subset=args.subset)
-    run_backtest(model_name=args.model_name)
+
+# if __name__ == "__main__":
+#     import argparse
+#     parser = argparse.ArgumentParser(description="Run experiment")
+#     parser.add_argument("-m", "--model_name", type=str, help="Model name")
+#     parser.add_argument("-s", "--subset", nargs="?", default=False, const=True, help="Use subset of data")
+#     args = parser.parse_args()
+#
+#     run_experiment(model_name=args.model_name, subset=args.subset)
+#     run_backtest(model_name=args.model_name)

@@ -38,5 +38,8 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 ## Caveats
 - The articles whose `returns` or `three-day returns` cannot be obtained are removed from the data during pre-processing (many of which corresponds to *delisted* stocks). This corresponds to purposefully avoiding future **delisting** -- the information that we could not know in advance.
 - It is not feasible to directly short stocks on the Chinese market. We can short on ETFs instead. 
+
+## TODO
 - Look at the performance of the strategies on the CSI 300 constituent stocks.
+- Look at top stocks, top articles, distribution of article sentiments and word sentiments.
 - A strategy that counts the occurrence of `涨` and `跌` (which have the highest occurrence and the most positive/negative sentiments) could be used as a benchmark for the remaining models.
