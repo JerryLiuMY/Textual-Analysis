@@ -1,13 +1,16 @@
 from transformers import TFAutoModelForSequenceClassification
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.metrics import SparseCategoricalAccuracy
+from global_settings import DATA_PATH
 from tools.exp_tools import iterable_wrapper
 from global_settings import tokenizer
-import official.nlp.optimization
 from scipy.stats import rankdata
+from datetime import datetime
 from official import nlp
+import official.nlp.optimization
 import tensorflow as tf
 import numpy as np
+import os
 
 
 def fit_bert(df_rich, bert_tok, params):
@@ -16,6 +19,8 @@ def fit_bert(df_rich, bert_tok, params):
 
     # recover parameters
     n = df_rich.shape[0]
+    textual_name = "bert_tok"
+    textual_path = os.path.join(DATA_PATH, textual_name)
     epochs, num_bins = params["epochs"], params["num_bins"]
 
     # get inputs
@@ -25,11 +30,15 @@ def fit_bert(df_rich, bert_tok, params):
     bert_tok_train = generate_art_tag(bert_tok, target, params)
 
     # retrain model
-    model = TFAutoModelForSequenceClassification.from_pretrained("bert-base-chinese", num_labels=num_bins)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Fetching pre-trained BERT model...")
+    model = TFAutoModelForSequenceClassification.from_pretrained(
+        os.path.join(textual_path, "pre-trained"), num_labels=num_bins
+    )
     optimizer = nlp.optimization.create_optimizer(init_lr=2e-5)
     loss = SparseCategoricalCrossentropy(from_logits=True)
     metrics = [SparseCategoricalAccuracy("accuracy", dtype=tf.float32)]
     model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora...")
     model.fit(x=bert_tok_train, epochs=epochs, verbose=1)
 
     return model
