@@ -144,7 +144,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Run experiment")
     parser.add_argument("-m", "--model_name", type=str, help="Model name")
-    parser.add_argument("-s", "--subset", nargs="?", const=True, default=False, help="Use subset of data")
+    parser.add_argument("-s", "--subset", nargs="?", default=False, const=True, help="Use subset of data")
     args = parser.parse_args()
 
     run_experiment(model_name=args.model_name, subset=args.subset)

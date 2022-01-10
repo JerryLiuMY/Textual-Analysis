@@ -3,8 +3,9 @@ import json
 import numpy as np
 import pandas as pd
 from pathlib import Path
-import official.nlp.bert.tokenization
+import tensorflow as tf
 from official.nlp import bert
+import official.nlp.bert.tokenization
 
 # directories
 DESKTOP_PATH = str(Path(os.getcwd()).parent.absolute())
@@ -41,6 +42,12 @@ tokenizer = bert.tokenization.FullTokenizer(vocab_file=os.path.join(DATA_PATH, "
 # pre-trained doc2vec
 # other methods
 
-# sinteractive --partition=gpu2 --nodes=1 --ntasks-per-node=28 --mem=56G --gres=gpu:1 --time=36:00:00
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=28 --mem=56G --time=36:00:00
+# sinteractive --partition=gpu2 --nodes=1 --ntasks-per-node=28 --mem=56G --gres=gpu:1 --time=36:00:00
+# module load midway2
+# module load cuda/9.0
+# nvidia-smi
+
+# import tensorflow as tf
+# tf.config.list_physical_devices("GPU")
 # python3 main.py -m doc2vec

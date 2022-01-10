@@ -1,7 +1,7 @@
 from transformers import TFAutoModelForSequenceClassification
-from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.metrics import SparseCategoricalAccuracy
+from tensorflow.keras.optimizers import Adam
 from global_settings import DATA_PATH
 from tools.exp_tools import iterable_wrapper
 from global_settings import tokenizer
@@ -67,6 +67,7 @@ def generate_batch(bert_tok, target, params):
         return init_dict, init_target
 
     batch_dict, batch_target = init_batch(params["input_len"])
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Initialized the 0th batch...")
     for idx, (input_dict, input_target) in enumerate(generate_bert_tok(bert_tok, target, params)):
         if idx % batch_size == 0 and idx // batch_size != 0:
             yield batch_dict, batch_target
