@@ -1,15 +1,16 @@
+import os
+import torch
+import numpy as np
+from datetime import datetime
+from torch.nn import functional
+from global_settings import DATA_PATH
+from global_settings import tokenizer
+from tools.exp_tools import iterable_wrapper
+from scipy.stats import rankdata
 from transformers import TFAutoModelForSequenceClassification
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.metrics import SparseCategoricalAccuracy
 from tensorflow.keras.optimizers import Adam
-from global_settings import DATA_PATH
-from tools.exp_tools import iterable_wrapper
-from global_settings import tokenizer
-from scipy.stats import rankdata
-from datetime import datetime
-import tensorflow as tf
-import numpy as np
-import os
 
 
 def fit_bert(df_rich, bert_tok, params):
@@ -34,7 +35,7 @@ def fit_bert(df_rich, bert_tok, params):
         os.path.join(textual_path, "pre-trained"), num_labels=num_bins
     )
     loss = SparseCategoricalCrossentropy(from_logits=True)
-    metrics = [SparseCategoricalAccuracy("accuracy", dtype=tf.float32)]
+    metrics = [SparseCategoricalAccuracy("accuracy", dtype=torch.float32)]
     model.compile(optimizer=Adam(learning_rate=5e-5), loss=loss, metrics=metrics)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora...")
     model.fit(x=batch_train, epochs=epochs, verbose=0)
@@ -54,7 +55,7 @@ def pre_bert(bert_tok, model, *args):
 @iterable_wrapper
 def generate_batch(bert_tok, target, params):
     batch_size = params["batch_size"]
-    def init_tensor(input_len): return tf.convert_to_tensor(np.empty((0, input_len), dtype=np.int32))
+    def init_tensor(input_len): return torch.tensor(np.empty((0, input_len), dtype=np.int32))
 
     def init_batch(input_len):
         init_dict = {
@@ -77,7 +78,7 @@ def generate_batch(bert_tok, target, params):
             batch_dict, batch_target = init_batch(params["input_len"])
 
         for key in batch_dict.keys():
-            batch_dict[key] = tf.concat([batch_dict[key], input_dict[key]], axis=0)
+            batch_dict[key] = torch.cat((batch_dict[key], input_dict[key]), dim=0)
         batch_target = np.concatenate([batch_target, input_target], axis=0)
 
 
@@ -98,14 +99,15 @@ def generate_bert_tok(bert_tok, target, params):
             input_target = line_target.reshape(-1, 1)
             for foo in range(0, len(line_bert_tok), input_len - 1):
                 input_ids = tokenizer.convert_tokens_to_ids(["[CLS]"]) + line_bert_tok[foo: foo + input_len - 1]
-                input_ids = tf.expand_dims(tf.convert_to_tensor(input_ids), axis=0)
-                attention_mask = tf.ones_like(input_ids)
-                token_type_ids = tf.zeros_like(input_ids)
+                current_len = len(input_ids)
 
-                current_len = input_ids.shape[1]
-                input_ids = tf.pad(input_ids, [[0, 0], [0, input_len - current_len]], "CONSTANT")
-                attention_mask = tf.pad(attention_mask, [[0, 0], [0, input_len - current_len]], "CONSTANT")
-                token_type_ids = tf.pad(token_type_ids, [[0, 0], [0, input_len - current_len]], "CONSTANT")
+                input_ids = torch.tensor(input_ids).expand(1, current_len)
+                attention_mask = torch.ones_like(input_ids)
+                token_type_ids = torch.zeros_like(input_ids)
+
+                input_ids = functional.pad(input_ids, (0, input_len - current_len), "constant", 0)
+                attention_mask = functional.pad(attention_mask, (0, input_len - current_len), "constant", 0)
+                token_type_ids = functional.pad(token_type_ids, (0, input_len - current_len), "constant", 0)
 
                 input_dict = {
                     "input_ids": input_ids,

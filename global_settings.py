@@ -3,9 +3,7 @@ import json
 import numpy as np
 import pandas as pd
 from pathlib import Path
-import tensorflow as tf
-from official.nlp import bert
-import official.nlp.bert.tokenization
+from transformers import BertTokenizer
 
 # directories
 DESKTOP_PATH = str(Path(os.getcwd()).parent.absolute())
@@ -36,7 +34,7 @@ pos_dict = [_.strip() for _ in xlsx_dict.parse("positive").iloc[:, 0]]
 neg_dict = [_.strip() for _ in xlsx_dict.parse("negative").iloc[:, 0]]
 full_dict = pos_dict + neg_dict
 stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=None).iloc[:, 0])
-tokenizer = bert.tokenization.FullTokenizer(vocab_file=os.path.join(DATA_PATH, "vocab.txt"))
+tokenizer = BertTokenizer(vocab_file=os.path.join(DATA_PATH, "vocab.txt"))
 
 # BERT
 # pre-trained doc2vec
@@ -48,6 +46,4 @@ tokenizer = bert.tokenization.FullTokenizer(vocab_file=os.path.join(DATA_PATH, "
 # module load cuda/9.0
 # nvidia-smi
 
-# import tensorflow as tf
-# tf.config.list_physical_devices("GPU")
 # python3 main.py -m doc2vec
