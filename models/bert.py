@@ -26,7 +26,7 @@ def fit_bert(df_rich, bert_tok, params):
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
     target = target.reshape(-1, 1)
-    bert_tok_train = generate_art_tag(bert_tok, target, params)
+    batch_train = generate_batch(bert_tok, target, params)
 
     # retrain model
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Fetching pre-trained BERT model...")
@@ -37,7 +37,7 @@ def fit_bert(df_rich, bert_tok, params):
     metrics = [SparseCategoricalAccuracy("accuracy", dtype=tf.float32)]
     model.compile(optimizer=Adam(learning_rate=5e-5), loss=loss, metrics=metrics)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora...")
-    model.fit(x=bert_tok_train, epochs=epochs, verbose=0)
+    model.fit(x=batch_train, epochs=epochs, verbose=0)
 
     return model
 
@@ -52,7 +52,37 @@ def pre_bert(bert_tok, model, *args):
 
 
 @iterable_wrapper
-def generate_art_tag(bert_tok, target, params):
+def generate_batch(bert_tok, target, params):
+    batch_size = params["batch_size"]
+    def init_tensor(input_len): return tf.convert_to_tensor(np.empty((0, input_len), dtype=np.int32))
+
+    def init_batch(input_len):
+        init_dict = {
+            "input_ids": init_tensor(input_len),
+            "attention_mask": init_tensor(input_len),
+            "token_type_ids": init_tensor(input_len)
+        }
+        init_target = np.empty((0, 1))
+        
+        return init_dict, init_target
+
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Initializing the 0th batch...")
+    batch_dict, batch_target = init_batch(params["input_len"])
+    for idx, (input_dict, input_target) in enumerate(zip(generate_bert_tok(bert_tok, target, params))):
+        if (idx % batch_size == 0) & (idx // batch_size != 0):
+            yield batch_dict, batch_target
+
+        if (idx % batch_size == 0) & (idx // batch_size != 0):
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Working on the {idx // batch_size}th batch...")
+            batch_dict, batch_target = init_batch(params["input_len"])
+
+        for key in batch_dict.keys():
+            batch_dict[key] = tf.concat([batch_dict[key], input_dict[key]], axis=0)
+        batch_target = np.concatenate([batch_target, input_target], axis=0)
+
+
+@iterable_wrapper
+def generate_bert_tok(bert_tok, target, params):
     """ generate article and tag
     :param bert_tok: iterable of tokenized text
     :param target: sentiment target
@@ -62,10 +92,9 @@ def generate_art_tag(bert_tok, target, params):
     idx = 0
     input_len = params["input_len"]
 
-    for i, sub_bert_tok in enumerate(bert_tok):
+    for sub_bert_tok in bert_tok:
         sub_target = target[idx: idx + sub_bert_tok.shape[0], :]
-        for j, (line_bert_tok, line_target) in enumerate(zip(sub_bert_tok, sub_target)):
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Working on the {i}_th file {j}_th line...")
+        for line_bert_tok, line_target in zip(sub_bert_tok, sub_target):
             input_target = line_target
             for foo in range(0, len(line_bert_tok), input_len - 1):
                 input_ids = tokenizer.convert_tokens_to_ids(["[CLS]"]) + line_bert_tok[foo: foo + input_len - 1]
