@@ -8,13 +8,10 @@ def analyze_ssestm(O_hat):
     """
 
     # "涨" and "跌" with large positive/negative sentiments
-    # "涨" and "跌" with high occurrence
+    # "涨" and "跌" with highest occurrence
     sentiment = 0.5 * (O_hat[:, 0] - O_hat[:, 1])
     occurrence = 0.5 * (O_hat[:, 0] + O_hat[:, 1])
-    idx = np.argsort(sentiment)
+    sentiment_idx = np.argsort(sentiment)
+    occurrence_idx = np.argsort(occurrence)
 
-    rank_dict = np.array(full_dict)[idx]
-    sentiment = sentiment[idx]
-    occurrence = occurrence[idx]
-
-    return rank_dict, sentiment, occurrence
+    return np.array(full_dict)[sentiment_idx], np.array(full_dict)[occurrence_idx]

@@ -14,7 +14,7 @@
 | Drop articles with more than one stock tagged       | 32,143,209              | 919,646                |
 | Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
 
-List of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
+Dictionaries of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
 
 ## SSESTM
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
