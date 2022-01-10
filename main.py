@@ -76,7 +76,7 @@ def run_textual(textual_name):
     else:
         raise ValueError("Invalid textual name")
 
-    num_proc = 1
+    num_proc = 18
     for idx in range(0, len(sub_file_rich_li), num_proc):
         pool = Pool(num_proc)
         pool.map(build_textual, sub_file_rich_li[idx: idx + num_proc])

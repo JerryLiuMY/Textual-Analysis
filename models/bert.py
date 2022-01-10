@@ -24,45 +24,53 @@ def fit_bert(df_rich, bert_tok, params):
     # get inputs
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
-    bert_tok_train = generate_art_tag(bert_tok, input_len)
+    bert_tok_train = generate_art_tag(bert_tok, target, input_len)
 
     # retrain model
     model = TFAutoModelForSequenceClassification.from_pretrained("bert-base-chinese", num_labels=num_bins)
     optimizer = nlp.optimization.create_optimizer(2e-5, num_train_steps=train_steps, num_warmup_steps=warmup_steps)
-    model.compile(optimizer=optimizer, loss=CategoricalCrossentropy(), metrics=["accuracy"])
-    model.fit(bert_tok_train, target=target, batch_size=batch_size, epochs=epochs)
+    model.compile(optimizer=optimizer, loss=CategoricalCrossentropy(from_logits=False), metrics=["accuracy"])
+    model.fit(bert_tok_train, batch_size=batch_size, epochs=epochs)
 
     return model
 
 
-def pre_bert(doc_cut, model, *args):
+def pre_bert(bert_tok, model, *args):
     """ predict doc2vec model
     """
 
-    sentiment = None
+    target = model.predict(bert_tok)
 
-    return sentiment
+    return target
 
 
 @iterable_wrapper
-def generate_art_tag(bert_tok, input_len):
+def generate_art_tag(bert_tok, target, input_len):
     """ generate article and tag
     :param bert_tok: iterable of tokenized text
+    :param target: sentiment target
     :param input_len: length of bert input
     """
 
+    idx = 0
     for sub_bert_tok in bert_tok:
-        for line_bert_tok in sub_bert_tok:
-            for idx in range(0, len(line_bert_tok), input_len - 1):
-                input_word_ids = [tokenizer.convert_tokens_to_ids(["[CLS]"])] + line_bert_tok[idx: idx + input_len - 1]
-                input_word_ids = tf.ragged.constant(input_word_ids)
-                input_mask = tf.ones_like(input_word_ids)
-                input_type_ids = tf.zeros_like(input_word_ids)
+        sub_target = target[idx: idx + sub_bert_tok.shape[0]]
+        for line_bert_tok, line_target in zip(sub_bert_tok, sub_target):
+            input_target = line_target
+            for foo in range(0, len(line_bert_tok), input_len - 1):
+                input_ids = [tokenizer.convert_tokens_to_ids(["[CLS]"])] + line_bert_tok[foo: foo + input_len - 1]
+                input_ids = tf.expand_dims(tf.convert_to_tensor(input_ids), axis=0)
+                attention_mask = tf.ones_like(input_ids)
+                token_type_ids = tf.zeros_like(input_ids)
+
+                input_ids = tf.pad(input_ids, [[0, 0], [0, input_len - input_ids.shape[1]]], "CONSTANT")
+                attention_mask = tf.pad(attention_mask, [[0, 0], [0, input_len - input_ids.shape[1]]], "CONSTANT")
+                token_type_ids = tf.pad(token_type_ids, [[0, 0], [0, input_len - input_ids.shape[1]]], "CONSTANT")
 
                 input_dict = {
-                    "input_word_ids": input_word_ids.to_tensor(),
-                    "input_mask": input_mask.to_tensor(),
-                    "input_type_ids": input_type_ids.to_tensor()
+                    "input_ids": input_ids,
+                    "attention_mask": attention_mask,
+                    "token_type_ids": token_type_ids
                 }
 
-                yield input_dict
+                yield input_dict, input_target
