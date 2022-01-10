@@ -66,14 +66,13 @@ def generate_batch(bert_tok, target, params):
         
         return init_dict, init_target
 
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Initializing the 0th batch...")
     batch_dict, batch_target = init_batch(params["input_len"])
-    for idx, (input_dict, input_target) in enumerate(zip(generate_bert_tok(bert_tok, target, params))):
-        if (idx % batch_size == 0) & (idx // batch_size != 0):
+    for idx, (input_dict, input_target) in enumerate(generate_bert_tok(bert_tok, target, params)):
+        if idx % batch_size == 0 and idx // batch_size != 0:
             yield batch_dict, batch_target
 
-        if (idx % batch_size == 0) & (idx // batch_size != 0):
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Working on the {idx // batch_size}th batch...")
+        if idx % batch_size == 0:
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Training on the {idx // batch_size}th batch...")
             batch_dict, batch_target = init_batch(params["input_len"])
 
         for key in batch_dict.keys():
@@ -95,7 +94,7 @@ def generate_bert_tok(bert_tok, target, params):
     for sub_bert_tok in bert_tok:
         sub_target = target[idx: idx + sub_bert_tok.shape[0], :]
         for line_bert_tok, line_target in zip(sub_bert_tok, sub_target):
-            input_target = line_target
+            input_target = line_target.reshape(-1, 1)
             for foo in range(0, len(line_bert_tok), input_len - 1):
                 input_ids = tokenizer.convert_tokens_to_ids(["[CLS]"]) + line_bert_tok[foo: foo + input_len - 1]
                 input_ids = tf.expand_dims(tf.convert_to_tensor(input_ids), axis=0)
