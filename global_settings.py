@@ -37,13 +37,9 @@ stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=No
 tokenizer = BertTokenizer(vocab_file=os.path.join(DATA_PATH, "vocab.txt"))
 
 # BERT
-# pre-trained doc2vec
-# other methods
+# pre-trained doc2vec & other methods
 
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=28 --mem=56G --time=36:00:00
 # sinteractive --partition=gpu2 --nodes=1 --ntasks-per-node=28 --mem=56G --gres=gpu:1 --time=36:00:00
-# module load midway2
-# module load cuda/9.0
-# nvidia-smi
 
-# python3 main.py -m doc2vec
+# python3 main.py -m bert --subset

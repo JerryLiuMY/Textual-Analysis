@@ -32,8 +32,9 @@ def fit_bert(df_rich, bert_tok, params):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Preparing inputs...")
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
-    batch_train = generate_batch(bert_tok, target, params)
-    steps_per_epoch = len(batch_train)
+    batch_build = generate_batch(bert_tok, target, params, silence=False)
+    batch_train = generate_batch(bert_tok, target, params, silence=True)
+    steps_per_epoch = len(batch_build)
 
     # setting up configs
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Setting up configs...")
@@ -41,10 +42,11 @@ def fit_bert(df_rich, bert_tok, params):
     optimizer = AdamW(model.parameters(), lr=5e-5)
     num_training_steps = epochs * steps_per_epoch
     lr_scheduler = get_scheduler("linear", optimizer, num_warmup_steps=0, num_training_steps=num_training_steps)
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
     # train BERT model
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora...")
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora; "
+          f"GPU available: {torch.cuda.is_available()}...")
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
     model.train()
     for epoch in range(epochs):
@@ -76,10 +78,11 @@ def pre_bert(bert_tok, model, *args):
 
 
 @iterable_wrapper
-def generate_batch(bert_tok, target, params):
+def generate_batch(bert_tok, target, params, silence):
     """ generate bert tokens by batch
     :param bert_tok: iterable of tokenized text
     :param target: sentiment target
+    :param silence: if silence mode
     :param params: parameters
     """
 
@@ -96,14 +99,14 @@ def generate_batch(bert_tok, target, params):
 
         return init_dict
 
-    batch_dict = init_batch(params["input_len"])
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Generating the 0th batch...")
+    batch_dict = None
     for idx, input_dict in enumerate(generate_bert_tok(bert_tok, target, params)):
         if idx % batch_size == 0 and idx // batch_size != 0:
             yield batch_dict
 
-        if idx % batch_size == 0 and idx // batch_size != 0:
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Generating the {idx // batch_size}th batch...")
+        if idx % batch_size == 0:
+            if not silence:
+                print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Generating the {idx // batch_size}th batch...")
             batch_dict = init_batch(params["input_len"])
 
         for key in batch_dict.keys():
