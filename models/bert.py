@@ -18,7 +18,7 @@ def fit_bert(df_rich, bert_tok, params):
     :param df_rich: enriched dataframe
     :param bert_tok: iterable of bert tokens
     :param params: parameters for bert
-    :return: the trained bert classifier
+    :return: trained bert classifier
     """
 
     # recover parameters
@@ -64,7 +64,10 @@ def fit_bert(df_rich, bert_tok, params):
 
 
 def pre_bert(bert_tok, model, *args):
-    """ predict doc2vec model
+    """ predict bert model
+    :param bert_tok: iterable of bert tokens
+    :param model: fitted model
+    :return: target
     """
 
     target = model.predict(bert_tok)
@@ -119,7 +122,7 @@ def generate_bert_tok(bert_tok, target, params):
     input_len = params["input_len"]
 
     for sub_bert_tok in bert_tok:
-        sub_target = target[idx: idx + sub_bert_tok.shape[0], :]
+        sub_target = target[idx: idx + sub_bert_tok.shape[0]]
         for line_bert_tok, line_target in zip(sub_bert_tok, sub_target):
             input_target = torch.tensor([line_target])
             for foo in range(0, len(line_bert_tok), input_len - 1):

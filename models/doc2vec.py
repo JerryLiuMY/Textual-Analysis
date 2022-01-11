@@ -14,7 +14,7 @@ def fit_doc2vec(df_rich, art_cut, params):
     :param df_rich: enriched dataframe
     :param art_cut: iterable of articles cut with jieba
     :param params: parameters for doc2vec
-    :return: the trained doc2vec object and classifier
+    :return: trained doc2vec object and classifier
     """
 
     # recover parameters
