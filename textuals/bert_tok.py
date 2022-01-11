@@ -2,8 +2,8 @@ from global_settings import RICH_PATH, DATA_PATH
 from global_settings import stop_list
 from global_settings import tokenizer
 from datetime import datetime
-import jieba
 import pandas as pd
+import jieba
 import pickle
 import math
 import os

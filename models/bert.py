@@ -1,16 +1,16 @@
 import os
 import torch
 import numpy as np
+from tqdm.auto import tqdm
 from datetime import datetime
 from torch.nn import functional
 from global_settings import DATA_PATH
 from global_settings import tokenizer
 from tools.exp_tools import iterable_wrapper
 from scipy.stats import rankdata
-from transformers import TFAutoModelForSequenceClassification
-from tensorflow.keras.losses import SparseCategoricalCrossentropy
-from tensorflow.keras.metrics import SparseCategoricalAccuracy
-from tensorflow.keras.optimizers import Adam
+from transformers import AdamW
+from transformers import get_scheduler
+from transformers import AutoModelForSequenceClassification
 
 
 def fit_bert(df_rich, bert_tok, params):
@@ -21,7 +21,8 @@ def fit_bert(df_rich, bert_tok, params):
     n = df_rich.shape[0]
     textual_name = "bert_tok"
     textual_path = os.path.join(DATA_PATH, textual_name)
-    epochs, num_bins = params["epochs"], params["num_bins"]
+    trained_path = os.path.join(textual_path, "pre-trained")
+    num_bins, epochs = params["num_bins"], params["epochs"]
 
     # get inputs
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
@@ -30,15 +31,27 @@ def fit_bert(df_rich, bert_tok, params):
     batch_train = generate_batch(bert_tok, target, params)
 
     # retrain model
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Fetching pre-trained BERT model...")
-    model = TFAutoModelForSequenceClassification.from_pretrained(
-        os.path.join(textual_path, "pre-trained"), num_labels=num_bins
-    )
-    loss = SparseCategoricalCrossentropy(from_logits=True)
-    metrics = [SparseCategoricalAccuracy("accuracy", dtype=torch.float32)]
-    model.compile(optimizer=Adam(learning_rate=5e-5), loss=loss, metrics=metrics)
+    model = AutoModelForSequenceClassification.from_pretrained(trained_path, num_labels=num_bins)
+    optimizer = AdamW(model.parameters(), lr=5e-5)
+    num_training_steps = epochs * len(batch_train)
+    lr_scheduler = get_scheduler("linear", optimizer, num_warmup_steps=0, num_training_steps=num_training_steps)
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora...")
-    model.fit(x=batch_train, epochs=epochs, verbose=0)
+    model.to(device)
+    model.train()
+    for epoch in range(epochs):
+        progress_bar = tqdm(range(len(batch_train)), desc=f"Epoch {epoch}")
+        for batch in batch_train:
+            batch = {k: v.to(device) for k, v in batch.items()}
+            outputs = model(**batch)
+            loss = outputs.loss
+            loss.backward()
+
+            optimizer.step()
+            lr_scheduler.step()
+            optimizer.zero_grad()
+            progress_bar.update(1)
 
     return model
 
@@ -61,25 +74,29 @@ def generate_batch(bert_tok, target, params):
         init_dict = {
             "input_ids": init_tensor(input_len),
             "attention_mask": init_tensor(input_len),
-            "token_type_ids": init_tensor(input_len)
+            "token_type_ids": init_tensor(input_len),
+            "labels": np.empty((0, 1))
         }
-        init_target = np.empty((0, 1))
-        
-        return init_dict, init_target
 
-    batch_dict, batch_target = init_batch(params["input_len"])
+        return init_dict
+
+    batch_dict = init_batch(params["input_len"])
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Initialized the 0th batch...")
-    for idx, (input_dict, input_target) in enumerate(generate_bert_tok(bert_tok, target, params)):
+    for idx, input_dict in enumerate(generate_bert_tok(bert_tok, target, params)):
         if idx % batch_size == 0 and idx // batch_size != 0:
-            yield batch_dict, batch_target
+            yield batch_dict
 
         if idx % batch_size == 0 and idx // batch_size != 0:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Training on the {idx // batch_size}th batch...")
             batch_dict, batch_target = init_batch(params["input_len"])
 
         for key in batch_dict.keys():
-            batch_dict[key] = torch.cat((batch_dict[key], input_dict[key]), dim=0)
-        batch_target = np.concatenate([batch_target, input_target], axis=0)
+            if isinstance(batch_dict[key], torch.Tensor):
+                batch_dict[key] = torch.cat((batch_dict[key], input_dict[key]), dim=0)
+            elif isinstance(batch_dict[key], np.ndarray):
+                batch_dict[key] = np.concatenate([batch_dict[key], input_dict[key]], axis=0)
+            else:
+                raise ValueError("Invalid data type")
 
 
 @iterable_wrapper
@@ -112,7 +129,8 @@ def generate_bert_tok(bert_tok, target, params):
                 input_dict = {
                     "input_ids": input_ids,
                     "attention_mask": attention_mask,
-                    "token_type_ids": token_type_ids
+                    "token_type_ids": token_type_ids,
+                    "labels": input_target,
                 }
 
-                yield input_dict, input_target
+                yield input_dict
