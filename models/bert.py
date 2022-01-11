@@ -1,7 +1,6 @@
 import os
 import torch
 import numpy as np
-from tqdm.auto import tqdm
 from datetime import datetime
 from torch.nn import functional
 from global_settings import DATA_PATH
@@ -29,28 +28,28 @@ def fit_bert(df_rich, bert_tok, params):
     num_bins, epochs = params["num_bins"], params["epochs"]
 
     # get inputs
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Preparing inputs...")
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
-    batch_build = generate_batch(bert_tok, target, params, silence=False)
-    batch_train = generate_batch(bert_tok, target, params, silence=True)
-    steps_per_epoch = len(batch_build)
+    batch_build = generate_batch(bert_tok, target, params)
+    batch_train = generate_batch(bert_tok, target, params)
 
     # setting up configs
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Preparing inputs...")
+    steps_per_epoch = len(batch_build)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Setting up configs...")
     model = AutoModelForSequenceClassification.from_pretrained(trained_path, num_labels=num_bins)
     optimizer = AdamW(model.parameters(), lr=5e-5)
     num_training_steps = epochs * steps_per_epoch
     lr_scheduler = get_scheduler("linear", optimizer, num_warmup_steps=0, num_training_steps=num_training_steps)
 
-    # train BERT model
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora; "
-          f"GPU available: {torch.cuda.is_available()}...")
+    # training BERT model
+    GPUs = [torch.cuda.get_device_name(_) for _ in range(torch.cuda.device_count())]
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} GPUs: {GPUs}...")
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora...")
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
     model.train()
     for epoch in range(epochs):
-        progress_bar = tqdm(range(steps_per_epoch), desc=f"Epoch {epoch}")
         for batch in batch_train:
             batch = {k: v.to(device) for k, v in batch.items()}
             outputs = model(**batch)
@@ -60,7 +59,6 @@ def fit_bert(df_rich, bert_tok, params):
             optimizer.step()
             lr_scheduler.step()
             optimizer.zero_grad()
-            progress_bar.update(1)
 
     return model
 
@@ -78,11 +76,10 @@ def pre_bert(bert_tok, model, *args):
 
 
 @iterable_wrapper
-def generate_batch(bert_tok, target, params, silence):
+def generate_batch(bert_tok, target, params):
     """ generate bert tokens by batch
     :param bert_tok: iterable of tokenized text
     :param target: sentiment target
-    :param silence: if silence mode
     :param params: parameters
     """
 
@@ -105,8 +102,7 @@ def generate_batch(bert_tok, target, params, silence):
             yield batch_dict
 
         if idx % batch_size == 0:
-            if not silence:
-                print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Generating the {idx // batch_size}th batch...")
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Generating the {idx // batch_size}th batch...")
             batch_dict = init_batch(params["input_len"])
 
         for key in batch_dict.keys():
