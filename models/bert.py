@@ -14,7 +14,7 @@ from transformers import AutoModelForSequenceClassification
 
 
 def fit_bert(df_rich, bert_tok, params):
-    """ train classifier
+    """ retrain BERT classifier
     :param df_rich: enriched dataframe
     :param bert_tok: iterable of bert tokens
     :param params: parameters for bert
@@ -29,19 +29,21 @@ def fit_bert(df_rich, bert_tok, params):
     num_bins, epochs = params["num_bins"], params["epochs"]
 
     # get inputs
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Preparing inputs...")
     p_hat = (rankdata(df_rich["ret3"].values) - 1) / n
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
-    target = target.reshape(-1, 1)
     batch_train = generate_batch(bert_tok, target, params)
     steps_per_epoch = len(batch_train)
 
-    # retrain model
+    # setting up configs
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Setting up configs...")
     model = AutoModelForSequenceClassification.from_pretrained(trained_path, num_labels=num_bins)
     optimizer = AdamW(model.parameters(), lr=5e-5)
     num_training_steps = epochs * steps_per_epoch
     lr_scheduler = get_scheduler("linear", optimizer, num_warmup_steps=0, num_training_steps=num_training_steps)
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
+    # train BERT model
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} BERT Training on corpora...")
     model.to(device)
     model.train()
@@ -86,7 +88,7 @@ def generate_batch(bert_tok, target, params):
             "input_ids": init_tensor(input_len),
             "attention_mask": init_tensor(input_len),
             "token_type_ids": init_tensor(input_len),
-            "labels": np.empty((0, 1))
+            "labels": torch.tensor(np.empty(0, dtype=np.int32))
         }
 
         return init_dict
@@ -102,12 +104,7 @@ def generate_batch(bert_tok, target, params):
             batch_dict = init_batch(params["input_len"])
 
         for key in batch_dict.keys():
-            if isinstance(batch_dict[key], torch.Tensor):
-                batch_dict[key] = torch.cat((batch_dict[key], input_dict[key]), dim=0)
-            elif isinstance(batch_dict[key], np.ndarray):
-                batch_dict[key] = np.concatenate([batch_dict[key], input_dict[key]], axis=0)
-            else:
-                raise ValueError("Invalid data type")
+            batch_dict[key] = torch.cat((batch_dict[key], input_dict[key]), dim=0)
 
 
 @iterable_wrapper
@@ -124,7 +121,7 @@ def generate_bert_tok(bert_tok, target, params):
     for sub_bert_tok in bert_tok:
         sub_target = target[idx: idx + sub_bert_tok.shape[0], :]
         for line_bert_tok, line_target in zip(sub_bert_tok, sub_target):
-            input_target = line_target.reshape(-1, 1)
+            input_target = torch.tensor([line_target])
             for foo in range(0, len(line_bert_tok), input_len - 1):
                 input_ids = tokenizer.convert_tokens_to_ids(["[CLS]"]) + line_bert_tok[foo: foo + input_len - 1]
                 current_len = len(input_ids)
