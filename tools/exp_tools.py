@@ -25,6 +25,12 @@ class IterableWrapper:
         self.generator = self.func(*self.args, **self.kwargs)
         return self
 
+    def __len__(self):
+        length = 0
+        for _ in self.generator:
+            length += 1
+        return length
+
     def __next__(self):
         item = next(self.generator)
         if item is not None:

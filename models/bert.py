@@ -15,6 +15,10 @@ from transformers import AutoModelForSequenceClassification
 
 def fit_bert(df_rich, bert_tok, params):
     """ train classifier
+    :param df_rich: enriched dataframe
+    :param bert_tok: iterable of bert tokens
+    :param params: parameters for bert
+    :return: the trained bert classifier
     """
 
     # recover parameters
@@ -29,11 +33,12 @@ def fit_bert(df_rich, bert_tok, params):
     target = np.digitize(p_hat, np.linspace(0, 1, num_bins + 1), right=False) - 1
     target = target.reshape(-1, 1)
     batch_train = generate_batch(bert_tok, target, params)
+    steps_per_epoch = len(batch_train)
 
     # retrain model
     model = AutoModelForSequenceClassification.from_pretrained(trained_path, num_labels=num_bins)
     optimizer = AdamW(model.parameters(), lr=5e-5)
-    num_training_steps = epochs * len(batch_train)
+    num_training_steps = epochs * steps_per_epoch
     lr_scheduler = get_scheduler("linear", optimizer, num_warmup_steps=0, num_training_steps=num_training_steps)
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -41,7 +46,7 @@ def fit_bert(df_rich, bert_tok, params):
     model.to(device)
     model.train()
     for epoch in range(epochs):
-        progress_bar = tqdm(range(len(batch_train)), desc=f"Epoch {epoch}")
+        progress_bar = tqdm(range(steps_per_epoch), desc=f"Epoch {epoch}")
         for batch in batch_train:
             batch = {k: v.to(device) for k, v in batch.items()}
             outputs = model(**batch)
@@ -67,6 +72,12 @@ def pre_bert(bert_tok, model, *args):
 
 @iterable_wrapper
 def generate_batch(bert_tok, target, params):
+    """ generate bert tokens by batch
+    :param bert_tok: iterable of tokenized text
+    :param target: sentiment target
+    :param params: parameters
+    """
+
     batch_size = params["batch_size"]
     def init_tensor(input_len): return torch.tensor(np.empty((0, input_len), dtype=np.int32))
 
@@ -81,14 +92,14 @@ def generate_batch(bert_tok, target, params):
         return init_dict
 
     batch_dict = init_batch(params["input_len"])
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Initialized the 0th batch...")
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Generating the 0th batch...")
     for idx, input_dict in enumerate(generate_bert_tok(bert_tok, target, params)):
         if idx % batch_size == 0 and idx // batch_size != 0:
             yield batch_dict
 
         if idx % batch_size == 0 and idx // batch_size != 0:
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Training on the {idx // batch_size}th batch...")
-            batch_dict, batch_target = init_batch(params["input_len"])
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} Generating the {idx // batch_size}th batch...")
+            batch_dict = init_batch(params["input_len"])
 
         for key in batch_dict.keys():
             if isinstance(batch_dict[key], torch.Tensor):
@@ -101,7 +112,7 @@ def generate_batch(bert_tok, target, params):
 
 @iterable_wrapper
 def generate_bert_tok(bert_tok, target, params):
-    """ generate article and tag
+    """ generate bert tokens by line
     :param bert_tok: iterable of tokenized text
     :param target: sentiment target
     :param params: parameters
