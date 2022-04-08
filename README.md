@@ -16,6 +16,10 @@
 
 Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
 
+Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from Jan 2015 to Jul 2019
+
+![alt text](./__resources__/stock_count.jpg?raw=true "Title")
+
 ## SSESTM
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
