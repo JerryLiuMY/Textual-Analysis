@@ -15,7 +15,8 @@
 | Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
 
 Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
-Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">time in a day</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a> and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. 
+
+Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a> and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. 
 
 ## SSESTM
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
