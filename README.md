@@ -45,5 +45,4 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 
 ## TODO
 - Look at the performance of the strategies on the CSI 300 constituent stocks.
-- Look at top stocks, top articles, distribution of article sentiments and word sentiments.
 - A strategy that counts the occurrence of `涨` and `跌` (which have the highest occurrence and the most positive/negative sentiments) could be used as a benchmark for the remaining models.
