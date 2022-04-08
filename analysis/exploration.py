@@ -93,12 +93,13 @@ def plot_stock_count(sub_file_rich_li):
 
     # define xticks & xticklabels
     dates = [sub_file_rich.split("/")[-1].split(".")[0] for sub_file_rich in sub_file_rich_li]
-    xticks = [date for date in dates if date[5:7] in ["01", "07"]]
+    xticks = [date for date in dates if date[5:7] in ["01", "04", "07", "10"]]
     xticks = [xticks[0]] + [date for i, date in enumerate(xticks[1:]) if date[5:7] != xticks[i][5:7]]
 
     def xtick_to_xticklabel(xtick):
+        month_dict = {"01": "Jan", "04": "Apr", "07": "Jul", "10": "Oct"}
+        month = month_dict[xtick[5:7]]
         year = xtick[:4]
-        month = "Jan" if xtick[5:7] == "01" else "Jul"
         xticklabel = " ".join([month, year])
 
         return xticklabel
@@ -110,9 +111,9 @@ def plot_stock_count(sub_file_rich_li):
     ax.bar(dates, height, color="blue")
     plt.setp(ax.patches, linewidth=0)
     ax.set_xticks(xticks)
-    ax.set_xticklabels(xticklabels)
+    ax.set_xticklabels(xticklabels, rotation=45, ha="right")
     fig.savefig(os.path.join(LOG_PATH, "zd_ret.pdf"), bbox_inches="tight")
-    ax.set_xlabel("Data")
+    ax.set_xlabel("Date")
     ax.set_ylabel("Num. Stocks Mentioned")
 
     fig.savefig(os.path.join(LOG_PATH, "stock_count.pdf"), bbox_inches="tight")
@@ -137,8 +138,10 @@ def plot_zd_ret(sub_file_rich_li):
         # print(f"涨: {round(z_ret, 4)}, 跌: {round(d_ret, 4)}")
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    ax.hist(z_ret_li, label="涨", color="red", alpha=0.65, bins=50)
-    ax.hist(d_ret_li, label="跌", color="green", alpha=0.65, bins=50)
+    ax.hist(z_ret_li, label="up", color="red", alpha=0.65, bins=50)
+    ax.hist(d_ret_li, label="down", color="green", alpha=0.65, bins=50)
+    ax.set_xlabel("Return")
+    ax.set_ylabel("Frequency")
     ax.legend()
 
     fig.savefig(os.path.join(LOG_PATH, "zd_ret.pdf"), bbox_inches="tight")
@@ -165,15 +168,17 @@ def plot_zd_rank(sub_file_rich_li):
         # print(f"涨: {round(z_rank, 4)}, 跌: {round(d_rank, 4)}")
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    ax.hist(z_rank_li, label="涨", color="red", alpha=0.65, bins=50)
-    ax.hist(d_rank_li, label="跌", color="green", alpha=0.65, bins=50)
+    ax.hist(z_rank_li, label="up", color="red", alpha=0.65, bins=50)
+    ax.hist(d_rank_li, label="down", color="green", alpha=0.65, bins=50)
+    ax.set_xlabel("Rank of Return")
+    ax.set_ylabel("Frequency")
     ax.legend()
 
     fig.savefig(os.path.join(LOG_PATH, "zd_rank.pdf"), bbox_inches="tight")
 
 
-if __name__ == "__main__":
-    sub_file_rich_li = sorted(glob.glob(os.path.join(RICH_PATH, "*.csv")))
-    plot_stock_count(sub_file_rich_li)
-    plot_zd_ret(sub_file_rich_li)
-    plot_zd_rank(sub_file_rich_li)
+# if __name__ == "__main__":
+#     sub_file_rich_li = sorted(glob.glob(os.path.join(RICH_PATH, "*.csv")))
+#     plot_stock_count(sub_file_rich_li)
+#     plot_zd_ret(sub_file_rich_li)
+#     plot_zd_rank(sub_file_rich_li)
