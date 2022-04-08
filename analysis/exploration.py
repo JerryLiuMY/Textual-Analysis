@@ -1,6 +1,8 @@
 from scipy.stats import rankdata
 import matplotlib.pyplot as plt
 from global_settings import LOG_PATH
+from global_settings import RICH_PATH
+import glob
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -56,7 +58,7 @@ def plot_day_count(data_df):
 
 
 def plot_hour_count(data_df):
-    """Bar plot of the number of articles per hour across the day
+    """ Bar plot of the number of articles per hour across the day
     :param data_df: cleaned data_df
     """
 
@@ -78,6 +80,44 @@ def plot_hour_count(data_df):
     fig.savefig(os.path.join(LOG_PATH, "hourly_count.pdf"), bbox_inches="tight")
 
 
+def plot_stock_count(sub_file_rich_li):
+    """ Plot the number of stocks mentioned in articles
+    :param sub_file_rich_li: list of enriched files
+    """
+
+    # define heights
+    height = np.zeros(len(sub_file_rich_li))
+    for i, file in enumerate(sub_file_rich_li):
+        df_rich = pd.read_csv(file)
+        height[i] = len(set(df_rich["stock_mention"]))
+
+    # define xticks & xticklabels
+    dates = [sub_file_rich.split("/")[-1].split(".")[0] for sub_file_rich in sub_file_rich_li]
+    xticks = [date for date in dates if date[5:7] in ["01", "07"]]
+    xticks = [xticks[0]] + [date for i, date in enumerate(xticks[1:]) if date[5:7] != xticks[i][5:7]]
+
+    def xtick_to_xticklabel(xtick):
+        year = xtick[:4]
+        month = "Jan" if xtick[5:7] == "01" else "Jul"
+        xticklabel = " ".join([month, year])
+
+        return xticklabel
+
+    xticklabels = [xtick_to_xticklabel(xtick) for xtick in xticks]
+
+    # plot stock count
+    fig, ax = plt.subplots(1, 1, figsize=(12, 6))
+    ax.bar(dates, height, color="blue")
+    plt.setp(ax.patches, linewidth=0)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xticklabels)
+    fig.savefig(os.path.join(LOG_PATH, "zd_ret.pdf"), bbox_inches="tight")
+    ax.set_xlabel("Data")
+    ax.set_ylabel("Num. Stocks Mentioned")
+
+    fig.savefig(os.path.join(LOG_PATH, "stock_count.pdf"), bbox_inches="tight")
+
+
 def plot_zd_ret(sub_file_rich_li):
     """ plot the average returns of stocks with "涨" and "跌" inside the enriched files
     :param sub_file_rich_li: list of enriched files
@@ -97,8 +137,8 @@ def plot_zd_ret(sub_file_rich_li):
         # print(f"涨: {round(z_ret, 4)}, 跌: {round(d_ret, 4)}")
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    ax.hist(z_ret_li, label="zhang", color="red", alpha=0.65, bins=50)
-    ax.hist(d_ret_li, label="die", color="green", alpha=0.65, bins=50)
+    ax.hist(z_ret_li, label="涨", color="red", alpha=0.65, bins=50)
+    ax.hist(d_ret_li, label="跌", color="green", alpha=0.65, bins=50)
     ax.legend()
 
     fig.savefig(os.path.join(LOG_PATH, "zd_ret.pdf"), bbox_inches="tight")
@@ -125,8 +165,15 @@ def plot_zd_rank(sub_file_rich_li):
         # print(f"涨: {round(z_rank, 4)}, 跌: {round(d_rank, 4)}")
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 5))
-    ax.hist(z_rank_li, label="zhang", color="red", alpha=0.65, bins=50)
-    ax.hist(d_rank_li, label="die", color="green", alpha=0.65, bins=50)
+    ax.hist(z_rank_li, label="涨", color="red", alpha=0.65, bins=50)
+    ax.hist(d_rank_li, label="跌", color="green", alpha=0.65, bins=50)
     ax.legend()
 
     fig.savefig(os.path.join(LOG_PATH, "zd_rank.pdf"), bbox_inches="tight")
+
+
+if __name__ == "__main__":
+    sub_file_rich_li = sorted(glob.glob(os.path.join(RICH_PATH, "*.csv")))
+    plot_stock_count(sub_file_rich_li)
+    plot_zd_ret(sub_file_rich_li)
+    plot_zd_rank(sub_file_rich_li)
