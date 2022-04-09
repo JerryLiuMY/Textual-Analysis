@@ -111,8 +111,8 @@ def experiment(window, model_name, perc_ls, subset):
         ret_v_win[i, 4:6] = get_weights(df_rich_win_test, target_v, perc_ls, "v")
         ret_e_win[i, 6:9] = get_return(df_rich_win_test, target_e, perc_ls, "e")
         ret_v_win[i, 6:9] = get_return(df_rich_win_test, target_v, perc_ls, "v")
-        ret_e_win[i, 10] = get_pearsonr(df_rich_win_test, target_e)
-        ret_v_win[i, 10] = get_pearsonr(df_rich_win_test, target_v)
+        ret_e_win[i, 9] = get_pearsonr(df_rich_win_test, target_e)
+        ret_v_win[i, 9] = get_pearsonr(df_rich_win_test, target_v)
 
     # get stocks, weights & returns
     columns_e = ["stks_le", "stks_se", "rets_le", "rets_se", "wgts_le", "wgts_se", "ret_e", "ret_le", "ret_se", "cor_e"]
