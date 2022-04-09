@@ -74,22 +74,37 @@ def backtest(model_name, dalym):
         json.dump(summary, f, indent=2)
 
     # plot cumulative return
+    fig = plt.figure(figsize=(14, 9))
+    gs = fig.add_gridspec(7, 1)
+    ax1 = fig.add_subplot(gs[0:5, :])
+    ax2 = fig.add_subplot(gs[5:7, :])
     xticks, xlabs = get_xticklabs(ret_csv)
-    fig, ax = plt.subplots(1, 1, figsize=(14, 7))
-    ax.set_xticks(xticks)
-    ax.set_xticklabels(xlabs)
-    ax.grid("on")
-    ax.plot(cum_e, "k-")
-    ax.plot(cum_le, "b-")
-    ax.plot(-cum_se, "r-")
-    ax.plot(cum_v, "k--")
-    ax.plot(cum_lv, "b--")
-    ax.plot(-cum_sv, "r--")
-    ax.plot(mkt_cum, 'y-')
-    ax.legend(["L-S EW", "L EW", "S EW", "L-S VW", "L VW", "S VW", "Index"])
-    ax.set_xlabel("Dates")
-    ax.set_ylabel("log(cum_ret)")
 
+    # ax1: backtest
+    ax1.set_xticks(xticks)
+    ax1.set_xticklabels(xlabs)
+    ax1.grid("on")
+    ax1.plot(cum_e, "k-")
+    ax1.plot(cum_le, "b-")
+    ax1.plot(-cum_se, "r-")
+    ax1.plot(cum_v, "k--")
+    ax1.plot(cum_lv, "b--")
+    ax1.plot(-cum_sv, "r--")
+    ax1.plot(mkt_cum, 'y-')
+    ax1.legend(["L-S EW", "L EW", "S EW", "L-S VW", "L VW", "S VW", "Index"])
+    ax1.set_xlabel("Dates")
+    ax1.set_ylabel("log(cum_ret)")
+
+    # ax2: correlation
+    pearson_cor = 0.5 * (ret_csv["cor_e"].to_numpy() + ret_csv["cor_v"].to_numpy())
+    ax2.stem(ret_csv.index, pearson_cor, linefmt="#A9A9A9", markerfmt=" ", basefmt=" ")
+    ax2.scatter(ret_csv.index, pearson_cor, color="#899499", marker=".")
+    ax2.set_xticks(xticks)
+    ax2.set_xticklabels(xlabs)
+    ax2.set_xlabel("Dates")
+    ax2.set_ylabel("Correlation")
+
+    fig.tight_layout()
     fig.savefig(os.path.join(model_path, "backtest.pdf"), bbox_inches="tight")
 
 

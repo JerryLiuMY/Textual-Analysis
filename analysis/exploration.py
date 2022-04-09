@@ -1,8 +1,6 @@
 from scipy.stats import rankdata
 import matplotlib.pyplot as plt
 from global_settings import LOG_PATH
-from global_settings import RICH_PATH
-import glob
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -178,6 +176,8 @@ def plot_zd_rank(sub_file_rich_li):
 
 
 # if __name__ == "__main__":
+#     from global_settings import RICH_PATH
+#     import glob
 #     sub_file_rich_li = sorted(glob.glob(os.path.join(RICH_PATH, "*.csv")))
 #     plot_stock_count(sub_file_rich_li)
 #     plot_zd_ret(sub_file_rich_li)

@@ -139,6 +139,7 @@ if __name__ == "__main__":
     # run_data_prep()
     # run_textual("bert_tok")
     run_experiment("ssestm", False)
+    run_backtest("ssestm")
 
 
 # if __name__ == "__main__":

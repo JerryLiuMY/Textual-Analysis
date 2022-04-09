@@ -235,6 +235,6 @@ def get_pearsonr(df_rich, target):
     df_rich_cp = df_rich.copy(deep=True)
     df_rich_cp.loc[:, "target"] = target
     df_rich_gb = df_rich_cp.groupby("stock_mention")
-    cor = pearsonr(df_rich_gb["target"].mean().to_numpy(), df_rich_gb["ret"].first().to_numpy())
+    cor = pearsonr(df_rich_gb["target"].mean().to_numpy(), df_rich_gb["ret"].first().to_numpy())[0]
 
     return cor

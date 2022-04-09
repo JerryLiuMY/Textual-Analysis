@@ -21,7 +21,7 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 ![alt text](./__resources__/stock_count.jpg?raw=true "Title")
 
 ## SSESTM
-<a href="https://drive.google.com/drive/folders/1l9D342FiJykrDvpKmzsh0BpU7iJcw9Yw?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
+<a href="https://drive.google.com/drive/folders/1mxMuPzGZvH_qNtP9J_t92lzjrZX5jdEu?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
