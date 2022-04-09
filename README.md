@@ -29,13 +29,13 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 
 ![alt text](./__resources__/backtest_ssestm.jpg?raw=true "Title")
 
+<a href="/__resources__/sentiment.xlsx" target="_blank">Full summary</a> of results for analysis of sentiment charged words. 
+
 **Top 10 frequent words:** `创业(0.0135)`, `健康(0.0158)`, `动力(0.0167)`, `建设(0.0177)`, `高新(0.0184)`, `平安(0.0216)`, `胜(0.0241)`, `发展(0.0433)`, `跌(0.0536)`, `涨(0.0619)`
 
 **Bottom 10 sentimental words:** `跌(-0.0536)`, `垃圾(-0.0071)`, `杀(-0.0032)`, `反弹(-0.0027)`, `下跌(-0.0027)`, `差(-0.0017)`, `机会(-0.0016)`, `大跌(-0.0014)`, `问题(-0.0014)`, `受益(-0.0013)`
 
 **Top 10 sentimental words:** `动力(0.0036)`, `创新(0.0036)`, `幸福(0.0044)`, `健康(0.0049)`, `高新(0.0058)`, `建设(0.0060)`, `创业(0.0062)`, `胜(0.0064)`, `发展(0.0109)`, `涨(0.0233)`
-
-Full summary of <a href="/__resources__/sentiment.xlsx" target="_blank">sentiment analysis</a>. 
 
 ## Doc2Vec
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
