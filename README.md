@@ -21,6 +21,7 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 ![alt text](./__resources__/stock_count.jpg?raw=true "Title")
 
 ## SSESTM
+<a href="https://drive.google.com/drive/folders/1l9D342FiJykrDvpKmzsh0BpU7iJcw9Yw?usp=sharing" target="_blank">Repository</a> of trained models, hyper-parameters and L/S portfolio positions 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
 | Average daily return  | 0.264%    | 0.159%     | 0.877%  | 0.309%    | 0.106%     | 0.757%  | -0.001% |
@@ -29,13 +30,14 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 
 ![alt text](./__resources__/backtest_ssestm.jpg?raw=true "Title")
 
-<a href="/__resources__/sentiment.xlsx" target="_blank">Full summary</a> of results for analysis of sentiment charged words. 
+#### Sentiment Analysis
+<a href="/__resources__/sentiment.xlsx" target="_blank">Full summary</a> of results for analysis of sentiment charged words.
 
-**Top 10 frequent words:** `创业(0.0135)`, `健康(0.0158)`, `动力(0.0167)`, `建设(0.0177)`, `高新(0.0184)`, `平安(0.0216)`, `胜(0.0241)`, `发展(0.0433)`, `跌(0.0536)`, `涨(0.0619)`
+**Top 10 frequent words:** `涨(0.0619)`, `跌(0.0536)`, `发展(0.0433)`, `胜(0.0241)`, `平安(0.0216)`, `高新(0.0184)`, `建设(0.0177)`, `动力(0.0167)`, `健康(0.0158)`, `创业(0.0135)`
 
-**Bottom 10 sentimental words:** `跌(-0.0536)`, `垃圾(-0.0071)`, `杀(-0.0032)`, `反弹(-0.0027)`, `下跌(-0.0027)`, `差(-0.0017)`, `机会(-0.0016)`, `大跌(-0.0014)`, `问题(-0.0014)`, `受益(-0.0013)`
+**Bottom 10 sentiment words:** `跌(-0.0536)`, `垃圾(-0.0071)`, `杀(-0.0032)`, `反弹(-0.0027)`, `下跌(-0.0027)`, `差(-0.0017)`, `机会(-0.0016)`, `大跌(-0.0014)`, `问题(-0.0014)`, `受益(-0.0013)`
 
-**Top 10 sentimental words:** `动力(0.0036)`, `创新(0.0036)`, `幸福(0.0044)`, `健康(0.0049)`, `高新(0.0058)`, `建设(0.0060)`, `创业(0.0062)`, `胜(0.0064)`, `发展(0.0109)`, `涨(0.0233)`
+**Top 10 sentiment words:** `动力(0.0036)`, `创新(0.0036)`, `幸福(0.0044)`, `健康(0.0049)`, `高新(0.0058)`, `建设(0.0060)`, `创业(0.0062)`, `胜(0.0064)`, `发展(0.0109)`, `涨(0.0233)`
 
 ## Doc2Vec
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
@@ -48,7 +50,7 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 
 ## Caveats
 - The articles whose `returns` or `three-day returns` cannot be obtained are removed from the data during pre-processing (many of which corresponds to *delisted* stocks). This corresponds to purposefully avoiding future **delisting** -- the information that we could not know in advance.
-- It is not feasible to directly short stocks in the Chinese market. We can short on ETFs instead. 
+- It is not feasible to directly short stocks in the Chinese market. We can short on ETFs instead.
 
 ## TODO
 - Look at the performance of the strategies on the CSI 300 constituent stocks.

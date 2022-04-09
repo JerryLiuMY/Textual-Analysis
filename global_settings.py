@@ -46,5 +46,5 @@ tokenizer = BertTokenizer(vocab_file=os.path.join(DATA_PATH, "vocab.txt"))
 # python3 main.py -m bert --subset
 
 
-# Top stocks
-# Sentiments vs. returns correlation overtime
+# L/S stocks
+# Predicted sentiments vs. returns correlation
