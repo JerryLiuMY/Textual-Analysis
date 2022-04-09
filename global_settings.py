@@ -44,3 +44,7 @@ tokenizer = BertTokenizer(vocab_file=os.path.join(DATA_PATH, "vocab.txt"))
 # sinteractive --partition=gpu2 --nodes=1 --ntasks-per-node=28 --mem=56G --gres=gpu:1 --time=36:00:00
 
 # python3 main.py -m bert --subset
+
+
+# Top stocks
+# Sentiments vs. returns correlation overtime
