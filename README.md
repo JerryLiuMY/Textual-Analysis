@@ -29,7 +29,7 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 
 ![alt text](./__resources__/backtest_ssestm.jpg?raw=true "Title")
 
-Bottom & Top 10 sentimental words: `跌`, `垃圾`, `杀`, `反弹`, `下跌`, `差`, `机会`, `大跌`, `问题`, `受益`, ..., `动力`, `创新`, `幸福`, `健康`, `高新`, `建设`, `创业`, `胜`, `发展`, `涨`
+Bottom & Top 10 sentimental words: `跌（-0.0535）`, `垃圾`, `杀`, `反弹`, `下跌`, `差`, `机会`, `大跌`, `问题`, `受益`, ..., `动力`, `创新`, `幸福`, `健康`, `高新`, `建设`, `创业`, `胜`, `发展`, `涨`
 
 ## Doc2Vec
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
