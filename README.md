@@ -21,7 +21,7 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 ![alt text](./__resources__/stock_count.jpg?raw=true "Title")
 
 ## SSESTM
-<a href="https://drive.google.com/drive/folders/1l9D342FiJykrDvpKmzsh0BpU7iJcw9Yw?usp=sharing" target="_blank">Repository</a> of trained models, hyper-parameters and L/S portfolio positions 
+<a href="https://drive.google.com/drive/folders/1l9D342FiJykrDvpKmzsh0BpU7iJcw9Yw?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
@@ -41,7 +41,7 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 **Top 10 sentiment words:** `动力(0.0036)`, `创新(0.0036)`, `幸福(0.0044)`, `健康(0.0049)`, `高新(0.0058)`, `建设(0.0060)`, `创业(0.0062)`, `胜(0.0064)`, `发展(0.0109)`, `涨(0.0233)`
 
 ## Doc2Vec
-<a href="https://drive.google.com/drive/folders/1IOhDnHQy8OIk4FSGJsn3ks5Fe4ktauzj?usp=sharing" target="_blank">Repository</a> of trained models, hyper-parameters and L/S portfolio positions 
+<a href="https://drive.google.com/drive/folders/1IOhDnHQy8OIk4FSGJsn3ks5Fe4ktauzj?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|

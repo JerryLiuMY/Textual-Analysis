@@ -3,6 +3,7 @@ from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
 from tools.exp_tools import get_return, get_stocks
 from tools.exp_tools import get_weights, get_returns
+from tools.exp_tools import get_pearsonr
 from tools.exp_tools import save_params, save_model, save_return
 from models.bert import fit_bert, pre_bert
 from experiments.generators import generate_params
@@ -110,16 +111,16 @@ def experiment(window, model_name, perc_ls, subset):
         ret_v_win[i, 4:6] = get_weights(df_rich_win_test, target_v, perc_ls, "v")
         ret_e_win[i, 6:9] = get_return(df_rich_win_test, target_e, perc_ls, "e")
         ret_v_win[i, 6:9] = get_return(df_rich_win_test, target_v, perc_ls, "v")
-        ret_e_win[i, 10] =
-        ret_v_win[i, 10] =
+        ret_e_win[i, 10] = get_pearsonr(df_rich_win_test, target_e)
+        ret_v_win[i, 10] = get_pearsonr(df_rich_win_test, target_v)
 
     # get stocks, weights & returns
-    columns_e = ["stks_le", "stks_se", "rets_le", "rets_se", "wgts_le", "wgts_se", "ret_e", "ret_le", "ret_se"]
-    columns_v = ["stks_lv", "stks_sv", "rets_lv", "rets_sv", "wgts_lv", "wgts_sv", "ret_v", "ret_lv", "ret_sv"]
+    columns_e = ["stks_le", "stks_se", "rets_le", "rets_se", "wgts_le", "wgts_se", "ret_e", "ret_le", "ret_se", "cor_e"]
+    columns_v = ["stks_lv", "stks_sv", "rets_lv", "rets_sv", "wgts_lv", "wgts_sv", "ret_v", "ret_lv", "ret_sv", "cor_v"]
     ret_e_win_pkl = pd.DataFrame(ret_e_win[:, 0:6], index=trddt_test, columns=columns_e[0:6])
     ret_v_win_pkl = pd.DataFrame(ret_v_win[:, 0:6], index=trddt_test, columns=columns_v[0:6])
-    ret_e_win_csv = pd.DataFrame(ret_e_win[:, 6:9], index=trddt_test, columns=columns_e[6:9])
-    ret_v_win_csv = pd.DataFrame(ret_v_win[:, 6:9], index=trddt_test, columns=columns_v[6:9])
+    ret_e_win_csv = pd.DataFrame(ret_e_win[:, 6:10], index=trddt_test, columns=columns_e[6:10])
+    ret_v_win_csv = pd.DataFrame(ret_v_win[:, 6:10], index=trddt_test, columns=columns_v[6:10])
     ret_win_pkl = pd.concat([ret_e_win_pkl, ret_v_win_pkl], axis=1)
     ret_win_csv = pd.concat([ret_e_win_csv, ret_v_win_csv], axis=1)
 

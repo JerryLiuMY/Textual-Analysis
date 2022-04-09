@@ -1,6 +1,7 @@
 from sklearn.linear_model import LogisticRegression
 from tensorflow.keras.models import Sequential
 from global_settings import OUTPUT_PATH
+from scipy.stats.stats import pearsonr
 import pickle
 import numpy as np
 import pandas as pd
@@ -112,14 +113,15 @@ def get_rich_ls(df_rich, target, perc_ls):
     """
 
     # group by stock_mention
-    df_rich.loc[:, "target"] = target
-    df_rich_gb = df_rich.groupby("stock_mention")
+    df_rich_cp = df_rich.copy(deep=True)
+    df_rich_cp.loc[:, "target"] = target
+    df_rich_gb = df_rich_cp.groupby("stock_mention")
 
     # return if no stock to L/S
     num_ls = int(len(df_rich_gb) * perc_ls)
     if num_ls == 0:
-        df_rich_l = pd.DataFrame(columns=df_rich.columns)
-        df_rich_s = pd.DataFrame(columns=df_rich.columns)
+        df_rich_l = pd.DataFrame(columns=df_rich_cp.columns)
+        df_rich_s = pd.DataFrame(columns=df_rich_cp.columns)
         return df_rich_l, df_rich_s
 
     # get L/S keys
@@ -129,12 +131,12 @@ def get_rich_ls(df_rich, target, perc_ls):
     keys_s = [keys[i] for i in sorted_idx[:num_ls]]
 
     # get L/S dataframes (first occurrence in each group)
-    df_rich_l = df_rich.loc[df_rich.apply(lambda _: _["stock_mention"] in keys_l, axis=1), :]
-    df_rich_s = df_rich.loc[df_rich.apply(lambda _: _["stock_mention"] in keys_s, axis=1), :]
+    df_rich_l = df_rich_cp.loc[df_rich_cp.apply(lambda _: _["stock_mention"] in keys_l, axis=1), :]
+    df_rich_s = df_rich_cp.loc[df_rich_cp.apply(lambda _: _["stock_mention"] in keys_s, axis=1), :]
     df_rich_l = df_rich_l.groupby("stock_mention").first().reset_index(inplace=False, drop=False)
     df_rich_s = df_rich_s.groupby("stock_mention").first().reset_index(inplace=False, drop=False)
-    df_rich_l = df_rich_l.loc[:, df_rich.columns]
-    df_rich_s = df_rich_s.loc[:, df_rich.columns]
+    df_rich_l = df_rich_l.loc[:, df_rich_cp.columns]
+    df_rich_s = df_rich_s.loc[:, df_rich_cp.columns]
 
     return df_rich_l, df_rich_s
 
@@ -221,3 +223,18 @@ def get_return(df_rich, target, perc_ls, ev):
     ret = ret_l + ret_s
 
     return ret, ret_l, ret_s
+
+
+def get_pearsonr(df_rich, target):
+    """ Get Pearson correlation coefficient
+    :param df_rich: enriched dataframe
+    :param target: predicted target for portfolio construction
+    :return pearson_cor: Pearson correlation coefficient
+    """
+
+    df_rich_cp = df_rich.copy(deep=True)
+    df_rich_cp.loc[:, "target"] = target
+    df_rich_gb = df_rich_cp.groupby("stock_mention")
+    cor = pearsonr(df_rich_gb["target"].mean().to_numpy(), df_rich_gb["ret"].first().to_numpy())
+
+    return cor
