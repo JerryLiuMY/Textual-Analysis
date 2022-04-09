@@ -89,13 +89,14 @@ def experiment(window, model_name, perc_ls, subset):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
           f"* Building returns {trddt_test[0][:-3]} to {trddt_test[-1][:-3]}...")
 
-    ret_e_win = np.empty([len(trddt_test), 9], dtype=object)
-    ret_v_win = np.empty([len(trddt_test), 9], dtype=object)
+    ret_e_win = np.empty([len(trddt_test), 10], dtype=object)
+    ret_v_win = np.empty([len(trddt_test), 10], dtype=object)
+
     for i, dt in enumerate(trddt_test):
         df_rich_win_test, textual_win_test = load_input([dt])
         if df_rich_win_test.shape[0] == 0:
-            ret_e_win[i, 0:6], ret_e_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
-            ret_v_win[i, 0:6], ret_v_win[i, 6:9] = [np.empty(0)] * 6, [0., 0., 0.]
+            ret_e_win[i, 0:6], ret_e_win[i, 6:10] = [np.empty(0)] * 6, [0., 0., 0., 0.]
+            ret_v_win[i, 0:6], ret_v_win[i, 6:10] = [np.empty(0)] * 6, [0., 0., 0., 0.]
             continue
 
         textual_win_test_e, textual_win_test_v = tee(textual_win_test, 2)
@@ -109,6 +110,8 @@ def experiment(window, model_name, perc_ls, subset):
         ret_v_win[i, 4:6] = get_weights(df_rich_win_test, target_v, perc_ls, "v")
         ret_e_win[i, 6:9] = get_return(df_rich_win_test, target_e, perc_ls, "e")
         ret_v_win[i, 6:9] = get_return(df_rich_win_test, target_v, perc_ls, "v")
+        ret_e_win[i, 10] =
+        ret_v_win[i, 10] =
 
     # get stocks, weights & returns
     columns_e = ["stks_le", "stks_se", "rets_le", "rets_se", "wgts_le", "wgts_se", "ret_e", "ret_le", "ret_se"]
