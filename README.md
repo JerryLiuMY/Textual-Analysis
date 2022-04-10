@@ -38,7 +38,7 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 
 **Bottom 10 sentiment words:** `跌(-0.0536)`, `垃圾(-0.0071)`, `杀(-0.0032)`, `反弹(-0.0027)`, `下跌(-0.0027)`, `差(-0.0017)`, `机会(-0.0016)`, `大跌(-0.0014)`, `问题(-0.0014)`, `受益(-0.0013)`
 
-**Top 10 sentiment words:** `动力(0.0036)`, `创新(0.0036)`, `幸福(0.0044)`, `健康(0.0049)`, `高新(0.0058)`, `建设(0.0060)`, `创业(0.0062)`, `胜(0.0064)`, `发展(0.0109)`, `涨(0.0233)`
+**Top 10 sentiment words:** `涨(0.0233)`, `发展(0.0109)`, `胜(0.0064)`, `创业(0.0062)`, `建设(0.0060)`, `高新(0.0058)`, `健康(0.0049)`, `幸福(0.0044)`, `创新(0.0036)`, `动力(0.0036)`
 
 ## Doc2Vec
 <a href="https://drive.google.com/drive/folders/1IOhDnHQy8OIk4FSGJsn3ks5Fe4ktauzj?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
