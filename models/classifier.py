@@ -24,7 +24,7 @@ def fit_classifier(emb_vec, target, params):
         cls.fit(emb_vec, target)
     elif cls_type == "mlp":
         cls_name = "Keras DNN"
-        num_bins, hidden = params["num_bins"], params["hidden"]
+        hidden, num_bins = 75, len(target)
         cls = Sequential()
         cls.add(Input(shape=(emb_vec.shape[1], )))
         cls.add(Dense(hidden, kernel_regularizer=L2(l2=1e-2), activation="relu"))
