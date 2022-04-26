@@ -15,8 +15,9 @@ proc_dict = {
 
 params_dict = {
     "ssestm": {"pen": [0.0]},
-    "doc2vec": {"window": [5, 10, 20], "vec_size": [5, 20, 50], "epochs": [10, 20],
+    "doc2vec": {"window": [5, 10, 20], "vec_size": [5, 10, 20], "epochs": [20],
                 "num_bins": [20], "cls_type": ["lr"]},
-    "bert": {"input_len": [64, 128, 256], "batch_size": [128], "epochs": [10, 20], "num_bins": [20]},
-    "dnn": {"hidden": [60]},
+    "bert": {"input_len": [64, 128, 256], "batch_size": [128], "epochs": [10, 20],
+             "num_bins": [20]},
+    "mlp": {"hidden": [60]},
 }
