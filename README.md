@@ -16,11 +16,9 @@
 
 Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
 
-Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from Jan 2015 to Jul 2019
+Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from *Jan 2015* to *Jul 2019*. <a href="https://drive.google.com/drive/folders/1ucT05lVyNUZ93czPlQT-B4naFscslXkF?usp=sharing" target="_blank">Repository</a> for data information. 
 
 ![alt text](./__resources__/stock_count.jpg?raw=true "Title")
-
-<a href="https://drive.google.com/drive/folders/1ucT05lVyNUZ93czPlQT-B4naFscslXkF?usp=sharing" target="_blank">Repository</a> for data information. 
 
 ## SSESTM
 <a href="https://drive.google.com/drive/folders/1mxMuPzGZvH_qNtP9J_t92lzjrZX5jdEu?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
