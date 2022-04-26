@@ -20,6 +20,8 @@ Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">
 
 ![alt text](./__resources__/stock_count.jpg?raw=true "Title")
 
+<a href="https://drive.google.com/drive/folders/1ucT05lVyNUZ93czPlQT-B4naFscslXkF?usp=sharing" target="_blank">Repository</a> for data information. 
+
 ## SSESTM
 <a href="https://drive.google.com/drive/folders/1mxMuPzGZvH_qNtP9J_t92lzjrZX5jdEu?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
