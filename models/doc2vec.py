@@ -55,7 +55,7 @@ def pre_doc2vec(art_cut, model, params):
 
     # calculate target
     doc2vec, cls = model
-    art_cut = pd.concat(art_cut, axis=0).reset_index(inplace=False, drop=True)
+    art_cut = pd.concat([_ for _ in art_cut], axis=0).reset_index(inplace=False, drop=True)
     emb_vec = np.vstack(art_cut.apply(lambda _: doc2vec.infer_vector(_)).to_numpy())
     target = pre_classifier(emb_vec, cls, params)
 

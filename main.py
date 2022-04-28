@@ -138,7 +138,7 @@ def run_backtest(model_name):
 if __name__ == "__main__":
     # run_data_prep()
     # run_textual("bert_tok")
-    run_experiment("doc2vec", False)
+    run_experiment("doc2vec", True)
     run_backtest("doc2vec")
 
 
