@@ -13,7 +13,7 @@ from transformers import AutoModelForSequenceClassification
 
 
 def fit_bert(df_rich, bert_tok, params):
-    """ finetune BERT classifier
+    """ fine-tune BERT classifier
     :param df_rich: enriched dataframe
     :param bert_tok: iterable of bert tokens
     :param params: parameters for bert
@@ -63,14 +63,42 @@ def fit_bert(df_rich, bert_tok, params):
     return model
 
 
-def pre_bert(bert_tok, model, *args):
+def pre_bert(bert_tok, model, params):
     """ predict bert model
     :param bert_tok: iterable of bert tokens
     :param model: fitted model
+    :param params: parameters for bert
     :return: target
     """
 
-    target = model.predict(bert_tok)
+    input_len = params["input_len"]
+    target = []
+    # recover parameters
+    for sub_bert_tok in bert_tok:
+        for line_bert_tok in sub_bert_tok:
+            t_li = []
+            for foo in range(0, len(line_bert_tok), input_len - 1):
+                input_ids = tokenizer.convert_tokens_to_ids(["[CLS]"]) + line_bert_tok[foo: foo + input_len - 1]
+                current_len = len(input_ids)
+
+                input_ids = torch.tensor(input_ids).expand(1, current_len)
+                attention_mask = torch.ones_like(input_ids)
+                token_type_ids = torch.zeros_like(input_ids)
+
+                input_ids = functional.pad(input_ids, (0, input_len - current_len), "constant", 0)
+                attention_mask = functional.pad(attention_mask, (0, input_len - current_len), "constant", 0)
+                token_type_ids = functional.pad(token_type_ids, (0, input_len - current_len), "constant", 0)
+
+                input_dict = {
+                    "input_ids": input_ids,
+                    "attention_mask": attention_mask,
+                    "token_type_ids": token_type_ids,
+                }
+
+                t_ = model.predict(input_dict)
+                t_li.append(t_)
+
+            target.append(np.mean(t_li))
 
     return target
 
