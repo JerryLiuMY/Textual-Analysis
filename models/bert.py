@@ -13,7 +13,7 @@ from transformers import AutoModelForSequenceClassification
 
 
 def fit_bert(df_rich, bert_tok, params):
-    """ retrain BERT classifier
+    """ finetune BERT classifier
     :param df_rich: enriched dataframe
     :param bert_tok: iterable of bert tokens
     :param params: parameters for bert
