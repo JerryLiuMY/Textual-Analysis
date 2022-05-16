@@ -72,6 +72,7 @@ def pre_bert(bert_tok, model, params):
     """
 
     input_len = params["input_len"]
+
     target = []
     # recover parameters
     for sub_bert_tok in bert_tok:
@@ -89,6 +90,7 @@ def pre_bert(bert_tok, model, params):
                 attention_mask = functional.pad(attention_mask, (0, input_len - current_len), "constant", 0)
                 token_type_ids = functional.pad(token_type_ids, (0, input_len - current_len), "constant", 0)
 
+                # define input dictionary
                 input_dict = {
                     "input_ids": input_ids,
                     "attention_mask": attention_mask,
