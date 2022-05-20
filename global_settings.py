@@ -17,8 +17,8 @@ LOG_PATH = os.path.join(OUTPUT_PATH, "log")
 stkcd_all = list(np.load(os.path.join(DATA_PATH, "stkcd_all.npy")))
 dalym = pd.read_csv(os.path.join(DATA_PATH, "dalym.csv"))
 trddt_all = np.array(sorted(set(dalym["Trddt"])))
-date0_min = "2016-04-01"  # "2015-01-07"
-date0_max = "2019-07-30"
+date0_min = "2017-03-01"  # "2015-01-07"
+date0_max = "2019-07-30"  # "2019-07-30"
 
 # risklab server
 user = "risklab_user"
@@ -36,7 +36,6 @@ full_dict = pos_dict + neg_dict
 stop_list = list(pd.read_csv(os.path.join(DATA_PATH, "stop_list.txt"), header=None).iloc[:, 0])
 tokenizer = BertTokenizer(vocab_file=os.path.join(DATA_PATH, "vocab.txt"))
 
-# BERT
 # FastText & GPT
 
 # sinteractive --partition=broadwl-lc --nodes=1 --ntasks-per-node=28 --mem=56G --time=36:00:00
