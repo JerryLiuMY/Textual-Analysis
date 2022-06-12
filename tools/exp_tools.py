@@ -51,7 +51,9 @@ def save_model(model, model_name, trddt_test_Ym, ev):
     model_path = os.path.join(OUTPUT_PATH, model_name)
     model_sub_path = os.path.join(model_path, f"model_{ev}")
 
-    if model_name == "ssestm":
+    if model_name == "simple":
+        pass
+    elif model_name == "ssestm":
         np.save(os.path.join(model_sub_path, f"{trddt_test_Ym}.npy"), model)
     elif model_name == "doc2vec":
         doc2vec, cls = model
