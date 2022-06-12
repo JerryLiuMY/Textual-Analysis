@@ -1,4 +1,5 @@
 from params.params import params_dict
+from models.simple import fit_simple, pre_simple
 from models.ssestm import fit_ssestm, pre_ssestm
 from models.doc2vec import fit_doc2vec, pre_doc2vec
 from tools.exp_tools import get_return, get_stocks
@@ -28,7 +29,10 @@ def experiment(window, model_name, perc_ls, subset):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} "
           f"Working on {trddt_train[0][:-3]} to {trddt_test[-1][:-3]}")
 
-    if model_name == "ssestm":
+    if model_name == "simple":
+        load_input = partial(input_loader, textual_name="word_sps", subset=subset)
+        fit_func, pre_func = fit_simple, pre_simple
+    elif model_name == "ssestm":
         load_input = partial(input_loader, textual_name="word_sps", subset=subset)
         fit_func, pre_func = fit_ssestm, pre_ssestm
     elif model_name == "doc2vec":
