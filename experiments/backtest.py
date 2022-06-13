@@ -44,8 +44,9 @@ def backtest(model_name, dalym):
     mkt_cum = np.log(np.cumprod(mkt_ret + 1))
 
     # compute average returns & sharpe ratios
-    ave_le, ave_se, ave_e = map(get_ave, [cum_le, cum_se, cum_e])
-    ave_lv, ave_sv, ave_v = map(get_ave, [cum_lv, cum_sv, cum_v])
+    ave_le, ave_se = map(get_ave, [cum_le, cum_se])
+    ave_lv, ave_sv = map(get_ave, [cum_lv, cum_sv])
+    ave_e, ave_v = ave_le + ave_se, ave_lv + ave_sv
     sha_le, sha_se, sha_e = map(get_sha, [ret_le, ret_se, ret_e])
     sha_lv, sha_sv, sha_v = map(get_sha, [ret_lv, ret_sv, ret_v])
     ave_idx, sha_idx = get_ave(mkt_cum), get_sha(mkt_ret)
