@@ -25,7 +25,7 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
-| Average daily return  | 0.264%    | 0.159%     | 0.877%  | 0.309%    | 0.106%     | 0.757%  | -0.001% |
+| Average daily return  | 0.264%    | 0.159%     | 0.423%  | 0.309%    | 0.106%     | 0.416%  | -0.001% |
 | Sharpe ratio          | 1.72      | 1.26       | 11.01   | 2.12      | 1.06       | 8.68    | 0.07    |
 | Turnover              | 66.6%     | 70.5%      | 68.6%   | 65.9%     | 68.7%      | 67.3%   | /       |
 
@@ -45,11 +45,21 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
-| Average daily return  | 0.059%    | 0.234%     | 0.492%  | -0.044%   | 0.268%     | 0.170%  | -0.001% |
+| Average daily return  | 0.059%    | 0.234%     | 0.293%  | -0.044%   | 0.268%     | 0.224%  | -0.001% |
 | Sharpe ratio          | 0.63      | 1.52       | 6.92    | -0.60     | 1.80       | 3.09    | 0.07    |
 | Turnover              | 86.4%     | 91.5%      | 89.0%   | 90.4%     | 92.4%      | 91.4%   | /       |
 
 ![alt text](./__resources__/backtest_doc2vec.jpg?raw=true "Title")
+
+
+## BERT
+|                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
+|-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
+| Average daily return  | 0.005%    | 0.307%     | 0.312%  | -0.047%   | 0.231%     | 0.183%  | -0.001% |
+| Sharpe ratio          | 0.172     | 1.77       | 6.81    | -0.67     | 1.65       | 2.70    | 0.07    |
+| Turnover              | 88.3%     | 91.5%      | 89.9%   | 91.3%     | 92.9%      | 92.1%   | /       |
+
+![alt text](./__resources__/backtest_bert.jpg?raw=true "Title")
 
 ## Caveats
 - The articles whose `returns` or `three-day returns` cannot be obtained are removed from the data during pre-processing (many of which corresponds to *delisted* stocks). This corresponds to purposefully avoiding future **delisting** -- the information that we could not know in advance.
