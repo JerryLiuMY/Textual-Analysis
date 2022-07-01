@@ -1,4 +1,4 @@
-from experiments.generators import generate_files
+from experiments.generator import generate_files
 from global_settings import DATA_PATH, RICH_PATH
 from tools.exp_tools import iterable_wrapper
 from params.params import subset_size

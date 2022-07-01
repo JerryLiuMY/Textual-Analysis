@@ -7,7 +7,7 @@ from tools.exp_tools import get_weights, get_returns
 from tools.exp_tools import get_pearsonr
 from tools.exp_tools import save_params, save_model, save_return
 from models.bert import fit_bert, pre_bert
-from experiments.generators import generate_params
+from experiments.generator import generate_params
 from experiments.loader import input_loader
 from itertools import tee
 from functools import partial

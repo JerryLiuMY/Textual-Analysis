@@ -6,7 +6,7 @@ from experiments.experiment import experiment
 from global_settings import DATA_PATH, OUTPUT_PATH, dalym
 from global_settings import CLEAN_PATH, RICH_PATH, LOG_PATH
 from global_settings import date0_min, date0_max
-from experiments.generators import generate_window
+from experiments.generator import generate_window
 from params.params import window_dict
 from params.params import perc_ls
 from params.params import proc_dict
