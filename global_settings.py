@@ -7,8 +7,9 @@ from transformers import BertTokenizer
 
 # directories
 DESKTOP_PATH = str(Path(os.getcwd()).parent.absolute())
-DATA_PATH = os.path.join(DESKTOP_PATH, "data")
-OUTPUT_PATH = os.path.join(DESKTOP_PATH, "output")
+SEAGATE_PATH = "/Volumes/Sumsung_1T/5_Projects/Textual-Analysis"
+DATA_PATH = os.path.join(SEAGATE_PATH, "data")
+OUTPUT_PATH = os.path.join(SEAGATE_PATH, "output")
 CLEAN_PATH = os.path.join(DATA_PATH, "cleaned")
 RICH_PATH = os.path.join(DATA_PATH, "enriched")
 LOG_PATH = os.path.join(OUTPUT_PATH, "log")
