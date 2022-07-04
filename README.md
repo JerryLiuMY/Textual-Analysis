@@ -14,14 +14,14 @@
 | Drop articles with more than one stock tagged       | 32,143,209              | 919,646                |
 | Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
 
-<a href="https://drive.google.com/drive/folders/1mzONmH3HUMoyI2VCVSUqFCu1PjCS6uRi?usp=sharing" target="_blank">Repository</a> for the processed data. <a href="https://drive.google.com/drive/folders/1ucT05lVyNUZ93czPlQT-B4naFscslXkF?usp=sharing" target="_blank">Folder</a> for data information. Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from *Jan 2015* to *Jul 2019*. 
+<a href="https://drive.google.com/drive/folders/1_IRf5XZQ19pFyrAj_aJ1k8rbZaw-TmGk?usp=sharing" target="_blank">Repository</a> for the processed data. <a href="https://drive.google.com/drive/folders/1x5wcyWZW5pdKv1o3pliHkoWdnXFdwdGI?usp=sharing" target="_blank">Folder</a> for data information. Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from *Jan 2015* to *Jul 2019*. 
 
 ![alt text](./__resources__/stock_count.jpg?raw=true "Title")
 
 Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
 
 ## SSESTM
-<a href="https://drive.google.com/drive/folders/1mxMuPzGZvH_qNtP9J_t92lzjrZX5jdEu?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
+<a href="https://drive.google.com/drive/folders/1wnRiUFZWT9qQZVPJMC1vIR0StLnpIknB?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
@@ -41,7 +41,7 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 **Top 10 sentiment words:** `涨(0.0233)`, `发展(0.0109)`, `胜(0.0064)`, `创业(0.0062)`, `建设(0.0060)`, `高新(0.0058)`, `健康(0.0049)`, `幸福(0.0044)`, `创新(0.0036)`, `动力(0.0036)`
 
 ## Doc2Vec
-<a href="https://drive.google.com/drive/folders/1IOhDnHQy8OIk4FSGJsn3ks5Fe4ktauzj?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
+<a href="https://drive.google.com/drive/folders/1x9lGmJDj0tl0pswhCtfQzOxWMjwpXgvR?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
