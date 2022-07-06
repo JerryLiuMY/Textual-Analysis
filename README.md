@@ -21,7 +21,7 @@
 Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main/params/params.py
 
 ## SSESTM
-<a href="https://drive.google.com/drive/folders/1wnRiUFZWT9qQZVPJMC1vIR0StLnpIknB?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
+<a href="https://drive.google.com/drive/folders/1ckigwCYzQ5_X0jicr1PieEJ_wvcXBXWL?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
@@ -41,7 +41,7 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 **Top 10 sentiment words:** `涨(0.0233)`, `发展(0.0109)`, `胜(0.0064)`, `创业(0.0062)`, `建设(0.0060)`, `高新(0.0058)`, `健康(0.0049)`, `幸福(0.0044)`, `创新(0.0036)`, `动力(0.0036)`
 
 ## Doc2Vec
-<a href="https://drive.google.com/drive/folders/1x9lGmJDj0tl0pswhCtfQzOxWMjwpXgvR?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
+<a href="https://drive.google.com/drive/folders/1dBhW2tskfImJCmAcsGUL1bWY2U-1fy1S?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
 |                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
 |-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
@@ -64,7 +64,7 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 ## Caveats
 - The articles whose `returns` or `three-day returns` cannot be obtained are removed from the data during pre-processing (many of which corresponds to *delisted* stocks). This corresponds to purposefully avoiding future **delisting** -- the information that we could not know in advance.
 - It is not feasible to directly short stocks in the Chinese market. We can short on ETFs instead.
-- <a href="https://drive.google.com/drive/folders/1wujU5JxASkKkHNeQCszJ72GnoIggEdh3?usp=sharing" target="_blank">A simple strategy</a> that counts the occurrence of `涨` and `跌` (which have the highest occurrence and the most positive/negative sentiments)
+- <a href="https://drive.google.com/drive/folders/1cyXc9Cs9XwB_R80D-9fx8vuxMy4Y8QK4?usp=sharing" target="_blank">A simple strategy</a> that counts the occurrence of `涨` and `跌` (which have the highest occurrence and the most positive/negative sentiments)
 
 ## TODO
 - Look at the performance of the strategies on the CSI 300 constituent stocks.
