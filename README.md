@@ -14,7 +14,7 @@
 | Drop articles with more than one stock tagged       | 32,143,209              | 919,646                |
 | Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
 
-<a href="https://drive.google.com/drive/folders/1_IRf5XZQ19pFyrAj_aJ1k8rbZaw-TmGk?usp=sharing" target="_blank">Repository</a> for the processed data. <a href="https://drive.google.com/drive/folders/1x5wcyWZW5pdKv1o3pliHkoWdnXFdwdGI?usp=sharing" target="_blank">Folder</a> for data information. Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from *Jan 2015* to *Jul 2019*. 
+<a href="https://drive.google.com/drive/folders/1Hh94ROHbnkDtnAy6sRs3TGPMWICGUvfn?usp=sharing" target="_blank">Repository</a> for the processed data. <a href="https://drive.google.com/drive/folders/1d-5nIgABFHoMhHTxpyectDnBKehmzJ2D?usp=sharing" target="_blank">Folder</a> for data information. Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from *Jan 2015* to *Jul 2019*. 
 
 ![alt text](./__resources__/stock_count.jpg?raw=true "Title")
 
