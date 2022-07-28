@@ -6,3 +6,4 @@
 *.pyc
 *.ipynb
 password.json
+__literature__/bert
