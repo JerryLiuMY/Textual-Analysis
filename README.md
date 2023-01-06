@@ -31,14 +31,18 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 
 ![alt text](./__resources__/backtest_ssestm.jpg?raw=true "Title")
 
-#### Sentiment Analysis
-<a href="/__resources__/sentiment.xlsx" target="_blank">Full summary</a> of results for analysis of sentiment charged words.
+[//]: # (#### Sentiment Analysis)
 
-**Top 10 frequent words:** `涨(0.0619)`, `跌(0.0536)`, `发展(0.0433)`, `胜(0.0241)`, `平安(0.0216)`, `高新(0.0184)`, `建设(0.0177)`, `动力(0.0167)`, `健康(0.0158)`, `创业(0.0135)`
+[//]: # (<a href="/__resources__/sentiment.xlsx" target="_blank">Full summary</a> of results for analysis of sentiment charged words.)
 
-**Bottom 10 sentiment words:** `跌(-0.0536)`, `垃圾(-0.0071)`, `杀(-0.0032)`, `反弹(-0.0027)`, `下跌(-0.0027)`, `差(-0.0017)`, `机会(-0.0016)`, `大跌(-0.0014)`, `问题(-0.0014)`, `受益(-0.0013)`
+[//]: # ()
+[//]: # (**Top 10 frequent words:** `涨&#40;0.0619&#41;`, `跌&#40;0.0536&#41;`, `发展&#40;0.0433&#41;`, `胜&#40;0.0241&#41;`, `平安&#40;0.0216&#41;`, `高新&#40;0.0184&#41;`, `建设&#40;0.0177&#41;`, `动力&#40;0.0167&#41;`, `健康&#40;0.0158&#41;`, `创业&#40;0.0135&#41;`)
 
-**Top 10 sentiment words:** `涨(0.0233)`, `发展(0.0109)`, `胜(0.0064)`, `创业(0.0062)`, `建设(0.0060)`, `高新(0.0058)`, `健康(0.0049)`, `幸福(0.0044)`, `创新(0.0036)`, `动力(0.0036)`
+[//]: # ()
+[//]: # (**Bottom 10 sentiment words:** `跌&#40;-0.0536&#41;`, `垃圾&#40;-0.0071&#41;`, `杀&#40;-0.0032&#41;`, `反弹&#40;-0.0027&#41;`, `下跌&#40;-0.0027&#41;`, `差&#40;-0.0017&#41;`, `机会&#40;-0.0016&#41;`, `大跌&#40;-0.0014&#41;`, `问题&#40;-0.0014&#41;`, `受益&#40;-0.0013&#41;`)
+
+[//]: # ()
+[//]: # (**Top 10 sentiment words:** `涨&#40;0.0233&#41;`, `发展&#40;0.0109&#41;`, `胜&#40;0.0064&#41;`, `创业&#40;0.0062&#41;`, `建设&#40;0.0060&#41;`, `高新&#40;0.0058&#41;`, `健康&#40;0.0049&#41;`, `幸福&#40;0.0044&#41;`, `创新&#40;0.0036&#41;`, `动力&#40;0.0036&#41;`)
 
 ## Doc2Vec
 <a href="https://drive.google.com/drive/folders/1E154z82RoUGKTYgvtNx11R7tT6eGfFuq?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
@@ -64,7 +68,8 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 ## Caveats
 - The articles whose `returns` or `three-day returns` cannot be obtained are removed from the data during pre-processing (many of which corresponds to *delisted* stocks). This corresponds to purposefully avoiding future **delisting** -- the information that we could not know in advance.
 - It is not feasible to directly short stocks in the Chinese market. We can short on ETFs instead.
-- <a href="https://drive.google.com/drive/folders/1DwefHc4P4FTRb9HV3UMXN2Jh4XVNyo-Y?usp=sharing" target="_blank">A simple strategy</a> that counts the occurrence of `涨` and `跌` (which have the highest occurrence and the most positive/negative sentiments)
+
+[//]: # (- <a href="https://drive.google.com/drive/folders/1DwefHc4P4FTRb9HV3UMXN2Jh4XVNyo-Y?usp=sharing" target="_blank">A simple strategy</a> that counts the occurrence of `涨` and `跌` &#40;which have the highest occurrence and the most positive/negative sentiments&#41;)
 
 ## TODO
 - Look at the performance of the strategies on the CSI 300 constituent stocks.
