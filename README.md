@@ -6,13 +6,13 @@
 </p>
 
 ## Data Information
-|                                                     |  Remaining Sample Size  |  Observations Removed  |
-|-----------------------------------------------------|:-----------------------:|:----------------------:|
-| Total number of articles                            | 43,132,204              |                        |
-| Drop articles out of date range                     | 37,256,210              | 5,875,994              |
-| Drop articles with no associated stock              | 33,062,855              | 4,193,355              |
-| Drop articles with more than one stock tagged       | 32,143,209              | 919,646                |
-| Drop articles without match with the CSMAR database | 22,543,726              | 9,599,483              |
+|                                                     | Remaining Sample Size | Observations Removed  |
+|-----------------------------------------------------|:---------------------:|:---------------------:|
+| Total number of articles                            |      43,132,204       |                       |
+| Drop articles out of date range                     |      37,256,210       |       5,875,994       |
+| Drop articles with no associated stock              |      33,062,855       |       4,193,355       |
+| Drop articles with more than one stock tagged       |      32,143,209       |        919,646        |
+| Drop articles without match with the CSMAR database |      22,543,726       |       9,599,483       |
 
 <a href="https://drive.google.com/drive/folders/16GvZWfqZREYVqnP9G2zgB55LAOyJUx-d?usp=sharing" target="_blank">Repository</a> for the processed data. <a href="https://drive.google.com/drive/folders/1E5r_OoTsZrQtrZeA4DpglN0ya3roGDt0?usp=sharing" target="_blank">Folder</a> for data information. Number of articles by <a href="/__resources__/hourly_count.pdf" target="_blank">hour</a>, <a href="__resources__/daily_count.pdf" target="_blank">date</a>, and <a href="__resources__/yearly_count.pdf" target="_blank">year</a>. Number of stocks mentioned from *Jan 2015* to *Jul 2019*. 
 
@@ -23,11 +23,11 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 ## SSESTM
 <a href="https://drive.google.com/drive/folders/1EJzldxDb6OJwT19V1o_R27hMuDxfb3MI?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
-|                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
-|-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
-| Average daily return  | 0.264%    | 0.159%     | 0.423%  | 0.309%    | 0.106%     | 0.416%  | -0.001% |
-| Sharpe ratio          | 1.72      | 1.26       | 11.01   | 2.12      | 1.06       | 8.68    | 0.07    |
-| Turnover              | 66.6%     | 70.5%      | 68.6%   | 65.9%     | 68.7%      | 67.3%   | /       |
+|                       | Long-EW  | Short-EW | LS-EW  | Long-VW  | Short-VW  | LS-VW  |  Index  |
+|-----------------------|:--------:|:--------:|:------:|:--------:|:---------:|:------:|:-------:|
+| Average daily return  |  0.264%  |  0.159%  | 0.423% |  0.309%  |  0.106%   | 0.416% | -0.001% |
+| Sharpe ratio          |   1.72   |   1.26   | 11.01  |   2.12   |   1.06    |  8.68  |  0.07   |
+| Turnover              |  66.6%   |  70.5%   | 68.6%  |  65.9%   |   68.7%   | 67.3%  |    /    |
 
 ![alt text](./__resources__/backtest_ssestm.jpg?raw=true "Title")
 
@@ -47,11 +47,11 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 ## Doc2Vec
 <a href="https://drive.google.com/drive/folders/1E154z82RoUGKTYgvtNx11R7tT6eGfFuq?usp=sharing" target="_blank">Repository</a> for trained models, hyper-parameters, and L/S portfolio positions, weights and returns
 
-|                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
-|-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
-| Average daily return  | 0.059%    | 0.234%     | 0.293%  | -0.044%   | 0.268%     | 0.224%  | -0.001% |
-| Sharpe ratio          | 0.63      | 1.52       | 6.92    | -0.60     | 1.80       | 3.09    | 0.07    |
-| Turnover              | 86.4%     | 91.5%      | 89.0%   | 90.4%     | 92.4%      | 91.4%   | /       |
+|                       | Long-EW  | Short-EW  | LS-EW  | Long-VW  | Short-VW  | LS-VW  |  Index  |
+|-----------------------|:--------:|:---------:|:------:|:--------:|:---------:|:------:|:-------:|
+| Average daily return  |  0.059%  |  0.234%   | 0.293% | -0.044%  |  0.268%   | 0.224% | -0.001% |
+| Sharpe ratio          |   0.63   |   1.52    |  6.92  |  -0.60   |   1.80    |  3.09  |  0.07   |
+| Turnover              |  86.4%   |   91.5%   | 89.0%  |  90.4%   |   92.4%   | 91.4%  |    /    |
 
 ![alt text](./__resources__/backtest_doc2vec.jpg?raw=true "Title")
 
