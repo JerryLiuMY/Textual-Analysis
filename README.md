@@ -57,11 +57,11 @@ Dictionary of parameters: https://github.com/xiubooth/Textual-Analysis/blob/main
 
 
 ## BERT
-|                       |  Long-EW  |  Short-EW  |  LS-EW  |  Long-VW  |  Short-VW  |  LS-VW  |  Index  |
-|-----------------------|:---------:|:----------:|:-------:|:---------:|:----------:|:-------:|:-------:|
-| Average daily return  | 0.005%    | 0.307%     | 0.312%  | -0.047%   | 0.231%     | 0.183%  | -0.001% |
-| Sharpe ratio          | 0.17      | 1.77       | 6.81    | -0.67     | 1.65       | 2.70    | 0.07    |
-| Turnover              | 88.3%     | 91.5%      | 89.9%   | 91.3%     | 92.9%      | 92.1%   | /       |
+|                       | Long-EW | Short-EW | LS-EW  | Long-VW  | Short-VW  | LS-VW  |  Index  |
+|-----------------------|:-------:|:--------:|:------:|:--------:|:---------:|:------:|:-------:|
+| Average daily return  | 0.005%  |  0.307%  | 0.312% | -0.047%  |  0.231%   | 0.183% | -0.001% |
+| Sharpe ratio          |  0.17   |   1.77   |  6.81  |  -0.67   |   1.65    |  2.70  |  0.07   |
+| Turnover              |  88.3%  |  91.5%   | 89.9%  |  91.3%   |   92.9%   | 92.1%  |    /    |
 
 ![alt text](./__resources__/backtest_bert.jpg?raw=true "Title")
 
